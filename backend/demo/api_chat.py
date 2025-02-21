@@ -30,6 +30,3 @@ def get_recipe(foods ='' ):
     )
     return completion.choices[0].message.content, quantity
 
-
-# x = get_recipe('Tomato, Cream')
-# print(x)
