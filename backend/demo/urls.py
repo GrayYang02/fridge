@@ -20,6 +20,7 @@ from . import views
 from .views import Another
 
 urlpatterns = [
-    path('first', views.first),
-    path('another', Another.as_view())
+    path('first', views.first, name='first'),
+    path('another', Another.as_view(), name='another'),
+    path('recipe_quest', views.recipe_quest, name='recipe_quest'),
 ]
