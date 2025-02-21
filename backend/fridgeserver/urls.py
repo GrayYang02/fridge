@@ -19,4 +19,6 @@ from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # path('quest_recipe/', admin.quest_recipe, name='create_item', methods=['POST']),
+
 ]
