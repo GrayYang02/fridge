@@ -1,13 +1,13 @@
 import os
 import openai
-from fridgeserver.settings import API_KEY,RECIPE_QUANTITY
+from fridgeserver.settings import API_URL,API_KEY,RECIPE_QUANTITY
 
 # optional; defaults to `os.environ['OPENAI_API_KEY']`
 openai.api_key = API_KEY
 quantity = RECIPE_QUANTITY
 
 # all client options can be configured just like the `OpenAI` instantiation counterpart
-openai.base_url = "https://free.v36.cm/v1/"
+openai.base_url = API_URL
 openai.default_headers = {"x-foo": "true"}
 
 def get_recipe(foods ='' ):

@@ -8,6 +8,7 @@ from .api_chat import get_recipe
 from .models import Food
 from django.http import JsonResponse
 
+from .response import Response
 
 
 # Create your views here.
@@ -31,20 +32,20 @@ async def recipe_quest(request):
         user_id = request.GET.get('user_id', '')
         task_id = request.GET.get('task_id', '')
         if foods == '':
-            return JsonResponse({'success': False, 'code': 400, 'msg': f'No food for search'})
+            return Response.error_data(msg=f'No food for search')
 
         # Call async function if needed
         recipes, quantity = get_recipe(foods)
         recipes = json.loads(recipes)
 
         # Return response
-        return JsonResponse({
+        return Response.ok(data = {
             'success': True,
             'code': 200,
             'msg': f'Success! Found recipes. Quantity: {quantity}, Foods: {foods}, User ID: {user_id}',
             'task_id': task_id,
             'recipe': recipes
-        }, json_dumps_params={'ensure_ascii': False})
+        })
 
     except Exception as e:
-        return JsonResponse({'success': False, 'code': 400, 'msg': f'Failed to search, {e}'})
+        return Response.error(msg= f'Failed to search, {e}')
