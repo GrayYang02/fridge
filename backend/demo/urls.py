@@ -19,8 +19,16 @@ from django.urls import path
 
 from demo import views
 
+from . import views
+from .views import Another
+from .views import add_fridge_item  # 确保这里正确导入
+
+
 urlpatterns = [
     path('first', views.first, name='first'),
     path('another', views.Another.as_view(), name='another'),
     path('recipe_quest', views.recipe_quest, name='recipe_quest'),
+    path('add_fridge_item/', add_fridge_item, name='add_fridge_item'),
+
+
 ]
