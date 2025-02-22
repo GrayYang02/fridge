@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'demo',
 ]
 
 MIDDLEWARE = [
@@ -121,3 +122,17 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+### API parts
+API_KEY = "sk-94945667a547494a9adeefcff1d5a3a1"
+APP_ID = 'a78c9f45e02c411da89cd9c95a1b86aa'
+
+### MONGODB
+MONGODB_USER = "dannelhdx"
+MONGODB_PASSWORD = "iBcyCvPUhKXvinoR"
+MONGODB_HOST = "cluster0.tlr9o.mongodb.net"
+MONGODB_PORT = ""  # MongoDB Atlas uses SRV, so no specific port is needed.
+MONGODB_DB = "Food"  # Replace with your actual database name.
+
+MONGODB_URI = f"mongodb+srv://{MONGODB_USER}:{MONGODB_PASSWORD}@{MONGODB_HOST}/{MONGODB_DB}?retryWrites=true&w=majority&appName=Cluster0"
+# print(MONGODB_URI)
