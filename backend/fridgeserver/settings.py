@@ -127,3 +127,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 API_KEY = "sk-3MlTKLPDYWERB6Zf448eCa977eBe417f86Ba4350299d63D0"
 API_URL = "https://free.v36.cm"
 RECIPE_QUANTITY = 3
+
+
+### MONGODB
+
+
+POST_ADD = 9402
+
+MONGODB_USER = "dannelhdx"
+MONGODB_PASSWORD = "iBcyCvPUhKXvinoR"
+MONGODB_HOST = "cluster0.tlr9o.mongodb.net"
+MONGODB_PORT = ""  # MongoDB Atlas uses SRV, so no specific port is needed.
+MONGODB_DB = "Food"  # Replace with your actual database name.
+
+MONGODB_URI = f"mongodb+srv://{MONGODB_USER}:{MONGODB_PASSWORD}@{MONGODB_HOST}/{MONGODB_DB}?retryWrites=true&w=majority&appName=Cluster0"
+print(MONGODB_URI)
