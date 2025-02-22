@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views import View
 
-from .api_chat import get_recipe
+from .api_chat import get_recipe, extract_clean_data
 from .models import Food
 from django.http import JsonResponse
 
@@ -35,14 +35,15 @@ async def recipe_quest(request):
             return Response.error_data(msg=f'No food for search')
 
         # Call async function if needed
-        recipes, quantity = get_recipe(foods)
-        recipes = json.loads(recipes)
+        recipes = get_recipe(foods)
+
+        recipes = extract_clean_data(recipes)
 
         # Return response
         return Response.ok(data = {
             'success': True,
             'code': 200,
-            'msg': f'Success! Found recipes. Quantity: {quantity}, Foods: {foods}, User ID: {user_id}',
+            'msg': f'Success! Found 3 recipes. Foods: {foods}, User ID: {user_id}',
             'task_id': task_id,
             'recipe': recipes
         })
