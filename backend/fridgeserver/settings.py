@@ -37,6 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+   
+
+    'rest_framework',  # 添加 Django REST Framework
+
+
     'demo',
 ]
 
@@ -135,4 +140,5 @@ MONGODB_PORT = ""  # MongoDB Atlas uses SRV, so no specific port is needed.
 MONGODB_DB = "Food"  # Replace with your actual database name.
 
 MONGODB_URI = f"mongodb+srv://{MONGODB_USER}:{MONGODB_PASSWORD}@{MONGODB_HOST}/{MONGODB_DB}?retryWrites=true&w=majority&appName=Cluster0"
+
 # print(MONGODB_URI)
