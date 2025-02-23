@@ -37,11 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-   
-
+    'rest_framework.authtoken',
     'rest_framework',  # 添加 Django REST Framework
-
-
     'demo',
 ]
 
@@ -72,6 +69,12 @@ TEMPLATES = [
         },
     },
 ]
+AUTH_USER_MODEL = 'demo.User'
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
 
 WSGI_APPLICATION = 'fridgeserver.wsgi.application'
 

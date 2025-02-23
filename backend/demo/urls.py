@@ -1,6 +1,14 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import FoodViewSet, UserViewSet, RecipeViewSet, UserRecipeLogViewSet, FridgeItemViewSet
+from .views import (
+    FoodViewSet,
+    UserViewSet,
+    RecipeViewSet,
+    UserRecipeLogViewSet,
+    FridgeItemViewSet,
+    RegisterView,
+    LoginView
+)
 
 router = DefaultRouter()
 router.register(r'food', FoodViewSet)  # `/food/` 自动生成 CRUD
@@ -11,4 +19,6 @@ router.register(r'fridge', FridgeItemViewSet)  # `/fridge/`
 
 urlpatterns = [
     path('', include(router.urls)),  # 让 Django 处理 API 请求
+    path('register/', RegisterView.as_view(), name='register'),
+    path('login/', LoginView.as_view(), name='login'),
 ]

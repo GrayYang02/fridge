@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
 class Food(models.Model):
     Name = models.CharField(blank=True, unique=True, max_length=36)
     Production_Date = models.DateField(blank=True, null=True)
@@ -7,9 +7,9 @@ class Food(models.Model):
     def __str__(self):
         return self.name
 
-class User(models.Model):
+class User(AbstractUser):
     email = models.CharField(max_length=255, unique=True)
-    nickname = models.CharField(max_length=255, null=True, blank=True)
+    username = models.CharField(max_length=255, null=True, blank=True)
     password = models.CharField(max_length=255)
     age = models.IntegerField(null=True, blank=True)
     height = models.IntegerField(null=True, blank=True)
@@ -20,6 +20,12 @@ class User(models.Model):
     userlike = models.CharField(max_length=255, null=True, blank=True)
     dislike = models.CharField(max_length=255, null=True, blank=True)
     allergics = models.CharField(max_length=255, null=True, blank=True)
+    # Set email as the unique identifier for authentication
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []  # You can add fields here if needed for createsuperuser
+
+    def __str__(self):
+        return self.email
 
 class Recipe(models.Model):
     recipe_name = models.CharField(max_length=255)
@@ -32,8 +38,8 @@ class Recipe(models.Model):
     is_del = models.IntegerField(default=0)
 
 class UserRecipeLog(models.Model):
-    userid = models.ForeignKey(User, on_delete=models.CASCADE)
-    recipe_id = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    userid = models.IntegerField()
+    recipe_id = models.IntegerField()
     op = models.IntegerField()
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
@@ -48,4 +54,4 @@ class FridgeItem(models.Model):
     pic = models.IntegerField(null=True, blank=True)
     is_del = models.IntegerField(default=0)
     update_time = models.DateTimeField(auto_now=True)
-    uid = models.ForeignKey(User, on_delete=models.CASCADE)
+    uid = models.IntegerField()
