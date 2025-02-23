@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from "react";
 import profilepic from "./assets/profilepic.png";
-import cookedView from "./views/cookedView";
-import preferencesView from "./views/preferencesView";
+import CookedView from "./views/CookedView";
+import PreferencesView from "./views/PreferencesView";
+import UserView from "./views/UserView";
 const Profile = () => {
   const [tab, setTab] = useState("cooked");
   useEffect(() => {
@@ -9,14 +10,16 @@ const Profile = () => {
   }, [tab]);
   const renderRightContent = () => {
     switch (tab) {
+      case "profile":
+        return (UserView())
       case "preferences":
         return (
-          preferencesView()
+          PreferencesView()
         );
       case "collected":
       case "viewed":
       case "cooked":
-        return (cookedView());
+        return (CookedView());
       default:
         return null;
       }

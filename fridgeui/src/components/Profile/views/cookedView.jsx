@@ -1,7 +1,7 @@
 import React from 'react'
 import recipepic from "../assets/recipepic.png";
 
-const cookedView = () => {
+const CookedView = () => {
   return (
     <>
     <h1 className="text-xl font-bold mb-4">Cooked Recipes</h1>
@@ -47,4 +47,4 @@ const cookedView = () => {
   )
 }
 
-export default cookedView
+export default CookedView
