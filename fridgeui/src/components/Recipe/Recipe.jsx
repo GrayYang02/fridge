@@ -1,5 +1,6 @@
 import profilepic from "./assets/profilepic.png";
 import potpic from "./assets/potpic.png";
+import applepic from "./assets/applepic.png";
 import React from 'react';
 
 const FridgeRecipePage = () => {
@@ -36,14 +37,14 @@ const FridgeRecipePage = () => {
           </div>
 
           <div className="mt-4 space-y-2">
-            <div className="border rounded-lg flex items-center p-2">
-              <span className="font-semibold">apple</span>
-              <img src="https://placehold.co/50x50" alt="apple" className="ml-auto" />
-            </div>
-            <div className="border rounded-lg flex items-center p-2">
-              <span className="font-semibold">apple</span>
-              <img src="https://placehold.co/50x50" alt="apple" className="ml-auto" />
-            </div>
+          <div className="border rounded-lg flex items-center p-2 h-12">
+            <span className="font-semibold">apple</span>
+            <img src={applepic} alt="apple" className="ml-auto h-10" />
+          </div>
+          <div className="border rounded-lg flex items-center p-2 h-12">
+            <span className="font-semibold">apple</span>
+            <img src={applepic} alt="apple" className="ml-auto h-10" />
+          </div>
           </div>
 
           <button className="mt-4 bg-gray-800 text-white py-2 px-4 rounded-lg">
@@ -53,9 +54,9 @@ const FridgeRecipePage = () => {
 
         {/* Center Column */}
         <section className="flex-1 bg-white rounded-lg shadow p-4 flex flex-col items-center justify-center">
-          <div className="border rounded-lg flex items-center p-2 mb-4">
+          <div className="border rounded-lg flex items-center p-2 h-12">
             <span className="font-semibold">apple</span>
-            <img src="https://placehold.co/50x50" alt="apple" className="ml-auto" />
+            <img src={applepic} alt="apple" className="ml-auto h-10" />
           </div>
           <span className="inline-block bg-gray-800 text-white rounded px-2 py-1">
             sweet & sour
