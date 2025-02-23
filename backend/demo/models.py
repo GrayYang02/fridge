@@ -1,11 +1,13 @@
 from django.db import models
 
-class Food(models.Model):
-    Name = models.CharField(blank=True, unique=True, max_length=36)
-    Production_Date = models.DateField(blank=True, null=True)
-    Expire_Date = models.DateField(blank=True, null=True)
-    def __str__(self):
-        return self.name
+# class Food(models.Model):
+#     Name = models.CharField(blank=True, unique=True, max_length=36)
+#     Production_Date = models.DateField(blank=True, null=True)
+#     Expire_Date = models.DateField(blank=True, null=True)
+
+#     def __str__(self):
+#         return self.Name  # 这里把 return self.name 改为 self.Name，保证和字段一致
+
 
 class User(models.Model):
     email = models.CharField(max_length=255, unique=True)
@@ -21,6 +23,7 @@ class User(models.Model):
     dislike = models.CharField(max_length=255, null=True, blank=True)
     allergics = models.CharField(max_length=255, null=True, blank=True)
 
+
 class Recipe(models.Model):
     recipe_name = models.CharField(max_length=255)
     food = models.CharField(max_length=255)
@@ -31,13 +34,17 @@ class Recipe(models.Model):
     flavor_tag = models.CharField(max_length=255, null=True, blank=True)
     is_del = models.IntegerField(default=0)
 
+
 class UserRecipeLog(models.Model):
-    userid = models.ForeignKey(User, on_delete=models.CASCADE)
-    recipe_id = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    # 将外键字段变为整数字段
+    userid = models.IntegerField()
+    recipe_id = models.IntegerField()
+
     op = models.IntegerField()
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     is_del = models.IntegerField(default=0)
+
 
 class FridgeItem(models.Model):
     name = models.CharField(max_length=255)
@@ -48,4 +55,6 @@ class FridgeItem(models.Model):
     pic = models.IntegerField(null=True, blank=True)
     is_del = models.IntegerField(default=0)
     update_time = models.DateTimeField(auto_now=True)
-    uid = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    # 将外键字段变为整数字段
+    uid = models.IntegerField()
