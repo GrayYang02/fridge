@@ -1,34 +1,13 @@
-"""
-URL configuration for fridgeserver project.
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import  UserViewSet, RecipeViewSet, UserRecipeLogViewSet, FridgeItemViewSet
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-# from django.contrib import admin
-from django.urls import path
-
-from demo import views
-
-from . import views
-from .views import Another
-from .views import add_fridge_item  # 确保这里正确导入
-
+router = DefaultRouter()
+router.register(r'users', UserViewSet)  # `/users/`
+router.register(r'recipes', RecipeViewSet)  # `/recipes/`
+router.register(r'user-recipe-log', UserRecipeLogViewSet)  # `/user-recipe-log/`
+router.register(r'fridge', FridgeItemViewSet)  # `/fridge/`
 
 urlpatterns = [
-    path('first', views.first, name='first'),
-    path('another', views.Another.as_view(), name='another'),
-    path('recipe_quest', views.recipe_quest, name='recipe_quest'),
-    path('add_fridge_item/', add_fridge_item, name='add_fridge_item'),
-
-
+    path('', include(router.urls)),  # 让 Django 处理 API 请求
 ]

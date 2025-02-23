@@ -1,28 +1,15 @@
-// import logo from './logo.svg';
-import './App.css';
-import Profile from './components/Profile/Profile';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Profile from "./components/Profile/Profile";
+import Fridge from "./components/Fridge/Fridge";  // ✅ 引入 Fridge 组件
 
 function App() {
   return (
-    // <div className="App">
-    //   <header className="App-header">
-    //     <img src={logo} className="App-logo" alt="logo" />
-    //     <p>
-    //       Edit <code>src/App.js</code> and save to reload.
-    //     </p>
-    //     <a
-    //       className="App-link"
-    //       href="https://reactjs.org"
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //     >
-    //       Learn React
-    //     </a>
-    //   </header>
-    // </div>
-    <div className='App'>
-      <Profile/>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/fridge" element={<Fridge />} />  {/* ✅ 新增 Fridge 页面 */}
+      </Routes>
+    </Router>
   );
 }
 
