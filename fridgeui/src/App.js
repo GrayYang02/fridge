@@ -1,6 +1,7 @@
 // import logo from './logo.svg';
 import './App.css';
 import Profile from './components/Profile/Profile';
+import Recipe from './components/Recipe/Recipe';
 
 function App() {
   return (
@@ -21,8 +22,10 @@ function App() {
     //   </header>
     // </div>
     <div className='App'>
-      <Profile/>
+      <Recipe />
+
     </div>
+
   );
 }
 
