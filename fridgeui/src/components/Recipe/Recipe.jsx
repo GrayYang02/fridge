@@ -8,7 +8,7 @@ const FridgeRecipePage = () => {
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Header */}
       <header className="flex justify-between items-center p-4 bg-white shadow">
-        <h1 className="text-xl font-semibold">APPNAME</h1>
+        <h1 className="text-xl font-semibold">Fridge</h1>
         <nav className="flex gap-6">
           <span className="cursor-pointer">RECIPE</span>
           <span className="cursor-pointer">FRIDGE</span>
