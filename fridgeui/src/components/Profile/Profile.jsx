@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import profilepic from "./assets/profilepic.png";
-import CookedView from "./views/CookedView";
-import PreferencesView from "./views/PreferencesView";
+import CookedView from "./views/cookedView";
+import PreferencesView from "./views/preferencesView";
 import UserView from "./views/UserView";
 const Profile = () => {
   const [tab, setTab] = useState("cooked");
