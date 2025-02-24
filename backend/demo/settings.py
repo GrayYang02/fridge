@@ -18,7 +18,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'demo',
 ]
-
+AUTH_USER_MODEL = 'demo.User'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
