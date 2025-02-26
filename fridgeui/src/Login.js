@@ -1,36 +1,67 @@
-import { useState } from "react";
-import axios from "axios";
+import React, { useState } from 'react';
+import axios from 'axios';
+import './index.css';
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8000/api/users/login/", {
-        email,
-        password,
-      });
-      localStorage.setItem("token", response.data.access);
-      alert("Login successful!");
-    } catch (error) {
-      alert("Invalid credentials");
+      const response = await axios.post('http://127.0.0.1:8000/demo/login/', formData);
+      const { token } = response.data;
+      localStorage.setItem('token', token);
+      alert('Login Successful!');
+    } catch (err) {
+      console.error(err);
+      alert('Login Failed!');
     }
   };
 
   return (
-    <div>
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
-        <label>Email</label>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+    <div className="auth-container">
+      <div className="auth-box">
+        <h1 className="auth-title">Welcome back!</h1>
 
-        <label>Password</label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <form onSubmit={handleSubmit} className="auth-form">
+          <label className="auth-label">EMAIL</label>
+          <input
+            type="email"
+            name="email"
+            className="auth-input"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
 
-        <button type="submit">Login</button>
-      </form>
+          <label className="auth-label">PASSWORD</label>
+          <input
+            type="password"
+            name="password"
+            className="auth-input"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+
+          <button type="submit" className="auth-button">Log in</button>
+        </form>
+
+        <div className="auth-links">
+          <a href="/signup" className="auth-link">Sign up</a>
+          <a href="/login" className="auth-link active">Log in</a>
+        </div>
+      </div>
     </div>
   );
 }

@@ -2,3 +2,102 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+/* index.css */
+/* index.css */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    background-color: #fefefe;
+  }
+  
+  .auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* 让内容垂直居中 */
+  }
+  
+  .auth-box {
+    background: #fff;
+    padding: 2rem;
+    width: 350px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .auth-title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .auth-label {
+    font-size: 0.85rem;
+    font-weight: bold;
+    align-self: flex-start;
+    margin-bottom: 0.2rem;
+    margin-top: 1rem;
+  }
+  
+  .auth-input {
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    outline: none;
+  }
+  
+  .auth-input:focus {
+    border-color: #a28275; /* 选中时颜色 */
+  }
+  
+  .auth-button {
+    margin-top: 1.5rem;
+    padding: 0.75rem;
+    font-size: 1rem;
+    width: 100%;
+    background-color: #a28275;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .auth-button:hover {
+    background-color: #8c6f64;
+  }
+  
+  .auth-links {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+  
+  .auth-link {
+    margin: 0 1rem;
+    color: #888;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  
+  .auth-link:hover {
+    text-decoration: underline;
+  }
+  
+  .auth-link.active {
+    color: #333;
+    font-weight: bold;
+  }
+  

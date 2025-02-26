@@ -1,40 +1,76 @@
-import { useState } from "react";
-import axios from "axios";
+import React, { useState } from 'react';
+import axios from 'axios';
+import './index.css';
 
 function SignUp() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    username: ''
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8000/api/users/register/", {
-        email,
-        password,
-        username,
-      });
-      alert("Registration successful!");
-    } catch (error) {
-      alert("Registration failed");
+      await axios.post('http://127.0.0.1:8000/demo/register/', formData);
+      alert('Sign Up Successful!');
+    } catch (err) {
+      console.error(err);
+      alert('Sign Up Failed!');
     }
   };
 
   return (
-    <div>
-      <h1>Hello!</h1>
-      <form onSubmit={handleSubmit}>
-        <label>Email</label>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+    <div className="auth-container">
+      <div className="auth-box">
+        <h1 className="auth-title">Hello!</h1>
 
-        <label>Password</label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <form onSubmit={handleSubmit} className="auth-form">
+          <label className="auth-label">EMAIL</label>
+          <input
+            type="email"
+            name="email"
+            className="auth-input"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
 
-        <label>Username</label>
-        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
+          <label className="auth-label">PASSWORD</label>
+          <input
+            type="password"
+            name="password"
+            className="auth-input"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
 
-        <button type="submit">Sign up</button>
-      </form>
+          <label className="auth-label">USERNAME</label>
+          <input
+            type="text"
+            name="username"
+            className="auth-input"
+            value={formData.username}
+            onChange={handleChange}
+            required
+          />
+
+          <button type="submit" className="auth-button">Sign up</button>
+        </form>
+
+        <div className="auth-links">
+          <a href="/signup" className="auth-link active">Sign up</a>
+          <a href="/login" className="auth-link">Log in</a>
+        </div>
+      </div>
     </div>
   );
 }
