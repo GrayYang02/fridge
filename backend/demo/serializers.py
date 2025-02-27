@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Food, User, Recipe, UserRecipeLog, FridgeItem
+from .models import  User, Recipe, UserRecipeLog, FridgeItem
 from django.contrib.auth.hashers import make_password, check_password
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -31,10 +31,7 @@ class LoginSerializer(serializers.Serializer):
     email = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
-class FoodSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Food
-        fields = '__all__'  #  自动包含所有字段
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

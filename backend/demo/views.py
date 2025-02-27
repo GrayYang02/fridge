@@ -1,6 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
-from .models import Food, User, Recipe, UserRecipeLog, FridgeItem
-from .serializers import FoodSerializer, UserSerializer, RecipeSerializer, UserRecipeLogSerializer, FridgeItemSerializer
+
+from .models import User, Recipe, UserRecipeLog, FridgeItem
+from .serializers import UserSerializer, RecipeSerializer, UserRecipeLogSerializer, FridgeItemSerializer
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -13,9 +14,7 @@ from .serializers import (
     LoginSerializer
 )
 
-class FoodViewSet(ModelViewSet):
-    queryset = Food.objects.all()
-    serializer_class = FoodSerializer
+
 
 
 class UserViewSet(ModelViewSet):

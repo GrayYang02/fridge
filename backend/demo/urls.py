@@ -1,8 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from .views import  UserViewSet, RecipeViewSet, UserRecipeLogViewSet, FridgeItemViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import (
-    FoodViewSet,
     UserViewSet,
     RecipeViewSet,
     UserRecipeLogViewSet,
@@ -11,8 +11,8 @@ from .views import (
     LoginView
 )
 
+
 router = DefaultRouter()
-router.register(r'food', FoodViewSet)  # `/food/` 自动生成 CRUD
 router.register(r'users', UserViewSet)  # `/users/`
 router.register(r'recipes', RecipeViewSet)  # `/recipes/`
 router.register(r'user-recipe-log', UserRecipeLogViewSet)  # `/user-recipe-log/`
