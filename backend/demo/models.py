@@ -45,7 +45,7 @@ class FridgeItem(models.Model):
     tag = models.IntegerField()
     create_time = models.DateTimeField(default=datetime.date.today)
     expire_time = models.DateTimeField(default=lambda: datetime.date.today() + datetime.timedelta(days=30)) # 默认30天
-    save_time = models.IntegerField(null=True, blank=True) # eg:90天
+    save_time = models.IntegerField(default=30) # default 90 days
     pic = models.IntegerField(null=True, blank=True)
     is_del = models.IntegerField(default=0)
     update_time = models.DateTimeField(default=datetime.date.today)
