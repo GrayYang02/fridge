@@ -32,7 +32,7 @@ This will:
 - Build and start the Django backend on port `8000`
 - Build and start the React frontend on port `3000`
 
-### 3. Access the Application
+### 4. Access the Application
 Once the services are running, you can access:
 - **Frontend:** [http://localhost:3000](http://localhost:3000)
 - **Backend:** [http://localhost:8000](http://localhost:8000)
