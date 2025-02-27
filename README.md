@@ -15,8 +15,15 @@ Ensure you have the following installed on your system:
 git clone <repository-url>
 cd <project-directory>
 ```
+### 2. Enviroment Config (.env file)
+This project uses `.env` file to store environment variobles,
+after you clone the repo, please execute the commands below:
+```bash
+cp .env.example .env
+```
+modify .env file if necessary (replace any placeholder)
 
-### 2. Build and Start the Services
+### 3. Build and Start the Services
 Run the following command to build and start the containers:
 ```sh
 docker-compose up --build

@@ -1,5 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import (
     FoodViewSet,
     UserViewSet,
@@ -21,4 +22,7 @@ urlpatterns = [
     path('', include(router.urls)),  # 让 Django 处理 API 请求
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
+    path('token/', TokenObtainPairView.as_view(), name='get_token'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api-auth/', include('rest_framework.urls')),
 ]
