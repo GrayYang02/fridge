@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import './signuplogin.css';
+import { useNavigate } from 'react-router-dom';
 
 function SignUp() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -19,8 +21,9 @@ function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://127.0.0.1:8000/demo/register/', formData);
+      await api.post('/demo/register/', formData);
       alert('Sign Up Successful!');
+      navigate('/login');
     } catch (err) {
       console.error(err);
       alert('Sign Up Failed!');

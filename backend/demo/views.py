@@ -5,6 +5,8 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.hashers import check_password
+from rest_framework.permissions import IsAuthenticated, AllowAny
+
 
 from .serializers import (
     RegisterSerializer,
@@ -39,6 +41,7 @@ class RegisterView(generics.CreateAPIView):
     """
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
 
 class LoginView(generics.GenericAPIView):
     """
@@ -64,11 +67,11 @@ class LoginView(generics.GenericAPIView):
             return Response({"detail": "Invalid credentials."}, status=status.HTTP_400_BAD_REQUEST)
 
         # 创建/获取 Token
-        token, created = Token.objects.get_or_create(user=user)
+        # token, created = Token.objects.get_or_create(user=user)
 
         # 返回 token
         return Response({
-            "token": token.key,
+            # "token": token.key,
             "user_id": user.id,
             "email": user.email,
             "username": user.username

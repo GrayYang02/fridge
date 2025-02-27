@@ -10,6 +10,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         # 假设你只需要 email, nickname, password
         fields = ['email', 'username', 'password']
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
 
     def create(self, validated_data):
         # 从表单数据中取出密码并进行哈希

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import './signuplogin.css';
 import { useNavigate } from 'react-router-dom';
+import { ACCESS_TOKEN } from '../../constants';
 
 
 function Login() {
@@ -21,9 +22,9 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://127.0.0.1:8000/demo/login/', formData);
-      const { token } = response.data;
-      localStorage.setItem('token', token);
+      const response = await api.post('/demo/token/', formData);
+      localStorage.setItem(ACCESS_TOKEN, response.data.access);
+      localStorage.setItem(ACCESS_TOKEN, response.data.refresh);
       alert('Login Successful!');
       navigate('/profile');
 
