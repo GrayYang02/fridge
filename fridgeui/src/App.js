@@ -1,17 +1,17 @@
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate, BrowserRouter} from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate, BrowserRouter } from 'react-router-dom';
 import SignUp from './components/SignupLogin/SignUp';
 import Profile from './components/Profile/Profile';
 import Login from './components/SignupLogin/Login';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotFound from './components/NotFound/NotFound';
 import Fridge from "./components/Fridge/Fridge";  // ✅ 引入 Fridge 组件
-import Recipe from "./components/Recipe/Recipe";  // ✅ 引入 Recipe 组件
+import Recipe from "./components/RecipeDetail/RecipeDetail";  // ✅ 引入 Recipe 组件
 function Logout() {
   localStorage.clear()
   return <Navigate to="/login" />;
-} 
+}
 
 function RegisterAndLogout() {
   localStorage.clear()
@@ -34,7 +34,7 @@ function App() {
         <Route path="/signup" element={<RegisterAndLogout />} />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
-        <Route path="/profile" element={<ProtectedRoute><Profile></Profile></ProtectedRoute> } />
+        <Route path="/profile" element={<ProtectedRoute><Profile></Profile></ProtectedRoute>} />
         <Route path="/fridge" element={<Fridge />} />  {/* ✅ 新增 Fridge 页面 */}
         <Route path="/Recipe" element={<ProtectedRoute><Recipe></Recipe></ProtectedRoute>} />  {/* ✅ 新增 Recipe 页面 */}
         <Route path="*" element={<NotFound />} />
