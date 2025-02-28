@@ -63,3 +63,8 @@ class FridgeItem(models.Model):
     is_del = models.IntegerField(default=0)
     update_time = models.DateTimeField(auto_now=True)
     uid = models.IntegerField()
+
+class ItemTag(models.Model):
+    tag = models.IntegerField()
+    name = models.CharField(max_length=255)
+    create_time = models.DateTimeField(auto_now_add=True)
