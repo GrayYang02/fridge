@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { fetchFridgeItems, addFridgeItem, deleteFridgeItem } from "../../api";
+import Navbar from "../../components/Navbar";
 
 const FridgePage = () => {
   const [fridgeItems, setFridgeItems] = useState([]);
@@ -8,13 +9,13 @@ const FridgePage = () => {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const getCurrentDate = () => {
-    return new Date().toISOString().split("T")[0]; // 获取 YYYY-MM-DD 格式
+    return new Date().toISOString().split("T")[0]; 
   };
-  // 弹窗相关状态
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newFood, setNewFood] = useState({
     name: "",
-    user_id: "", // 需要在实际使用时提供
+    user_id: "", 
     add_time: getCurrentDate(),
     expire_time: "",
   });
@@ -30,7 +31,7 @@ const FridgePage = () => {
   const loadItems = async () => {
     setLoading(true);
     try {
-      const items = await fetchFridgeItems(1, 20, "create_time_desc"); // 默认加载第一页，20个食物
+      const items = await fetchFridgeItems(1, 20, "create_time_desc"); 
       const now = new Date();
       const expiring = items.filter(
         (item) => new Date(item.expire_time) <= new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000)
@@ -72,22 +73,6 @@ const FridgePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
-      <nav className="flex justify-between items-center px-8 py-4 shadow-sm">
-        <span className="font-bold text-xl">APPNAME</span>
-        <ul className="flex gap-6">
-          <li>RECIPE</li>
-          <li className="font-semibold">FRIDGE</li>
-          <li>PROFILE</li>
-        </ul>
-        <div>
-          <img
-            className="rounded-full h-12 w-12 object-cover"
-            src="https://placehold.co/100x100"
-            alt="User"
-          />
-        </div>
-      </nav>
-
       <main className="p-8">
         <section className="flex gap-4">
           {/* Expiring Items */}
@@ -109,7 +94,7 @@ const FridgePage = () => {
             </ul>
           </div>
 
-          {/* Stored Items */}
+          {}
           <div className="bg-white p-4 shadow rounded-lg flex-grow">
             <div className="flex items-center gap-2 mb-4">
               <input
@@ -148,7 +133,7 @@ const FridgePage = () => {
         </section>
       </main>
 
-      {/* 新增食材按钮 */}
+      {}
       <button
         onClick={() => setIsModalOpen(true)}
         className="fixed bottom-6 right-6 bg-blue-500 text-white px-4 py-2 rounded-full shadow-lg"
@@ -156,7 +141,7 @@ const FridgePage = () => {
         + Add Food
       </button>
 
-      {/* 添加食材的弹窗 */}
+      {}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
