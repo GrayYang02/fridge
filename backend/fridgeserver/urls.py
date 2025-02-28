@@ -21,4 +21,6 @@ from django.urls import path, include
 urlpatterns = [
     path('demo/',include('demo.urls')),
     path('admin/', admin.site.urls),
+    # path('quest_recipe/', admin.quest_recipe, name='create_item', methods=['POST']),
+
 ]

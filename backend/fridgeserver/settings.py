@@ -149,3 +149,7 @@ MONGODB_DB = "Food"  # Replace with your actual database name.
 MONGODB_URI = f"mongodb+srv://{MONGODB_USER}:{MONGODB_PASSWORD}@{MONGODB_HOST}/{MONGODB_DB}?retryWrites=true&w=majority&appName=Cluster0"
 
 # print(MONGODB_URI)
+
+# ### API parts
+# API_KEY = "sk-3MlTKLPDYWERB6Zf448eCa977eBe417f86Ba4350299d63D0"
+# API_URL = "https://free.v36.cm"
