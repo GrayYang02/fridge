@@ -6,23 +6,33 @@ import re
 import dashscope
 from dashscope import Application
 
+from demo.log import logger
+from demo.response import Response
 from fridgeserver.settings import API_KEY,APP_ID
 
 dashscope.api_key = API_KEY
 
-def get_recipe(foods):
+def get_recipe(request):
+    if request.method == "GET":
+        foods = request.GET.get('ingredient','user')
+    else: Response.error('port method GET')
     response = Application.call(
         api_key=os.getenv(API_KEY),
         app_id=APP_ID,
         prompt=f'my food is {foods}')
 
     if response.status_code != HTTPStatus.OK:
-        print(f'request_id={response.request_id}')
-        print(f'code={response.status_code}')
-        print(f'message={response.message}')
-        print(f'See Doc：https://help.aliyun.com/zh/model-studio/developer-reference/error-code')
+        msg_info = (f'request_id={response.request_id},code={response.status_code}, message={response.message}.\n'
+               f'See Doc：https://help.aliyun.com/zh/model-studio/developer-reference/error-code')
+        return Response.error(msg = msg_info)
     else:
-        return response.output.text
+        res = response.output.text
+
+        res_clean = extract_clean_data(res)
+        if res_clean == '':
+            return Response.error(msg=f'extract_clean_data failed, raw message is :{res}')
+
+        return Response.ok(res_clean,msg='successful gain recipes')
 
 # x = get_recipe('pasta,Tomato,Garlic')
 # print(x)
@@ -110,11 +120,10 @@ def extract_clean_data(long_string):
             ans = eval(ans)
             return ans
         else:
-            print("No related sign")
+            logger.error("No related sign")
 
     except Exception as e:
-        print('No return recipe been found')
-
+        logger.error('No return recipe been found')
 
     return ''
 
