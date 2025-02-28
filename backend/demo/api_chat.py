@@ -15,7 +15,9 @@ dashscope.api_key = API_KEY
 def get_recipe(request):
     if request.method == "GET":
         foods = request.GET.get('ingredient','user')
-    else: Response.error('port method GET')
+    else:
+        Response.error('port method GET')
+
     response = Application.call(
         api_key=os.getenv(API_KEY),
         app_id=APP_ID,
