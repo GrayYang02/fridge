@@ -74,14 +74,13 @@ class LoginView(generics.GenericAPIView):
             "username": user.username
         }, status=status.HTTP_200_OK)
     
-    # class UserProfileView(APIView):
-    #     permission_classes = [IsAuthenticated]  
+    class UserProfileView(APIView):
+        permission_classes = [IsAuthenticated]  
 
-    #     def get(self, request):
-    #         user = request.user
-
-    #         return Response({
-    #             "id": user.id,
-    #             "username": user.username,
-    #             "email": user.email,
-    #         })
+        def get(self, request):
+            user = request.user
+            return Response({
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+            }, status=status.HTTP_200_OK)
