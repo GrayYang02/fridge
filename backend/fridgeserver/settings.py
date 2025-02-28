@@ -136,7 +136,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-### API parts
-API_KEY = "sk-3MlTKLPDYWERB6Zf448eCa977eBe417f86Ba4350299d63D0"
-API_URL = "https://free.v36.cm"
+### API parts 
+API_KEY = "sk-94945667a547494a9adeefcff1d5a3a1"
+APP_ID = 'a78c9f45e02c411da89cd9c95a1b86aa'
 
