@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'demo',
 ]
+
 AUTH_USER_MODEL = 'demo.User'
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',

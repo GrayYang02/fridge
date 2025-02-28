@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
-    'rest_framework',  # 添加 Django REST Framework
+    'rest_framework',  
     'corsheaders',
     'demo',
 ]

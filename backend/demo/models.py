@@ -2,14 +2,6 @@ from datetime import datetime
 
 from django.db import models
 
-# class Food(models.Model):
-#     Name = models.CharField(blank=True, unique=True, max_length=36)
-#     Production_Date = models.DateField(blank=True, null=True)
-#     Expire_Date = models.DateField(blank=True, null=True)
-
-#     def __str__(self):
-#         return self.Name  # 这里把 return self.name 改为 self.Name，保证和字段一致
-
 from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     email = models.CharField(max_length=255, unique=True)
@@ -24,7 +16,7 @@ class User(AbstractUser):
     userlike = models.CharField(max_length=255, null=True, blank=True)
     dislike = models.CharField(max_length=255, null=True, blank=True)
     allergics = models.CharField(max_length=255, null=True, blank=True)
-    # # Set email as the unique identifier for authentication
+    # Set email as the unique identifier for authentication
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []  # You can add fields here if needed for createsuperuser
 
