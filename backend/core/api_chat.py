@@ -6,9 +6,9 @@ import re
 import dashscope
 from dashscope import Application
 
-from demo.log import logger
-from demo.response import Response
-from demo.settings import APP_ID,API_KEY
+from core.log import logger
+from core.response import Response
+from core.settings import APP_ID,API_KEY
 
 dashscope.api_key = API_KEY
 
