@@ -20,10 +20,10 @@ api.interceptors.request.use(
 );
 export default api;
 
-const API_BASE_URL = "http://127.0.0.1:8000/core";  // Django 后端 URL
+
+const API_BASE_URL = "http://127.0.0.1:8000/core"; 
 const API_BASE_URL_fri = "http://127.0.0.1:8000/core/fridge"; 
 
-// 获取冰箱食材列表（分页 + 排序）
 export async function fetchFridgeItems(page = 1, pageSize = 10, sortBy = "create_time_desc") {
   try {
     const response = await fetch(`${API_BASE_URL_fri}/food_list/?page=${page}&page_size=${pageSize}&sort_by=${sortBy}`);
@@ -38,7 +38,6 @@ export async function fetchFridgeItems(page = 1, pageSize = 10, sortBy = "create
   }
 }
 
-// 添加新食材
 export async function addFridgeItem(item) {
   try {
     const response = await fetch(`${API_BASE_URL_fri}/add_food/`, {
@@ -46,7 +45,7 @@ export async function addFridgeItem(item) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: item.name,
-        user_id: item.user_id,  // 需要提供 user_id
+        user_id: item.user_id,
         add_time: item.add_time,
         expire_time: item.expire_time,
       }),
@@ -62,7 +61,6 @@ export async function addFridgeItem(item) {
   }
 }
 
-// 删除食材
 export async function deleteFridgeItem(food_id) {
   try {
     const response = await fetch(`${API_BASE_URL_fri}/delete_food/`, {
