@@ -22,7 +22,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/demo/token/', formData);
+      const response = await api.post('/core/token/', formData);
       localStorage.setItem(ACCESS_TOKEN, response.data.access);
       localStorage.setItem(ACCESS_TOKEN, response.data.refresh);
       alert('Login Successful!');

@@ -31,10 +31,11 @@ class UserRecipeLogViewSet(ModelViewSet):
 class FridgeItemViewSet(ModelViewSet):
     queryset = FridgeItem.objects.all()
     serializer_class = FridgeItemSerializer
+    
 
 class RegisterView(generics.CreateAPIView):
     """
-    注册视图:POST /demo/register/
+    注册视图:POST /core/register/
     """
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
@@ -42,7 +43,7 @@ class RegisterView(generics.CreateAPIView):
 
 class LoginView(generics.GenericAPIView):
     """
-    登录视图:POST /demo/login/
+    登录视图:POST /core/login/
     """
     serializer_class = LoginSerializer
 

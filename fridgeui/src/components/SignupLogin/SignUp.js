@@ -21,7 +21,7 @@ function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/demo/register/', formData);
+      await api.post('/core/register/', formData);
       alert('Sign Up Successful!');
       navigate('/login');
     } catch (err) {

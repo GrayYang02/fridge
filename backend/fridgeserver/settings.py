@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework',  # 添加 Django REST Framework
     'corsheaders',
-    'demo',
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -73,7 +73,7 @@ TEMPLATES = [
         },
     },
 ]
-AUTH_USER_MODEL = 'demo.User'
+AUTH_USER_MODEL = 'core.User'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
