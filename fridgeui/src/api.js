@@ -3,25 +3,25 @@ import axios from 'axios';
 import { ACCESS_TOKEN } from './constants';
 
 const api = axios.create({
-baseURL: process.env.REACT_APP_API_URL,
+  baseURL: process.env.REACT_APP_API_URL,
 })
 
 api.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem(ACCESS_TOKEN);
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
+  (config) => {
+    const token = localStorage.getItem(ACCESS_TOKEN);
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 export default api;
 
 const API_BASE_URL = "http://127.0.0.1:8000/demo";  // Django 后端 URL
-const API_BASE_URL_fri = "http://127.0.0.1:8000/demo/fridge"; 
+const API_BASE_URL_fri = "http://127.0.0.1:8000/demo/fridge";
 
 // 获取冰箱食材列表（分页 + 排序）
 export async function fetchFridgeItems(page = 1, pageSize = 10, sortBy = "create_time_desc") {
@@ -38,7 +38,7 @@ export async function fetchFridgeItems(page = 1, pageSize = 10, sortBy = "create
   }
 }
 
-// 添加新食材
+
 export async function addFridgeItem(item) {
   try {
     const response = await fetch(`${API_BASE_URL_fri}/add_food/`, {
@@ -46,7 +46,7 @@ export async function addFridgeItem(item) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: item.name,
-        user_id: item.user_id,  // 需要提供 user_id
+        user_id: item.user_id,
         add_time: item.add_time,
         expire_time: item.expire_time,
       }),
@@ -62,7 +62,7 @@ export async function addFridgeItem(item) {
   }
 }
 
-// 删除食材
+// delete
 export async function deleteFridgeItem(food_id) {
   try {
     const response = await fetch(`${API_BASE_URL_fri}/delete_food/`, {
@@ -71,18 +71,18 @@ export async function deleteFridgeItem(food_id) {
       body: JSON.stringify({ food_id }),
     });
 
-// export const fetchFridgeItems = async () => {
-//   try {
-//     const response = await fetch(API_URL);
-//     if (!response.ok) {
-//       throw new Error("Failed to fetch fridge items");
-//     }
-//     return await response.json();
-//   } catch (error) {
-//     console.error("Error fetching fridge items:", error);
-//     return [];
-//   }
-// };
+    // export const fetchFridgeItems = async () => {
+    //   try {
+    //     const response = await fetch(API_URL);
+    //     if (!response.ok) {
+    //       throw new Error("Failed to fetch fridge items");
+    //     }
+    //     return await response.json();
+    //   } catch (error) {
+    //     console.error("Error fetching fridge items:", error);
+    //     return [];
+    //   }
+    // };
 
 
     if (!response.ok) {

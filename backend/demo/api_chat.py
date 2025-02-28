@@ -29,7 +29,7 @@ def get_recipe(request):
         # Call the external API
         response = Application.call(
             api_key=os.getenv("API_KEY"),  # Ensure API_KEY is correctly retrieved
-            app_id="APP_ID",  # Replace with actual APP_ID
+            app_id=APP_ID,  # Replace with actual APP_ID
             prompt=f'My food is {foods}'
         )
 
@@ -39,6 +39,7 @@ def get_recipe(request):
                 f"request_id={response.request_id}, code={response.status_code}, message={response.message}.\n"
                 f"See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code"
             )
+            logger.error(msg_info)
             return Response.error(msg=msg_info)
 
         # Process the response

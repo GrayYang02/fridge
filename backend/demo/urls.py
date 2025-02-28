@@ -2,7 +2,8 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from .api_chat import get_recipe
-from .views import  UserViewSet, RecipeViewSet, UserRecipeLogViewSet, FridgeItemViewSet
+from .temp_recipe_detail import recipe_detail
+from .views import UserViewSet, RecipeViewSet, UserRecipeLogViewSet, FridgeItemViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import (
     UserViewSet,
@@ -20,6 +21,7 @@ router.register(r'recipes', RecipeViewSet)  # `/recipes/`
 router.register(r'user-recipe-log', UserRecipeLogViewSet)  # `/user-recipe-log/`
 router.register(r'fridge', FridgeItemViewSet)  # `/fridge/`
 
+
 urlpatterns = [
     path('', include(router.urls)),  # 让 Django 处理 API 请求
     path('register/', RegisterView.as_view(), name='register'),
@@ -28,5 +30,6 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api_auth/', include('rest_framework.urls')),
     path('get_recipe/', get_recipe, name='get_recipe'),  # POST request will call this function
+    path('recipe_detail/', recipe_detail, name='recipe_detail'),  # POST request will call this function
 
 ]
