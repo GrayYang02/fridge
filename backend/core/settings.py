@@ -37,10 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'demo',
+    'core',
 ]
-
-AUTH_USER_MODEL = 'demo.User'
+AUTH_USER_MODEL = 'core.User'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -93,3 +92,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+
+
+### API parts
+API_KEY = "sk-94945667a547494a9adeefcff1d5a3a1"
+APP_ID = 'a78c9f45e02c411da89cd9c95a1b86aa'

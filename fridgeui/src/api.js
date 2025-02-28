@@ -20,8 +20,9 @@ api.interceptors.request.use(
 );
 export default api;
 
-const API_BASE_URL = "http://127.0.0.1:8000/demo"; 
-const API_BASE_URL_fri = "http://127.0.0.1:8000/demo/fridge"; 
+
+const API_BASE_URL = "http://127.0.0.1:8000/core"; 
+const API_BASE_URL_fri = "http://127.0.0.1:8000/core/fridge"; 
 
 export async function fetchFridgeItems(page = 1, pageSize = 10, sortBy = "create_time_desc") {
   try {

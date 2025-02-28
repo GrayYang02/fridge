@@ -31,13 +31,16 @@ class UserRecipeLogViewSet(ModelViewSet):
 class FridgeItemViewSet(ModelViewSet):
     queryset = FridgeItem.objects.all()
     serializer_class = FridgeItemSerializer
+    
 
 class RegisterView(generics.CreateAPIView):
+
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
 
 class LoginView(generics.GenericAPIView):
+
     serializer_class = LoginSerializer
 
     def post(self, request):
