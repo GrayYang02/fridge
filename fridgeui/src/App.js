@@ -21,7 +21,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* 新增根路径重定向 */}
+        {}
         <Route path="/" element={<Navigate to="/login" replace />} />
 
         <Route path="/signup" element={<RegisterAndLogout />} />
