@@ -15,8 +15,15 @@ Ensure you have the following installed on your system:
 git clone <repository-url>
 cd <project-directory>
 ```
+### 2. Enviroment Config (.env file)
+This project uses `.env` file to store environment variobles,
+after you clone the repo, please execute the commands below:
+```bash
+cp .env.example .env
+```
+modify .env file if necessary (replace any placeholder)
 
-### 2. Build and Start the Services
+### 3. Build and Start the Services
 Run the following command to build and start the containers:
 ```sh
 docker-compose up --build
@@ -25,7 +32,7 @@ This will:
 - Build and start the Django backend on port `8000`
 - Build and start the React frontend on port `3000`
 
-### 3. Access the Application
+### 4. Access the Application
 Once the services are running, you can access:
 - **Frontend:** [http://localhost:3000](http://localhost:3000)
 - **Backend:** [http://localhost:8000](http://localhost:8000)

@@ -10,7 +10,15 @@
    ```sh
    npm install
    ```
-3. Start the React development server:
+3. Enviroment Config (.env file)
+This project uses `.env` file to store environment variobles,
+after you clone the repo, please execute the commands below:
+```bash
+cp .env.example .env
+```
+modify .env file if necessary (replace any placeholder)
+
+4. Start the React development server:
    ```sh
    npm start
    ```
