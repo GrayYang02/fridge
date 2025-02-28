@@ -12,7 +12,7 @@ def main():
         print(exc)
         return
 
-    from demo.models import FridgeItem
+    from core.models import FridgeItem
 
     # Query to get the record where name='xx'
     FridgeItem.objects.all().delete()

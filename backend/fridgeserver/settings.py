@@ -38,9 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
-    'rest_framework',  # 添加 Django REST Framework
+    'rest_framework',  
     'corsheaders',
-    'demo',
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -73,7 +73,7 @@ TEMPLATES = [
         },
     },
 ]
-AUTH_USER_MODEL = 'demo.User'
+AUTH_USER_MODEL = 'core.User'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
@@ -136,7 +136,8 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-### API parts
-API_KEY = "sk-3MlTKLPDYWERB6Zf448eCa977eBe417f86Ba4350299d63D0"
-API_URL = "https://free.v36.cm"
+
+### API parts 
+API_KEY = "sk-94945667a547494a9adeefcff1d5a3a1"
+APP_ID = 'a78c9f45e02c411da89cd9c95a1b86aa'
 

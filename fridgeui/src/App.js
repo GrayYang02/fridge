@@ -1,47 +1,46 @@
-
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate, BrowserRouter} from 'react-router-dom';
+ 
+import { BrowserRouter as Router, Routes, Route, Link, Navigate, BrowserRouter } from 'react-router-dom';
+ 
 import SignUp from './components/SignupLogin/SignUp';
 import Profile from './components/Profile/Profile';
 import Login from './components/SignupLogin/Login';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotFound from './components/NotFound/NotFound';
-import Fridge from "./components/Fridge/Fridge";  // ✅ 引入 Fridge 组件
-function Logout() {
-  localStorage.clear()
-  return <Navigate to="/login" />;
-} 
+import Fridge from "./components/Fridge/Fridge";
+ 
+import Recipe from './components/Recipe/Recipe'
+ 
 
-function RegisterAndLogout() {
-  localStorage.clear()
-  return <SignUp />;
+function Logout() {
+  localStorage.clear();
+  return <Navigate to="/login" />;
 }
 
-
-
-
+function RegisterAndLogout() {
+  localStorage.clear();
+  return <SignUp />;
+}
 
 function App() {
   return (
     <Router>
-      {/* <nav style={{ margin: '1rem' }}>
-        <Link to="/signup" style={{ marginRight: '1rem' }}>Sign up</Link>
-        <Link to="/login">Log in</Link>
-      </nav> */}
-
       <Routes>
+        {}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
         <Route path="/signup" element={<RegisterAndLogout />} />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
-        <Route path="/profile" element={<ProtectedRoute><Profile></Profile></ProtectedRoute> } />
-        <Route path="/fridge" element={<Fridge />} />  {/* ✅ 新增 Fridge 页面 */}
+ 
+        <Route path="/profile" element={<ProtectedRoute><Profile></Profile></ProtectedRoute>} />
+        <Route path="/fridge" element={<Fridge />} />
+        <Route path="/recipe" element={<Recipe />} />
+ 
         <Route path="*" element={<NotFound />} />
-        {/* 你也可以加其它页面路由 */}
       </Routes>
     </Router>
   );
 }
 
 export default App;
-
-
