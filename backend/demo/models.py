@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 
 # class Food(models.Model):
@@ -62,8 +64,8 @@ class FridgeItem(models.Model):
     name = models.CharField(max_length=255)
     tag = models.IntegerField()
     create_time = models.DateTimeField(auto_now_add=True)
-    expire_time = models.DateTimeField(null=True, blank=True)
-    save_time = models.IntegerField(null=True, blank=True)
+    expire_time = models.DateField(default=lambda: datetime.date.today() + datetime.timedelta(days=30))
+    save_time = models.IntegerField(default=30) # default 90 days
     pic = models.IntegerField(null=True, blank=True)
     is_del = models.IntegerField(default=0)
     update_time = models.DateTimeField(auto_now=True)
