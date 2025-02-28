@@ -1,16 +1,19 @@
 import json
 import os
 from http import HTTPStatus
-import re
+
 
 import dashscope
 from dashscope import Application
 
+from demo.response import Response
 from fridgeserver.settings import API_KEY,APP_ID
 
 dashscope.api_key = API_KEY
 
 def get_recipe(foods):
+    if foods == '':
+        return Response.error('No info')
     response = Application.call(
         api_key=os.getenv(API_KEY),
         app_id=APP_ID,
