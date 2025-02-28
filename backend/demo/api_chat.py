@@ -8,7 +8,7 @@ from dashscope import Application
 
 from demo.log import logger
 from demo.response import Response
-from fridgeserver.settings import API_KEY,APP_ID
+from demo.settings import APP_ID,API_KEY
 
 dashscope.api_key = API_KEY
 
