@@ -1,58 +1,51 @@
 import React, { useEffect, useState } from "react";
 import api from '../../api';
-
-import { useParams, useLocation } from "react-router-dom";
-
-const RecipePage = () => {
+ 
+export default function RecipeDetail({ userId, recipeId }) {
   const [recipe, setRecipe] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Get the user_id from the URL
-  const { user_id } = useParams();
-  
-  // You can also use query parameters using useLocation hook
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const userIdFromQuery = queryParams.get('user_id');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchRecipe = async () => {
+    async function fetchRecipe() {
       try {
-        // Use user_id (from either path or query) to fetch data
-        const recipe_id = 1;
-        const response = await api.get(`demo/recipe_detail/?user_id = ${userIdFromQuery}& recipe_id=${recipe_id}`);
-        setRecipe(response.data.recipe);
-        console.log(response.data.recipe)
-        setLoading(false);
+        const response = await api.get(`demo/recipe_detail/?user_id=${userId}&recipe_id=${recipeId}`);
+        const data = response.data.data.recipes; // Check if this is an array
+        if (data && data.length > 0) {
+          setRecipe(data[0]); // Get the first recipe
+        } else {
+          setError("No recipe found.");
+        }
       } catch (err) {
-        setError("Failed to fetch recipe");
+        setError("Failed to fetch recipe.");
+      } finally {
         setLoading(false);
       }
-    };
+    }
 
     fetchRecipe();
-  }, [user_id, userIdFromQuery]); // Dependency array to refetch if user_id changes
+  }, [userId, recipeId]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
+  if (!recipe) return <p>No recipe available.</p>;
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center py-10">
       <div className="bg-white shadow-lg rounded-lg p-6 max-w-4xl w-full">
         <h1 className="text-3xl font-bold text-gray-800 text-center mb-6">
-          { setRecipe.name}
+          {recipe.name || "Unknown Recipe"}
         </h1>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Ingredients Section */}
           <div className="border border-gray-300 rounded-lg p-4 bg-blue-50">
             <h2 className="text-xl font-semibold text-blue-900 mb-4">Ingredients</h2>
             <ul className="list-disc list-inside text-gray-600 mb-4">
-              { setRecipe.ingredients}
+              {recipe.ingredients?.map((ingredient, index) => (
+                <li key={index}>{ingredient}</li>
+              )) || <p>No ingredients listed.</p>}
             </ul>
-
-            
           </div>
 
           {/* Directions Section */}
@@ -69,15 +62,13 @@ const RecipePage = () => {
               </div>
             </div>
             <ol className="space-y-4 text-gray-700">
-              {recipe?.directions?.map((direction, index) => (
-                <li key={index}><strong>{index + 1}.</strong> {direction}</li>
-              ))}
+              {recipe.steps?.map((step, index) => (
+                <li key={index}><strong>{index + 1}.</strong> {step}</li>
+              )) || <p>No steps provided.</p>}
             </ol>
           </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default RecipePage;
+}
