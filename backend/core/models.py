@@ -1,8 +1,7 @@
 from datetime import datetime
 
 from django.db import models
-import datetime
-from django.db import models
+import datetime 
 # class Food(models.Model):
 #     Name = models.CharField(blank=True, unique=True, max_length=36)
 #     Production_Date = models.DateField(blank=True, null=True)
@@ -69,4 +68,10 @@ class FridgeItem(models.Model):
     pic = models.IntegerField(null=True, blank=True)
     is_del = models.IntegerField(default=0)
     update_time = models.DateTimeField(auto_now=True)
-    uid = models.IntegerField()
+    uid = models.IntegerField() 
+
+class ItemTag(models.Model):
+    tag = models.IntegerField()
+    name = models.CharField(max_length=255)
+    create_time = models.DateTimeField(auto_now_add=True)
+ 
