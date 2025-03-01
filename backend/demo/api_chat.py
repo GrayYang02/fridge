@@ -1,20 +1,9 @@
-import json
-import os
-from http import HTTPStatus
-import re
-
-import dashscope
 from dashscope import Application
-
 from demo.log import logger
-from demo.response import Response
 from demo.settings import APP_ID,API_KEY
-
-dashscope.api_key = API_KEY
-
-import os
 from http import HTTPStatus
-from demo.response import Response  # Using your custom Response class
+from demo.response import Response
+
 
 def get_recipe(request):
     try:
@@ -28,8 +17,8 @@ def get_recipe(request):
 
         # Call the external API
         response = Application.call(
-            api_key=os.getenv("API_KEY"),  # Ensure API_KEY is correctly retrieved
-            app_id=APP_ID,  # Replace with actual APP_ID
+            api_key= API_KEY,
+            app_id= APP_ID,
             prompt=f'My food is {foods}'
         )
 
@@ -70,7 +59,8 @@ def extract_clean_data(long_string):
         else:
             logger.error("No related sign")
 
-    except Exception as e:
+    except Exception as err:
+        logger.error(err)
         logger.error('No return recipe been found')
 
     return ''
