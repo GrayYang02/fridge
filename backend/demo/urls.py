@@ -29,7 +29,7 @@ urlpatterns = [
     path('token/', TokenObtainPairView.as_view(), name='get_token'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api_auth/', include('rest_framework.urls')),
-    path('get_recipe/', get_recipe, name='get_recipe'),  # POST request will call this function
-    path('recipe_detail/', recipe_detail, name='recipe_detail'),  # POST request will call this function
+    path('get_recipe/', get_recipe, name='get_recipe'),
+    path('recipe_detail/', recipe_detail, name='recipe_detail'),
 
 ]

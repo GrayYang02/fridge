@@ -5,7 +5,7 @@ export default function RecipeDetail({ userId, recipeId }) {
   const [recipe, setRecipe] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-
+ 
   useEffect(() => {
     async function fetchRecipe() {
       try {
