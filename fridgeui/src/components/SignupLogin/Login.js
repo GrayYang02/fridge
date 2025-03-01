@@ -25,7 +25,6 @@ function Login() {
       const response = await api.post('/core/token/', formData);
       localStorage.setItem(ACCESS_TOKEN, response.data.access);
       localStorage.setItem(ACCESS_TOKEN, response.data.refresh);
-      alert('Login Successful!');
       navigate('/profile');
 
     } catch (err) {
