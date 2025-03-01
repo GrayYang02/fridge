@@ -1,9 +1,9 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from .api_chat import get_recipe
-from .temp_recipe_detail import recipe_detail
-from .views import UserViewSet, RecipeViewSet, UserRecipeLogViewSet, FridgeItemViewSet
+
+from .views import UserViewSet, RecipeViewSet, UserRecipeLogViewSet, FridgeItemViewSet, recipe_detail_recieve, \
+    get_recipe
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import (
     UserViewSet,
@@ -28,7 +28,7 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api_auth/', include('rest_framework.urls')),
     path('get_recipe/', get_recipe, name='get_recipe'),
-    path('recipe_detail/', recipe_detail, name='recipe_detail'),
+    path('recipe_detail/', recipe_detail_recieve, name='recipe_detail'),
 
 
 ]

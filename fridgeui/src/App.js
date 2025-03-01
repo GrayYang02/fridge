@@ -26,21 +26,25 @@ function RegisterAndLogout() {
 function App() {
   return (
     <Router>
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Routes>
 
-      <Route path="/signup" element={<RegisterAndLogout />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/logout" element={<Logout />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
-      <Route path="/profile" element={<ProtectedRoute><Profile></Profile></ProtectedRoute>} />
-      <Route path="/fridge" element={<Fridge />} />
-      <Route path="/recipe_gen" element={<RecipeGen />} />
-      <Route path="/recipe_detail" element={<RecipeDetail />} />
+        <Route path="/signup" element={<RegisterAndLogout />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/logout" element={<Logout />} />
 
-      <Route path="*" element={<NotFound />} />
+        <Route path="/profile" element={<ProtectedRoute><Profile></Profile></ProtectedRoute>} />
+        <Route path="/fridge" element={<Fridge />} />
+        <Route path="/recipe_gen" element={<RecipeGen />} />
+        <Route path="/recipe_detail" element={<RecipeDetail />} />
+
+        <Route path="*" element={<NotFound />} />
+      </Routes>
 
     </Router>
   );
 }
+
 
 export default App;

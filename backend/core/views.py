@@ -1,17 +1,11 @@
-from rest_framework.viewsets import ModelViewSet
-
 from .models import User, Recipe, UserRecipeLog, FridgeItem
 from .serializers import UserSerializer, RecipeSerializer, UserRecipeLogSerializer, FridgeItemSerializer
 from rest_framework import generics, status
-from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
 from django.contrib.auth.hashers import check_password
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from django.core.exceptions import ObjectDoesNotExist
 from .models import FridgeItem, User
@@ -21,6 +15,7 @@ from .serializers import (
     RegisterSerializer,
     LoginSerializer,
 )
+
 
 
 class UserViewSet(ModelViewSet):
@@ -155,3 +150,105 @@ class LoginView(generics.GenericAPIView):
     #             "username": user.username,
     #             "email": user.email,
     #         })
+
+#################################################
+
+                   #API PORT #
+
+#################################################
+async def get_recipe(request):
+    from .log import logger
+
+    from dashscope import Application
+    from http import HTTPStatus
+    from core.settings import APP_ID, API_KEY
+    from .response import Response
+
+    try:
+        # Ensure only GET requests are processed
+        if request.method != "GET":
+            return Response.error(msg="Invalid request method, only GET allowed")
+
+        # Get the ingredient parameter from the request
+        foods = request.GET.get('ingredient')
+        user_id = request.GET.get('user_id')
+
+        # Call the external API
+        response = Application.call(
+            api_key= API_KEY,
+            app_id= APP_ID,
+            prompt=f'My food is {foods}'
+        )
+
+        # Check response status
+        if response.status_code != HTTPStatus.OK:
+            msg_info = (
+                f"request_id={response.request_id}, code={response.status_code}, message={response.message}.\n"
+                f"See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code"
+            )
+            logger.error(msg_info)
+            return Response.error(msg=msg_info)
+
+        # Process the response
+        res = response.output.text
+        res_clean = extract_clean_data(res)
+
+        if not res_clean:
+            return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
+
+        return Response.ok(data=res_clean, msg="Successfully retrieved recipes")
+
+    except Exception as e:
+        return Response.error(msg=f"Internal Server Error: {str(e)}")
+
+def extract_clean_data(long_string):
+    from .log import logger
+    try:
+        # first {
+        first_brace_index = long_string.find('{')
+
+        # last }
+        last_brace_index = long_string.rfind('}')
+
+        #
+        if first_brace_index != -1 and last_brace_index != -1:
+            ans = long_string[first_brace_index:last_brace_index+1]
+            ans = eval(ans)
+            return ans
+        else:
+            logger.error("No related sign")
+
+    except Exception as err:
+        logger.error(err)
+        logger.error('No return recipe been found')
+
+    return ''
+
+
+async def recipe_detail_recieve(request):
+    from .response import Response
+
+    temp_res = {"recipes": [
+        {
+            "name": "Apple and Banana Smoothie",
+            "ingredients": [
+                "2 medium-sized apples, peeled and chopped",
+                "1 large banana, peeled",
+                "1 cup of milk (dairy or non-dairy)",
+                "1 tablespoon honey (optional)"
+            ],
+            "steps": [
+                "Place the chopped apples and banana into a blender.",
+                "Add the milk and honey if using.",
+                "Blend all ingredients until smooth and creamy.",
+                "Pour the smoothie into glasses and serve immediately."
+            ]
+        }
+    ]
+    }
+
+    # Get the ingredient parameter from the request
+    recipe_id = request.GET.get('recipe_id')
+    user_id = request.GET.get('user_id')
+
+    return Response.ok(data=temp_res, msg=f"recipe_id = {recipe_id}, user_id = {user_id}")

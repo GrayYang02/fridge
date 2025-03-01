@@ -9,7 +9,7 @@ export default function RecipeDetail({ userId, recipeId }) {
   useEffect(() => {
     async function fetchRecipe() {
       try {
-        const response = await api.get(`demo/recipe_detail/?user_id=${userId}&recipe_id=${recipeId}`);
+        const response = await api.get(`core/recipe_detail/?user_id=${userId}&recipe_id=${recipeId}`);
         const data = response.data.data.recipes; // Check if this is an array
         if (data && data.length > 0) {
           setRecipe(data[0]); // Get the first recipe
