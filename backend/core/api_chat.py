@@ -1,9 +1,12 @@
-from dashscope import Application
+from dashscope import Application 
 from demo.log import logger
 from demo.settings import APP_ID,API_KEY
 from http import HTTPStatus
-from demo.response import Response
+from demo.response import Response 
 
+from core.log import logger
+from core.response import Response
+from core.settings import APP_ID,API_KEY 
 
 def get_recipe(request):
     try:

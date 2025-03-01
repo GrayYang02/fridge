@@ -8,14 +8,12 @@ class RegisterSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = User
-        # 假设你只需要 email, nickname, password
         fields = ['email', 'username', 'password']
         extra_kwargs = {
             'password': {'write_only': True}
         }
 
     def create(self, validated_data):
-        # 从表单数据中取出密码并进行哈希
         password = validated_data.pop('password', None)
         user = User(**validated_data)
         if password is not None:
@@ -30,8 +28,6 @@ class LoginSerializer(serializers.Serializer):
     """
     email = serializers.CharField()
     password = serializers.CharField(write_only=True)
-
-
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
