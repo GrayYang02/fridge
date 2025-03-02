@@ -2,12 +2,13 @@ import profilepic from "./assets/profilepic.png";
 import potpic from "./assets/potpic.png";
 import applepic from "./assets/applepic.png";
 import React from 'react';
+import Navbar from "../../components/Navbar"; 
 
 const FridgeRecipePage = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Header */}
-
+      <Navbar /> {/* Add Navbar here */}
       {/* Main content */}
       <main className="flex flex-1 gap-4 p-4">
         {/* Left Column */}
