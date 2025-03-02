@@ -39,6 +39,7 @@ class UserRecipeLogViewSet(ModelViewSet):
 class FridgeItemViewSet(ModelViewSet):
     queryset = FridgeItem.objects.all()
     serializer_class = FridgeItemSerializer
+    permission_classes = [IsAuthenticated]  
     def get_queryset(self):
         """确保用户只能看到自己的食物"""
         return FridgeItem.objects.filter(user=self.request.user)
@@ -72,6 +73,12 @@ class FridgeItemViewSet(ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def food_list(self, request):
+        print(f"Authenticated user: {request.user}")  
+        print(f"Authenticated user: {request.user.id}") 
+
+        if request.user.is_anonymous:
+            return Response({"error": "Unauthorized - Invalid Token"}, status=401)
+
         """获取食物列表，支持分页和排序"""
         page = int(request.query_params.get('page', 1))
         page_size = int(request.query_params.get('page_size', 10))

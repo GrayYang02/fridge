@@ -34,7 +34,7 @@ function App() {
         <Route path="/logout" element={<Logout />} />
  
         <Route path="/profile" element={<ProtectedRoute><Profile></Profile></ProtectedRoute>} />
-        <Route path="/fridge" element={<Fridge />} />
+        <Route path="/fridge" element={<ProtectedRoute><Fridge></Fridge></ProtectedRoute>} />
         <Route path="/recipe" element={<Recipe />} />
  
         <Route path="*" element={<NotFound />} />
