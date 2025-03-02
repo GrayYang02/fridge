@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import api from '../../api';
 import './signuplogin.css';
 import { useNavigate } from 'react-router-dom';
-import { ACCESS_TOKEN } from '../../constants';
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '../../constants';
 
 
 function Login() {
@@ -24,7 +24,7 @@ function Login() {
     try {
       const response = await api.post('/core/token/', formData);
       localStorage.setItem(ACCESS_TOKEN, response.data.access);
-      localStorage.setItem(ACCESS_TOKEN, response.data.refresh);
+      localStorage.setItem(REFRESH_TOKEN, response.data.refresh);
       navigate('/profile');
 
     } catch (err) {
