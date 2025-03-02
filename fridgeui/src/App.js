@@ -43,8 +43,6 @@ function App() {
         <Route path="/signup" element={<RegisterAndLogout />} />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
-
-
         <Route path="/profile" element={<ProtectedRoute><Profile></Profile></ProtectedRoute>} />
         <Route path="/fridge" element={<Fridge />} />
         <Route path="/recipe_gen" element={<RecipeGen />} />

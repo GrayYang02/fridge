@@ -36,6 +36,8 @@ class User(AbstractUser):
 
 class Recipe(models.Model):
     recipe_name = models.CharField(max_length=255)
+    uid = models.IntegerField()
+
     food = models.CharField(max_length=255)
     recipe = models.TextField()
     img_url = models.CharField(max_length=255, null=True, blank=True)
