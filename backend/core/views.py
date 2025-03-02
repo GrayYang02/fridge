@@ -15,7 +15,9 @@ from .serializers import (
     RegisterSerializer,
     LoginSerializer,
 )
+from asgiref.sync import sync_to_async
 
+from datetime import datetime
 
 
 class UserViewSet(ModelViewSet):
@@ -156,9 +158,8 @@ class LoginView(generics.GenericAPIView):
                    #API PORT #
 
 #################################################
-async def get_recipe(request):
+def get_recipe(request):
     from .log import logger
-
     from dashscope import Application
     from http import HTTPStatus
     from core.settings import APP_ID, API_KEY
@@ -190,14 +191,25 @@ async def get_recipe(request):
             return Response.error(msg=msg_info)
 
         # Process the response
+
         res = response.output.text
         res_clean = extract_clean_data(res)
 
-        if not res_clean:
+
+
+        if res_clean == '':
             return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
-
+        try:
+            for d in res_clean['recipes']:
+                Recipe.objects.create(
+                    recipe_name=d['name'],
+                    food=d['ingredients'],
+                    recipe=d['steps'],
+                    create_time=datetime.now()
+                )
+        except Exception as e:
+            logger.error(f'failed to store info to Recipe, err_msg:{e}')
         return Response.ok(data=res_clean, msg="Successfully retrieved recipes")
-
     except Exception as e:
         return Response.error(msg=f"Internal Server Error: {str(e)}")
 
@@ -214,6 +226,7 @@ def extract_clean_data(long_string):
         if first_brace_index != -1 and last_brace_index != -1:
             ans = long_string[first_brace_index:last_brace_index+1]
             ans = eval(ans)
+
             return ans
         else:
             logger.error("No related sign")
