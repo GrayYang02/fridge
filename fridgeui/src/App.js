@@ -1,13 +1,17 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import Navbar from './components/Navbar';
+
+import { BrowserRouter as Router, Routes, Route, Link, Navigate, BrowserRouter } from 'react-router-dom';
+
 import SignUp from './components/SignupLogin/SignUp';
 import Profile from './components/Profile/Profile';
 import Login from './components/SignupLogin/Login';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotFound from './components/NotFound/NotFound';
 import Fridge from "./components/Fridge/Fridge";
-import Recipe from './components/Recipe/Recipe';
+
+import RecipeGen from './components/RecipeGenerate/RecipeGen'
+import RecipeDetail from './components/RecipeDetail/RecipeDetail'
 
 function Logout() {
   localStorage.clear();
@@ -23,7 +27,7 @@ function RegisterAndLogout() {
 const LayoutWithNavbar = () => (
   <>
     <Navbar />
-    <Outlet />
+    {/* <Outlet /> */}
   </>
 );
 
@@ -32,6 +36,7 @@ function App() {
     <Router>
       <Routes>
         {/* Default redirect to login page */}
+
         <Route path="/" element={<Navigate to="/login" replace />} />
 
         {/* Pages that do NOT require the navbar */}
@@ -39,18 +44,18 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
 
-        {/* Pages that require the common navbar */}
-        <Route element={<LayoutWithNavbar />}>
-          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="/fridge" element={<Fridge />} />
-          <Route path="/recipe" element={<Recipe />} />
-        </Route>
 
-        {/* 404 page */}
+        <Route path="/profile" element={<ProtectedRoute><Profile></Profile></ProtectedRoute>} />
+        <Route path="/fridge" element={<Fridge />} />
+        <Route path="/recipe_gen" element={<RecipeGen />} />
+        <Route path="/recipe_detail" element={<RecipeDetail />} />
+
         <Route path="*" element={<NotFound />} />
       </Routes>
+
     </Router>
   );
 }
+
 
 export default App;

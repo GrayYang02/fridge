@@ -19,10 +19,6 @@ const FridgePage = () => {
     add_time: getCurrentDate(),
     expire_time: "",
   });
-  
-
-
-  
 
   useEffect(() => {
     loadItems();
