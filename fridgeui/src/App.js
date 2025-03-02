@@ -10,8 +10,16 @@ import ProtectedRoute from './components/ProtectedRoute';
 import NotFound from './components/NotFound/NotFound';
 import Fridge from "./components/Fridge/Fridge";
 
+
+ 
+
+import {UserProvider} from './components/Profile/views/UserProvider';
+ 
+
+
 import RecipeGen from './components/RecipeGenerate/RecipeGen'
 import RecipeDetail from './components/RecipeDetail/RecipeDetail'
+
 
 function Logout() {
   localStorage.clear();
@@ -43,9 +51,14 @@ function App() {
         <Route path="/signup" element={<RegisterAndLogout />} />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
-        <Route path="/profile" element={<ProtectedRoute><Profile></Profile></ProtectedRoute>} />
-        <Route path="/fridge" element={<Fridge />} />
-        <Route path="/recipe_gen" element={<RecipeGen />} />
+ 
+
+        {/* Pages that require the common navbar */}
+        
+          <Route path="/profile" element={<UserProvider><ProtectedRoute><Profile /></ProtectedRoute></UserProvider>} />
+          <Route path="/fridge" element={<Fridge />} />
+          <Route path="/recipe_gen" element={<RecipeGen />} />
+         
         <Route path="/recipe_detail" element={<RecipeDetail />} />
 
         <Route path="*" element={<NotFound />} />

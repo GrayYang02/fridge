@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import api from '../../api';
 import profilepic from "./assets/profilepic.png";
-import potpic from "./assets/potpic.png";
+import potpic from "./assets/potpic.png"; 
+import applepic from "./assets/applepic.png";
+import React from 'react';
+import Navbar from "../../components/Navbar";  
 
 const FridgeRecipePage = ({ userId, recipeId }) => {
   const [foods, setFoods] = useState([]);
@@ -41,6 +44,7 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Header */}
+ 
       <header className="flex justify-between items-center p-4 bg-white shadow">
         <h1 className="text-xl font-semibold">Fridge</h1>
         <nav className="flex gap-6">
@@ -55,6 +59,9 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
         />
       </header>
 
+ 
+      <Navbar /> {/* Add Navbar here */}
+ 
       {/* Main content */}
       <main className="flex flex-1 gap-4 p-4">
         {/* Left Column */}

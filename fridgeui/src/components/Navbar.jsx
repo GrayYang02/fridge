@@ -5,11 +5,11 @@ import { Link } from 'react-router-dom';
 const Navbar = () => {
   return (
     <nav className="flex justify-between items-center px-8 py-4 shadow-sm">
-      <span className="font-bold text-xl">APPNAME</span>
+      <span className="font-bold text-xl">eFridge</span>
       <ul className="flex gap-6">
         <li>
           {/* 这里跳转到 /recipe 路由 */}
-          <Link to="/recipe">RECIPE</Link>
+          <Link to="/recipe_gen">RECIPE</Link>
         </li>
         <li>
           {/* 跳转到 /fridge 路由 */}
