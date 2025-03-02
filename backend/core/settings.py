@@ -76,8 +76,15 @@ WSGI_APPLICATION = 'fridgeserver.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django_db',
+        'USER': 'django_user',
+        'PASSWORD': 'xw172182',
+        'HOST': 'database-1.czm20ai6yn1e.us-east-2.rds.amazonaws.com',
+        'PORT': '3306',
+        'OPTIONS': {
+            'auth_plugin': 'caching_sha2_password',
+        },
     }
 }
 
@@ -97,3 +104,4 @@ CORS_ALLOW_CREDENTIALS = True
 ### API parts
 API_KEY = "sk-94945667a547494a9adeefcff1d5a3a1"
 APP_ID = 'a78c9f45e02c411da89cd9c95a1b86aa'
+
