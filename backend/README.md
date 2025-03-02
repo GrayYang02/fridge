@@ -53,6 +53,24 @@ To stop the running backend, press `Ctrl + C` or run:
 docker-compose stop backend
 ```
 
+# DataBase Setup
+If show: 
+`django.core.exceptions.ImproperlyConfigured: Error loading MySQLdb module.
+Did you install mysqlclient?`
+
+and do
+###### pip install mysqlclient
+still do not working
+
+### FIX!
+do
+```aiignore
+brew install pkg-config
+brew install mariadb
+brew link mariadb
+pip install mysqlclient
+```
+
 # Frontend Setup
 
 This document provides instructions for setting up and running the React frontend.
