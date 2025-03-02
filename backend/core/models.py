@@ -24,7 +24,7 @@ class User(AbstractUser):
     update_time = models.DateTimeField(auto_now=True)
     userlike = models.CharField(max_length=255, null=True, blank=True)
     dislike = models.CharField(max_length=255, null=True, blank=True)
-    allergics = models.CharField(max_length=255, null=True, blank=True)
+    allergies = models.CharField(max_length=255, null=True, blank=True)
     # Set email as the unique identifier for authentication
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []  # You can add fields here if needed for createsuperuser

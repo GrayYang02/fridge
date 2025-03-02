@@ -1,21 +1,11 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from core.views import FridgeItemViewSet 
-from .api_chat import get_recipe
-# from .views import  UserViewSet, RecipeViewSet, UserRecipeLogViewSet, FridgeItemViewSet
 
 
 from .views import UserViewSet, RecipeViewSet, UserRecipeLogViewSet, FridgeItemViewSet, recipe_detail_recieve, \
-    get_recipe
+    get_recipe, RegisterView, LoginView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import (
-    UserViewSet,
-    RecipeViewSet,
-    UserRecipeLogViewSet,
-    FridgeItemViewSet,
-    RegisterView,
-    LoginView
-)
+
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)  # `/users/`
@@ -34,4 +24,4 @@ urlpatterns = [
  
     path('get_recipe/', get_recipe, name='get_recipe'),
     path('recipe_detail/', recipe_detail_recieve, name='recipe_detail'),
-];
+]
