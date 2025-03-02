@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-
+from core.views import FridgeItemViewSet 
 from .api_chat import get_recipe
 from .views import  UserViewSet, RecipeViewSet, UserRecipeLogViewSet, FridgeItemViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -14,12 +14,10 @@ from .views import (
     UserProfileView,
 )
 
-
 router = DefaultRouter()
 router.register(r'users', UserViewSet)  # `/users/`
 router.register(r'recipes', RecipeViewSet)  # `/recipes/`
 router.register(r'user-recipe-log', UserRecipeLogViewSet)  # `/user-recipe-log/`
-# router.register(r'fridge', FridgeItemViewSet)  # `/fridge/`
 router.register(r'fridge', FridgeItemViewSet, basename="fridge") 
 urlpatterns = [
     path('', include(router.urls)),
@@ -30,5 +28,5 @@ urlpatterns = [
     path('api_auth/', include('rest_framework.urls')),
     path('get_recipe/', get_recipe, name='get_recipe'),  # POST request will call this function
     path('profile/user-info/', UserProfileView.as_view(), name='profileinfo'),
-    
+
 ]

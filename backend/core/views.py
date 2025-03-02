@@ -15,7 +15,9 @@ from .serializers import (
     RegisterSerializer,
     LoginSerializer,
 )
+
 from .response import Response as R
+
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
@@ -107,14 +109,11 @@ class UserRecipeLogViewSet(ModelViewSet):
         return queryset  
 
 
-
 class FridgeItemViewSet(ModelViewSet):
     queryset = FridgeItem.objects.all()
     serializer_class = FridgeItemSerializer
-    
 
 class RegisterView(generics.CreateAPIView):
-
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]

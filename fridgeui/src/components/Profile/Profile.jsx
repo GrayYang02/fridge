@@ -1,4 +1,8 @@
+
 import React, { useState, useEffect, useContext } from "react";
+
+import Navbar from "../../components/Navbar"; 
+
 import profilepic from "./assets/profilepic.png";
 import CookedView from "./views/cookedView";
 import PreferencesView from "./views/preferencesView";
@@ -29,9 +33,11 @@ const Profile = () => {
   //   fetchUser();
   // }, []);
 
+
   useEffect(() => {
     console.log("Active Tab:", tab);
   }, [tab]);
+
 
   // useEffect(() => {
   //   console.log('userinfo:', userinfo);
@@ -49,6 +55,7 @@ const Profile = () => {
         return <ViewedView></ViewedView>;
       case "cooked":
         return <CookedView />;
+
       default:
         return null;
     }
