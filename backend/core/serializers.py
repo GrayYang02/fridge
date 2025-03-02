@@ -26,7 +26,7 @@ class LoginSerializer(serializers.Serializer):
     """
     专门处理登录逻辑
     """
-    email = serializers.CharField()
+    email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
 class UserSerializer(serializers.ModelSerializer):
@@ -48,3 +48,26 @@ class FridgeItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = FridgeItem
         fields = '__all__'
+
+class ProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'username', 'age', 'height', 'weight', 'BMI', 'userlike', 'dislike', 'allergies']
+        extra_kwargs = {
+            'email': {'write_only': True}
+        }
+    
+
+
+    # def update(self, instance, validated_data):
+        
+    #     password = validated_data.pop('password', None) 
+    #     for attr, value in validated_data.items():
+    #         setattr(instance, attr, value) 
+
+    #     if password:  
+    #         instance.set_password(password) 
+
+    #     instance.save()
+    #     return instance

@@ -10,7 +10,8 @@ from .views import (
     UserRecipeLogViewSet,
     FridgeItemViewSet,
     RegisterView,
-    LoginView
+    LoginView,
+    UserProfileView,
 )
 
 
@@ -28,6 +29,7 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api_auth/', include('rest_framework.urls')),
     path('get_recipe/', get_recipe, name='get_recipe'),  # POST request will call this function
+    path('profile/user-info/', UserProfileView.as_view(), name='profileinfo'),
 
 
 ]

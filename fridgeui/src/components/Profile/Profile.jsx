@@ -1,13 +1,44 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useContext} from "react";
 import profilepic from "./assets/profilepic.png";
 import CookedView from "./views/cookedView";
 import PreferencesView from "./views/preferencesView";
 import UserView from "./views/UserView";
+import api from "../../api";
+import { UserContext } from "./views/UserProvider";
 const Profile = () => {
-  const [tab, setTab] = useState("cooked");
+  const [tab, setTab] = useState("profile");
+  const { userinfo, setUserinfo, loading, error } = useContext(UserContext);
+
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     try {
+  //       const response = await api.get("/core/profile/user-info/");
+  //       if (response.status !== 200) {
+  //         throw new Error("failed to fetch user");
+  //       }
+  //       setUserinfo(response.data.data);
+
+        
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   }
+  //   fetchUser();
+  // }, []);
+
+
+    
+
+
+
   useEffect(() => {
     console.log('Active Tab:', tab);
   }, [tab]);
+
+  // useEffect(() => {
+  //   console.log('userinfo:', userinfo);
+  // }, [userinfo]);
+
   const renderRightContent = () => {
     switch (tab) {
       case "profile":
@@ -39,7 +70,8 @@ const Profile = () => {
             src={profilepic}
             alt="ProfilePic"
           />
-          <h2 className="mt-3 text-lg font-bold">Lily Chen</h2>
+
+          <h2 className="mt-3 text-lg font-bold">{userinfo?userinfo.username:"loading..."}</h2>
           <button onClick={()=>setTab("profile")} className="text-green-500 text-sm mt-1 hover:underline">
             Edit Profile
           </button>

@@ -14,18 +14,19 @@ from django.db import models
 
 from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
-    email = models.CharField(max_length=255, unique=True)
+    email = models.EmailField(max_length=255, unique=True)
     username = models.CharField(max_length=255, null=True, blank=True)
     password = models.CharField(max_length=255)
     age = models.IntegerField(null=True, blank=True)
-    height = models.IntegerField(null=True, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
-    BMI = models.IntegerField(null=True, blank=True)
+    height = models.FloatField(null=True, blank=True)
+    weight = models.FloatField(null=True, blank=True)
+    BMI = models.FloatField(null=True, blank=True)
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     userlike = models.CharField(max_length=255, null=True, blank=True)
     dislike = models.CharField(max_length=255, null=True, blank=True)
-    allergics = models.CharField(max_length=255, null=True, blank=True)
+    allergies = models.CharField(max_length=255, null=True, blank=True)
+    profilepic = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
     # Set email as the unique identifier for authentication
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []  # You can add fields here if needed for createsuperuser

@@ -10,6 +10,7 @@ import NotFound from './components/NotFound/NotFound';
 import Fridge from "./components/Fridge/Fridge";
  
 import Recipe from './components/Recipe/Recipe'
+import {UserProvider} from './components/Profile/views/UserProvider';
  
 
 function Logout() {
@@ -33,7 +34,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
  
-        <Route path="/profile" element={<ProtectedRoute><Profile></Profile></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><UserProvider><Profile></Profile></UserProvider></ProtectedRoute>} />
         <Route path="/fridge" element={<Fridge />} />
         <Route path="/recipe" element={<Recipe />} />
  

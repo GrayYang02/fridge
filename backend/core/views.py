@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 
 from .models import User, Recipe, UserRecipeLog, FridgeItem
-from .serializers import UserSerializer, RecipeSerializer, UserRecipeLogSerializer, FridgeItemSerializer
+from .serializers import UserSerializer, RecipeSerializer, UserRecipeLogSerializer, FridgeItemSerializer, ProfileSerializer
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -13,7 +13,7 @@ from .serializers import (
     RegisterSerializer,
     LoginSerializer,
 )
-
+from .response import Response as R
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
@@ -64,13 +64,14 @@ class LoginView(generics.GenericAPIView):
             "username": user.username
         }, status=status.HTTP_200_OK)
     
-    class UserProfileView(APIView):
-        permission_classes = [IsAuthenticated]  
+class UserProfileView(generics.GenericAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]  
 
-        def get(self, request):
-            user = request.user
-            return Response({
-                "id": user.id,
-                "username": user.username,
-                "email": user.email,
-            }, status=status.HTTP_200_OK)
+    def get(self, request):
+        user = request.user
+        print(user)
+        serializer = self.get_serializer(user)
+        return R.ok(serializer.data)
+        
+        
