@@ -74,17 +74,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'fridgeserver.wsgi.application'
 
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'django_db',
-        'USER': 'django_user',
-        'PASSWORD': 'xw172182',
-        'HOST': 'database-1.czm20ai6yn1e.us-east-2.rds.amazonaws.com',
-        'PORT': '3306',
-        'OPTIONS': {
-            'auth_plugin': 'caching_sha2_password',
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
