@@ -222,6 +222,7 @@ def get_recipe(request):
                 Recipe.objects.create(
                     recipe_name=d['name'],
                     food=d['ingredients'],
+                    flavor_tag=d['flavor_tag'],
                     recipe=d['steps'],
                     uid=user_id,
                     create_time=datetime.now()

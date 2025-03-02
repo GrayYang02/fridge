@@ -12,7 +12,7 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
   useEffect(() => {
     async function fetchRecipe() {
       try {
-        const userId = 1;
+        const userId = 111;
         const response = await api.get(`core/get_food_list/?uid=${userId}`);
         const data = response.data.data; // Get the data from response
         console.log(data);
