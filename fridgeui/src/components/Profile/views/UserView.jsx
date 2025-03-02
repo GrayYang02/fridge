@@ -107,7 +107,7 @@ const UserView = () => {
           <input
             type="text"
             name="height"
-            value={tempUser?.height || "j"}
+            value={tempUser?.height || ""}
             onChange={handleInputChange}
             disabled={!isEditing}
             className="w-full p-2 border rounded-md"

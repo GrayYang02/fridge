@@ -62,7 +62,10 @@ const Profile = () => {
   };
 
   return (
+    <>
+    <Navbar /> 
     <div className="flex min-h-screen bg-gray-100 p-6">
+     {/* Add Navbar here */}
       {/* left side */}
       <aside className="w-1/4 bg-white shadow-lg rounded-lg p-6">
         {/* profile pic */}
@@ -84,6 +87,7 @@ const Profile = () => {
             Edit Profile
           </button>
         </div>
+
 
         {/* menu */}
         <nav className="flex flex-col mt-6 space-y-4">
@@ -128,6 +132,7 @@ const Profile = () => {
         </div>
       </main>
     </div>
+    </>
   );
 };
 
