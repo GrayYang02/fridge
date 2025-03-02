@@ -5,6 +5,7 @@ import PreferencesView from "./views/preferencesView";
 import UserView from "./views/UserView";
 import api from "../../api";
 import { UserContext } from "./views/UserProvider";
+import Pagination from "../Pagination/Pagination";
 const Profile = () => {
   const [tab, setTab] = useState("profile");
   const { userinfo, setUserinfo, loading, error } = useContext(UserContext);
@@ -42,15 +43,13 @@ const Profile = () => {
   const renderRightContent = () => {
     switch (tab) {
       case "profile":
-        return (UserView())
+        return <UserView />;
       case "preferences":
-        return (
-          PreferencesView()
-        );
+        return <PreferencesView />;
       case "collected":
       case "viewed":
       case "cooked":
-        return (CookedView());
+        return <CookedView />
       default:
         return null;
       }
@@ -94,7 +93,7 @@ const Profile = () => {
           {renderRightContent()}
 
           {/* pagination */}
-          <div className="mt-6 flex justify-between text-gray-500 text-sm">
+          {/* <div className="mt-6 flex justify-between text-gray-500 text-sm">
             <button className="hover:text-black">← Previous</button>
             <div className="flex space-x-2">
               <button className="bg-black text-white px-3 py-1 rounded">
@@ -107,7 +106,8 @@ const Profile = () => {
               <button className="hover:text-black">68</button>
             </div>
             <button className="hover:text-black">Next →</button>
-          </div>
+          </div> */}
+          {tab === "profile" || tab==="preferences" ? <></>: <Pagination />}
         </div>
       </main>
     </div>

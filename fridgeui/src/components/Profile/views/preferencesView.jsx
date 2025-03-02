@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { LuX } from "react-icons/lu";
+import api from "../../../api";
+import { UserContext } from "./UserProvider";
 
 const tags = [
   "Tagggggggggg",
@@ -16,8 +18,39 @@ const tags = [
   "Tag",
 ];
 
-const TagInput = ({ title, icon, tagList }) => {
-    const [dynamicTags, setDynamicTags] = React.useState(tagList);
+const TagInput = ({ title, icon, tagList, onUpdate }) => {
+  const [dynamicTags, setDynamicTags] = useState(tagList || []);
+  const [inputValue, setInputValue] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [originalTags, setOriginalTags] = useState(tagList || []);
+
+  useEffect(() => {
+    setDynamicTags(tagList || []);
+    setOriginalTags(tagList || []);
+  }, [tagList]);
+
+  const handleAddTag = () => {
+    if (inputValue.trim() === "") return;
+    const newTags = [...dynamicTags, inputValue.trim()];
+    setDynamicTags(newTags);
+    setInputValue("");
+  };
+
+  const handleRemoveTag = (tagToRemove) => {
+    const newTags = dynamicTags.filter((tag) => tag !== tagToRemove);
+    setDynamicTags(newTags);
+  };
+
+  const handleSave = () => {
+    setIsEditing(false);
+    onUpdate(dynamicTags);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setDynamicTags(originalTags);
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-md p-4 mb-6">
       <div className="flex items-center gap-2 mb-3">
@@ -32,30 +65,94 @@ const TagInput = ({ title, icon, tagList }) => {
               className="flex bg-black text-white px-2 py-1 text-xs rounded-lg"
             >
               <span>{tag}</span>
-              <button
-                onClick={() => {
-                  console.log("delete");
-                }}
-                className="ml-1"
-              >
-                <LuX></LuX>
-              </button>
+              {isEditing && (
+                <button onClick={() => handleRemoveTag(tag)} className="ml-1">
+                  <LuX />
+                </button>
+              )}
             </div>
           ))}
         </div>
-        <div className="flex justify-end">
-          <input
-            type="text"
-            placeholder="Value"
-            className="border rounded-full px-4 py-1 text-sm outline-none"
-          />
-        </div>
+        {isEditing &&
+        (
+          <div className="flex justify-end">
+            <input
+              type="text"
+              placeholder="add your tag :)"
+              onChange={(e) => setInputValue(e.target.value)}
+              value={inputValue}
+              onKeyUp={(e) => {
+                if (e.key === "Enter") {
+                  handleAddTag();
+                }
+              }}
+              className="border rounded-full px-4 py-1 text-sm outline-none"
+            />
+            {/* <button
+              onClick={handleAddTag}
+              className="ml-2 bg-blue-500 text-white px-3 py-1 rounded-md text-sm"
+            >
+              Add
+            </button> */}
+          </div>
+        )}
+      </div>
+      {/* Edit & Save Buttons */}
+      <div className="flex justify-end mt-4 space-x-2">
+        {isEditing ? (
+          <>
+            <button
+              onClick={handleSave}
+              className="bg-green-500 text-white px-3 py-1 rounded-md text-sm"
+            >
+              Save
+            </button>
+            <button
+              onClick={handleCancel}
+              className="bg-gray-400 text-white px-3 py-1 rounded-md text-sm"
+            >
+              Cancel
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="bg-gray-700 text-white px-3 py-1 rounded-md text-sm"
+          >
+            Edit
+          </button>
+        )}
       </div>
     </div>
   );
 };
 
 const PreferencesView = () => {
+  const { userinfo, setUserinfo } = useContext(UserContext);
+  //   const [likes, setLikes] = useState([]);
+  //   const [dislikes, setDislikes] = useState([]);
+  //   const [allergies, setAllergies] = useState([]);
+    
+
+
+
+  const updateUserTags = async (field, newTags) => {
+    try {
+      const updatedUser = { ...userinfo, [field]: newTags.join(",") };
+      const response = await api.patch(
+        `/core/users/${userinfo.id}/`,
+        updatedUser
+      );
+      if (response.status !== 200)
+        throw new Error("Failed to update user data");
+
+      setUserinfo(updatedUser);
+      console.log(`Updated ${field}:`, newTags);
+    } catch (error) {
+      console.error(`Error updating ${field}:`, error);
+    }
+  };
+
   return (
     <>
       {/* Main Content */}
@@ -63,17 +160,20 @@ const PreferencesView = () => {
       <TagInput
         title="What I like?"
         icon={<span className="text-xl">💜</span>}
-        tagList={tags}
+        tagList={userinfo?.userlike ? userinfo.userlike.split(",")  : []}
+        onUpdate={(newTags) => updateUserTags("userlike", newTags)}
       />
       <TagInput
         title="What I dislike?"
         icon={<span className="text-xl">❌</span>}
-        tagList={tags}
+        tagList={userinfo?.dislike? userinfo.dislike.split(",") : []}
+        onUpdate={(newTags) => updateUserTags("dislike", newTags)}
       />
       <TagInput
         title="Allergies"
         icon={<span className="text-xl">❗</span>}
-        tagList={tags}
+        tagList={userinfo?.allergies? userinfo.allergies.split(",") : []}
+        onUpdate={(newTags) => updateUserTags("allergies", newTags)}
       />
     </>
   );
