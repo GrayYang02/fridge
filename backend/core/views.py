@@ -14,7 +14,6 @@ from .serializers import (
     LoginSerializer,
 )
 
-
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -27,14 +26,11 @@ class UserRecipeLogViewSet(ModelViewSet):
     queryset = UserRecipeLog.objects.all()
     serializer_class = UserRecipeLogSerializer
 
-
 class FridgeItemViewSet(ModelViewSet):
     queryset = FridgeItem.objects.all()
     serializer_class = FridgeItemSerializer
-    
 
 class RegisterView(generics.CreateAPIView):
-
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]

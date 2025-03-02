@@ -3,9 +3,9 @@ from .models import  User, Recipe, UserRecipeLog, FridgeItem
 from django.contrib.auth.hashers import make_password, check_password
 
 class RegisterSerializer(serializers.ModelSerializer):
-    """
-    专门处理注册逻辑，哈希用户密码
-    """
+    username = serializers.CharField(required=True, allow_blank=False)
+    email = serializers.CharField(required=True, allow_blank=False)
+    password = serializers.CharField(required=True, allow_blank=False)
     class Meta:
         model = User
         fields = ['email', 'username', 'password']
@@ -23,9 +23,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    """
-    专门处理登录逻辑
-    """
     email = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
