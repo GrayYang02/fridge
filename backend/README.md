@@ -32,6 +32,9 @@ Ensure you have the following installed:
    ```
    The backend will be accessible at [http://localhost:8000](http://localhost:8000).
 
+5. Run the test_views.py for tests of views:
+   python manage.py test core     
+
 ### Option 2: Run with Docker Compose
 
 1. Clone the Repository:
