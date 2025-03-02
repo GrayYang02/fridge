@@ -73,8 +73,7 @@ const TagInput = ({ title, icon, tagList, onUpdate }) => {
             </div>
           ))}
         </div>
-        {isEditing &&
-        (
+        {isEditing && (
           <div className="flex justify-end">
             <input
               type="text"
@@ -132,9 +131,6 @@ const PreferencesView = () => {
   //   const [likes, setLikes] = useState([]);
   //   const [dislikes, setDislikes] = useState([]);
   //   const [allergies, setAllergies] = useState([]);
-    
-
-
 
   const updateUserTags = async (field, newTags) => {
     try {
@@ -160,19 +156,19 @@ const PreferencesView = () => {
       <TagInput
         title="What I like?"
         icon={<span className="text-xl">💜</span>}
-        tagList={userinfo?.userlike ? userinfo.userlike.split(",")  : []}
+        tagList={userinfo?.userlike ? userinfo.userlike.split(",") : []}
         onUpdate={(newTags) => updateUserTags("userlike", newTags)}
       />
       <TagInput
         title="What I dislike?"
         icon={<span className="text-xl">❌</span>}
-        tagList={userinfo?.dislike? userinfo.dislike.split(",") : []}
+        tagList={userinfo?.dislike ? userinfo.dislike.split(",") : []}
         onUpdate={(newTags) => updateUserTags("dislike", newTags)}
       />
       <TagInput
         title="Allergies"
         icon={<span className="text-xl">❗</span>}
-        tagList={userinfo?.allergies? userinfo.allergies.split(",") : []}
+        tagList={userinfo?.allergies ? userinfo.allergies.split(",") : []}
         onUpdate={(newTags) => updateUserTags("allergies", newTags)}
       />
     </>

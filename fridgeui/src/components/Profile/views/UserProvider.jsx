@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import api from "../../../api"; 
+import api from "../../../api";
 
 export const UserContext = createContext();
 
@@ -19,7 +19,6 @@ export const UserProvider = ({ children }) => {
       } catch (err) {
         setError(err.message);
       } finally {
-        
         setLoading(false);
       }
     };

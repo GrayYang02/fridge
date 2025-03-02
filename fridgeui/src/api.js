@@ -9,6 +9,7 @@ baseURL: process.env.REACT_APP_API_URL,
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem(ACCESS_TOKEN);
+        // console.log("api token", token)
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }

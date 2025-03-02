@@ -40,9 +40,17 @@ class RecipeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class UserRecipeLogSerializer(serializers.ModelSerializer):
+    recipe_id = serializers.PrimaryKeyRelatedField(
+        queryset=Recipe.objects.all()  # Ensures valid Recipe IDs
+    )
+    recipe_details = serializers.SerializerMethodField() 
     class Meta:
         model = UserRecipeLog
-        fields = '__all__'
+        fields = ["id","userid", "recipe_id", "recipe_details", "op", "create_time", "is_del"]
+    def get_recipe_details(self, obj):
+        if obj.recipe_id:
+            return RecipeSerializer(obj.recipe_id).data  # Fetch full recipe details
+        return None
 
 class FridgeItemSerializer(serializers.ModelSerializer):
     class Meta:

@@ -12,19 +12,18 @@ const UserView = () => {
   }, [userinfo]);
 
   const calculateBMI = (height, weight) => {
-    if (!height || !weight) return ""; 
+    if (!height || !weight) return "";
     const bmi = weight / (height * height);
-    return bmi.toFixed(2); 
+    return bmi.toFixed(2);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     const updatedUser = { ...tempUser, [name]: value };
     if (name === "height" || name === "weight") {
-        updatedUser.BMI = calculateBMI(updatedUser.height, updatedUser.weight);
+      updatedUser.BMI = calculateBMI(updatedUser.height, updatedUser.weight);
     }
     setTempUser(updatedUser);
-
   };
 
   const handleImageUpload = (e) => {
@@ -122,7 +121,6 @@ const UserView = () => {
             type="text"
             name="BMI"
             value={tempUser?.BMI || ""}
-            
             disabled={true}
             className="w-full p-2 border rounded-md"
           />
@@ -130,13 +128,22 @@ const UserView = () => {
 
         {/* note */}
         <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg shadow-md mt-4">
-        <h3 className="font-bold text-lg">📌 BMI Health Note</h3>
-        <p className="mt-2">
-            ✅ <span className="font-semibold">Healthy BMI</span> is between <span className="text-green-600 font-semibold">18.5 - 24.9</span>.
-        </p>
-        <p className="mt-1">
-            ❗ <span className="font-semibold text-red-500">BMI does not account</span> for <span className="italic">muscle mass, bone density, or body composition</span>.
-        </p>
+          <h3 className="font-bold text-lg">📌 BMI Health Note</h3>
+          <p className="mt-2">
+            ✅ <span className="font-semibold">Healthy BMI</span> is between{" "}
+            <span className="text-green-600 font-semibold">18.5 - 24.9</span>.
+          </p>
+          <p className="mt-1">
+            ❗{" "}
+            <span className="font-semibold text-red-500">
+              BMI does not account
+            </span>{" "}
+            for{" "}
+            <span className="italic">
+              muscle mass, bone density, or body composition
+            </span>
+            .
+          </p>
         </div>
 
         {/* Profile Picture Upload */}

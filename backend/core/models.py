@@ -48,12 +48,16 @@ class Recipe(models.Model):
 
 
 class UserRecipeLog(models.Model):
-    userid = models.IntegerField()
-    recipe_id = models.IntegerField()
-    op = models.IntegerField()
+    userid = models.ForeignKey(User, on_delete=models.CASCADE)
+    recipe_id = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    op = models.IntegerField() # 1: cooked, 2: collected 3: viewed
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     is_del = models.IntegerField(default=0)
+    class Meta:
+        unique_together = (("userid", "recipe_id", "op"),) 
+    def __str__(self):
+        return f"{self.userid} - {self.recipe_id} - {self.op}"
 
 
 
