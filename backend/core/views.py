@@ -22,7 +22,6 @@ from .serializers import (
     LoginSerializer,
 )
 
-
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -34,7 +33,6 @@ class RecipeViewSet(ModelViewSet):
 class UserRecipeLogViewSet(ModelViewSet):
     queryset = UserRecipeLog.objects.all()
     serializer_class = UserRecipeLogSerializer
-
 
 class FridgeItemViewSet(ModelViewSet):
     queryset = FridgeItem.objects.all()
@@ -120,8 +118,8 @@ class FridgeItemViewSet(ModelViewSet):
         return Response({"success": True}, status=status.HTTP_200_OK)
     
 
-class RegisterView(generics.CreateAPIView):
 
+class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]

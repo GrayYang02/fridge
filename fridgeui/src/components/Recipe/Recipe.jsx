@@ -7,19 +7,6 @@ const FridgeRecipePage = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Header */}
-      <header className="flex justify-between items-center p-4 bg-white shadow">
-        <h1 className="text-xl font-semibold">Fridge</h1>
-        <nav className="flex gap-6">
-          <span className="cursor-pointer">RECIPE</span>
-          <span className="cursor-pointer">FRIDGE</span>
-          <span className="cursor-pointer">PROFILE</span>
-        </nav>
-        <img
-          className="w-24 h-24 rounded-full border-4 border-gray-300"
-          src={profilepic}
-          alt="ProfilePic"
-        />
-      </header>
 
       {/* Main content */}
       <main className="flex flex-1 gap-4 p-4">
