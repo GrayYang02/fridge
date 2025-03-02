@@ -30,7 +30,7 @@ const Profile = () => {
   return (
     <div>
       {}
-
+      <Navbar /> {/* Add Navbar here */}
       <div className="flex min-h-screen bg-gray-100 p-6">
         {}
         <aside className="w-1/4 bg-white shadow-lg rounded-lg p-6">
