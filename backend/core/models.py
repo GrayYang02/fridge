@@ -13,18 +13,20 @@ import datetime
 
 from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
-    email = models.CharField(max_length=255, unique=True)
+    email = models.EmailField(max_length=255, unique=True)
     username = models.CharField(max_length=255, null=True, blank=True)
     password = models.CharField(max_length=255)
     age = models.IntegerField(null=True, blank=True)
-    height = models.IntegerField(null=True, blank=True)
-    weight = models.IntegerField(null=True, blank=True)
-    BMI = models.IntegerField(null=True, blank=True)
+    height = models.FloatField(null=True, blank=True)
+    weight = models.FloatField(null=True, blank=True)
+    BMI = models.FloatField(null=True, blank=True)
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     userlike = models.CharField(max_length=255, null=True, blank=True)
     dislike = models.CharField(max_length=255, null=True, blank=True)
     allergies = models.CharField(max_length=255, null=True, blank=True)
+    profilepic = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
+
     # Set email as the unique identifier for authentication
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []  # You can add fields here if needed for createsuperuser
@@ -47,12 +49,16 @@ class Recipe(models.Model):
 
 
 class UserRecipeLog(models.Model):
-    userid = models.IntegerField()
-    recipe_id = models.IntegerField()
-    op = models.IntegerField()
+    userid = models.ForeignKey(User, on_delete=models.CASCADE)
+    recipe_id = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    op = models.IntegerField() # 1: cooked, 2: collected 3: viewed
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     is_del = models.IntegerField(default=0)
+    class Meta:
+        unique_together = (("userid", "recipe_id", "op"),) 
+    def __str__(self):
+        return f"{self.userid} - {self.recipe_id} - {self.op}"
 
 
 

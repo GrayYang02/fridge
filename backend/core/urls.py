@@ -6,6 +6,16 @@ from .views import UserViewSet, RecipeViewSet, UserRecipeLogViewSet, FridgeItemV
     get_recipe, RegisterView, LoginView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+from .views import (
+    UserViewSet,
+    RecipeViewSet,
+    UserRecipeLogViewSet,
+    FridgeItemViewSet,
+    RegisterView,
+    LoginView,
+    UserProfileView,
+)
+
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)  # `/users/`
@@ -21,7 +31,8 @@ urlpatterns = [
     path('token/', TokenObtainPairView.as_view(), name='get_token'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api_auth/', include('rest_framework.urls')),
- 
-    path('get_recipe/', get_recipe, name='get_recipe'),
+    path('get_recipe/', get_recipe, name='get_recipe'),  # POST request will call this function
+    path('profile/user-info/', UserProfileView.as_view(), name='profileinfo'),
     path('recipe_detail/', recipe_detail_recieve, name='recipe_detail'),
 ]
+
