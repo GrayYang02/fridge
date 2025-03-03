@@ -1,14 +1,9 @@
-from pyasn1_modules.rfc3820 import id_ppl_anyLanguage
-
 from .models import User, Recipe, UserRecipeLog, FridgeItem, PicUrls
 from .serializers import UserSerializer, RecipeSerializer, UserRecipeLogSerializer, FridgeItemSerializer, ProfileSerializer
 from rest_framework import generics, status
 from django.contrib.auth.hashers import check_password
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.views import APIView
 
-from rest_framework.views import APIView
-from rest_framework.decorators import action
 from .pagination import UserRecipeLogPagination
 
 from rest_framework.viewsets import ModelViewSet
@@ -25,7 +20,6 @@ from .serializers import (
     RegisterSerializer,
     LoginSerializer,
 )
-from asgiref.sync import sync_to_async
 
 from datetime import datetime
 from django.shortcuts import get_object_or_404
@@ -73,44 +67,44 @@ class RecipeViewSet(ModelViewSet):
             user_id = int(user_id)
 
             # Call the external API
-            # response = Application.call(
-            #
-            #     api_key=API_KEY,
-            #     app_id=APP_ID,
-            #     prompt=f'My food is {foods},generate English recipe! remember to output in [dict] format!'
-            # )
-            #
-            # # Check response status
-            # if response.status_code != HTTPStatus.OK:
-            #     msg_info = (
-            #         f"request_id={response.request_id}, code={response.status_code}, message={response.message}.\n"
-            #         f"See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code"
-            #     )
-            #     logger.error(msg_info)
-            #     return Response.error(msg=msg_info)
-            #
-            # res = response.output.text
-            # res_clean = extract_clean_data(res)
-            #
-            # if res_clean == '':
-            #     return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
-            #
-            # recipes_with_ids = []
-            # try:
-            #     for d in res_clean['recipes']:
-            #         recipe = Recipe.objects.create(
-            #             recipe_name=d['name'],
-            #             food=d['ingredients'],
-            #             flavor_tag=d['flavor_tag'],
-            #             recipe=d['steps'],
-            #             uid=user_id,
-            #             create_time=datetime.now()
-            #         )
-            #         d['id'] = recipe.id  # 直接在菜谱结构中添加 ID
-            #         recipes_with_ids.append(d)
-            # except Exception as e:
-            #     logger.error(f'failed to store info to Recipe, err_msg:{e}')
-            recipes_with_ids = 127
+            response = Application.call(
+
+                api_key=API_KEY,
+                app_id=APP_ID,
+                prompt=f'My food is {foods},generate English recipe! remember to output in [dict] format!'
+            )
+
+            # Check response status
+            if response.status_code != HTTPStatus.OK:
+                msg_info = (
+                    f"request_id={response.request_id}, code={response.status_code}, message={response.message}.\n"
+                    f"See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code"
+                )
+                logger.error(msg_info)
+                return Response.error(msg=msg_info)
+
+            res = response.output.text
+            res_clean = extract_clean_data(res)
+
+            if res_clean == '':
+                return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
+
+            recipes_with_ids = []
+            try:
+                for d in res_clean['recipes']:
+                    recipe = Recipe.objects.create(
+                        recipe_name=d['name'],
+                        food=d['ingredients'],
+                        flavor_tag=d['flavor_tag'],
+                        recipe=d['steps'],
+                        uid=user_id,
+                        create_time=datetime.now()
+                    )
+                    d['id'] = recipe.id  # 直接在菜谱结构中添加 ID
+                    recipes_with_ids.append(d)
+            except Exception as e:
+                logger.error(f'failed to store info to Recipe, err_msg:{e}')
+            # recipes_with_ids = 127
             return Response.ok(data={'recipes': recipes_with_ids}, msg="Successfully retrieved recipes")
         except Exception as e:
             return Response.error(msg=f"Internal Server Error: {str(e)}")
