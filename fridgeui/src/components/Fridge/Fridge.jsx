@@ -21,15 +21,16 @@ const FridgePage = () => {
     tag: "", 
   });
 
+
+  const [sortBy, setSortBy] = useState("create_time_desc"); // Default sort option
   useEffect(() => {
     loadItems();
     loadFoodTags();
-  }, []);
-
+  }, [searchTerm, sortBy]);
   const loadItems = async () => {
     setLoading(true);
     try {
-      const items = await fetchFridgeItems(1, 20, "create_time_desc");
+      const items = await fetchFridgeItems(1, 20, sortBy, searchTerm); // Include sortBy in API call
       const now = new Date();
       const expiring = items.filter(
         (item) => new Date(item.expire_time) <= new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000)
@@ -42,7 +43,9 @@ const FridgePage = () => {
       setLoading(false);
     }
   };
+  
 
+  
   const loadFoodTags = async () => {
     try {
       const tags = await fetchFoodTags();
@@ -113,6 +116,16 @@ const FridgePage = () => {
       value={searchTerm}
       onChange={(e) => setSearchTerm(e.target.value)}
     />
+     {/* Sorting Dropdown */}
+  <select
+    className="border rounded-lg px-2 py-1"
+    value={sortBy}
+    onChange={(e) => setSortBy(e.target.value)}
+  >
+    <option value="create_time_desc">Newest</option>
+    <option value="create_time">Oldest</option>
+    <option value="tag">Category</option>
+  </select>
   </div>
 
   <div className="border rounded-lg p-4 bg-gray-100">

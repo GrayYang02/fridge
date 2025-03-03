@@ -27,14 +27,13 @@ const API_BASE_URL_FRIDGE = "/core/fridge";
 const API_BASE_URL = "http://127.0.0.1:8000/demo";  // Django 后端 URL
 const API_BASE_URL_fri = "http://127.0.0.1:8000/demo/fridge";
 
-export async function fetchFridgeItems(page = 1, pageSize = 10, sortBy = "create_time_desc") {
+export async function fetchFridgeItems(page = 1, pageSize = 10, sortBy = "create_time_desc",searchTerm) {
   try {
-    console.log('sdcfvgbhn')
 
     console.log(localStorage.getItem('access'))
     // console.log(config.headers.Authorization)
     const response = await api.get(`${API_BASE_URL_FRIDGE}/food_list/`, {
-      params: { page, page_size: pageSize, sort_by: sortBy }
+      params: { page, page_size: pageSize, sort_by: sortBy ,keyword:searchTerm}
     });
     return response.data.foods || [];
   } catch (error) {
