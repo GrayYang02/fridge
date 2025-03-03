@@ -26,6 +26,7 @@ from .serializers import (
 from asgiref.sync import sync_to_async
 
 from datetime import datetime
+from django.shortcuts import get_object_or_404
 FOOD_TAGS = {
     1: {"name": "meat", "icon": "/icons/meat.png"},
     2: {"name": "vegetable", "icon": "/icons/vegetable.png"},
@@ -68,11 +69,13 @@ class UserRecipeLogViewSet(ModelViewSet):
             return Response({"error": "userid, recipe_id, and op are required"}, status=400)
 
         try:
+            user = get_object_or_404(User, id=user_id) 
+            recipe = get_object_or_404(Recipe, id=recipe_id)
             # Check if a record exists
             user_recipe_log = UserRecipeLog.objects.filter(
-                userid=user_id, recipe_id=recipe_id, op=op
+                userid=user, recipe_id=recipe, op=op
             ).first()
-
+            
             if user_recipe_log:
                 # Toggle is_del (soft delete/restore)
                 user_recipe_log.is_del = 0 if user_recipe_log.is_del else 1
@@ -81,7 +84,7 @@ class UserRecipeLogViewSet(ModelViewSet):
             else:
                 # Create a new record if it does not exist
                 user_recipe_log = UserRecipeLog.objects.create(
-                    userid=user_id, recipe_id=recipe_id, op=op, is_del=0
+                    userid=user, recipe_id=recipe, op=op, is_del=0
                 )
                 action = "Created"
 
