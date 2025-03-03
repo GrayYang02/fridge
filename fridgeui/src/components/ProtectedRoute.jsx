@@ -33,6 +33,9 @@ function ProtectedRoute({ children }){
             return
         }
         const decoded = jwtDecode(token)
+        // console.log("decoded.exp", decoded.exp * 1000)
+        // console.log("date.now", Date.now())
+        // console.log("ifexpired", decoded.exp * 1000 < Date.now())
         if (decoded.exp * 1000 < Date.now()) {
             await refreshToken()
         }

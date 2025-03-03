@@ -80,6 +80,7 @@ const FridgePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
+      <Navbar /> {/* Add Navbar here */}
       <main className="p-8">
         <section className="flex gap-4">
           {/* Expiring Items */}

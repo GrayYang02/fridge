@@ -23,7 +23,12 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    email = serializers.CharField()
+
+    """
+    专门处理登录逻辑
+    """
+    email = serializers.EmailField()
+
     password = serializers.CharField(write_only=True)
 
 class UserSerializer(serializers.ModelSerializer):
@@ -37,11 +42,42 @@ class RecipeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class UserRecipeLogSerializer(serializers.ModelSerializer):
+    recipe_id = serializers.PrimaryKeyRelatedField(
+        queryset=Recipe.objects.all()  # Ensures valid Recipe IDs
+    )
+    recipe_details = serializers.SerializerMethodField() 
     class Meta:
         model = UserRecipeLog
-        fields = '__all__'
+        fields = ["id","userid", "recipe_id", "recipe_details", "op", "create_time", "is_del"]
+    def get_recipe_details(self, obj):
+        if obj.recipe_id:
+            return RecipeSerializer(obj.recipe_id).data  # Fetch full recipe details
+        return None
 
 class FridgeItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = FridgeItem
         fields = '__all__'
+
+class ProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'username', 'age', 'height', 'weight', 'BMI', 'userlike', 'dislike', 'allergies']
+        extra_kwargs = {
+            'email': {'write_only': True}
+        }
+    
+
+
+    # def update(self, instance, validated_data):
+        
+    #     password = validated_data.pop('password', None) 
+    #     for attr, value in validated_data.items():
+    #         setattr(instance, attr, value) 
+
+    #     if password:  
+    #         instance.set_password(password) 
+
+    #     instance.save()
+    #     return instance
