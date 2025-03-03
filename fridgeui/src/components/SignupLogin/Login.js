@@ -41,8 +41,9 @@ function Login() {
         <h1 className="auth-title">Welcome back!</h1>
 
         <form onSubmit={handleSubmit} className="auth-form">
-          <label className="auth-label">EMAIL</label>
+          <label className="auth-label" htmlFor="email">EMAIL</label>
           <input
+            id="email"  
             type="email"
             name="email"
             className="auth-input"
@@ -51,8 +52,9 @@ function Login() {
             required
           />
 
-          <label className="auth-label">PASSWORD</label>
+          <label className="auth-label" htmlFor="password">PASSWORD</label>
           <input
+            id="password"
             type="password"
             name="password"
             className="auth-input"

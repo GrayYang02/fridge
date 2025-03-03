@@ -135,7 +135,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
+MONGODB_DB = 1
+MONGODB_URI  =1
 
 ### API parts 
 API_KEY = "sk-94945667a547494a9adeefcff1d5a3a1"

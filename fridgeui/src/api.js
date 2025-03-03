@@ -3,16 +3,12 @@ import { ACCESS_TOKEN } from './constants';
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
-});
+
+})
 
 api.interceptors.request.use(
   (config) => {
-    const token1 = localStorage.getItem(ACCESS_TOKEN);
-    const token = localStorage.getItem('access'); 
-    console.log('1111')
-
-    console.log(token)
-
+    const token = localStorage.getItem(ACCESS_TOKEN);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -26,6 +22,9 @@ api.interceptors.request.use(
 export default api;
 
 const API_BASE_URL_FRIDGE = "/core/fridge";
+
+const API_BASE_URL = "http://127.0.0.1:8000/demo";  // Django 后端 URL
+const API_BASE_URL_fri = "http://127.0.0.1:8000/demo/fridge";
 
 export async function fetchFridgeItems(page = 1, pageSize = 10, sortBy = "create_time_desc") {
   try {
@@ -50,6 +49,7 @@ export async function addFridgeItem(item) {
       user_id: item.user_id,
       add_time: item.add_time,
       expire_time: item.expire_time,
+      tag:item.tag,
     });
     return response.data;
   } catch (error) {
@@ -58,14 +58,44 @@ export async function addFridgeItem(item) {
   }
 }
 
+// delete 
 export async function deleteFridgeItem(food_id) {
   try {
     const response = await api.delete(`${API_BASE_URL_FRIDGE}/delete_food/`, {
       data: { food_id }
     });
     return response.data;
+
+    // export const fetchFridgeItems = async () => {
+    //   try {
+    //     const response = await fetch(API_URL);
+    //     if (!response.ok) {
+    //       throw new Error("Failed to fetch fridge items");
+    //     }
+    //     return await response.json();
+    //   } catch (error) {
+    //     console.error("Error fetching fridge items:", error);
+    //     return [];
+    //   }
+    // };
+
+
+    // if (!response.ok) {
+    //   throw new Error("Failed to delete fridge item");
+    // }
+    // return await response.json();
+// >>>>>>> main
   } catch (error) {
     console.error("Error deleting fridge item:", error);
     return null;
+  }
+}
+export async function fetchFoodTags() {
+  try {
+    const response = await api.get(`${API_BASE_URL_FRIDGE}/food_tags/`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching food tags:", error);
+    return {};
   }
 }
