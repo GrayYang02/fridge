@@ -13,7 +13,10 @@ class IntegrationTests(APITestCase):
         self.login_url = reverse('login')
         self.token_url = reverse('get_token')
         self.profile_url = reverse('profileinfo')
-        # self.get_recipe_url = reverse('get_recipe')
+
+        # Reverse the 'get_recipe' action in the RecipeViewSet
+        # Assuming 'recipe-get_recipe' is the correct name for the action in urls.py
+        self.get_recipe_url = reverse('recipe-get_recipe')
 
         # For viewsets registered via DefaultRouter:
         # For example, FridgeItemViewSet is registered as 'fridge', so its list URL is reverse('fridge-list')
@@ -158,17 +161,36 @@ class IntegrationTests(APITestCase):
             any("Apple" in food["name"] for food in search_resp_data.get("data", {}).get("foods", []))
         )
 
+    # def test_get_recipe(self):
+    #     """
+    #     Test the recipe generation endpoint.
+    #     Note: This endpoint calls an external API and may rely on external services.
+    #     In real integration tests, it is recommended to use mocks for external API calls.
+    #     """
+    #     # Simulate a GET request to the get_recipe endpoint
+    #     params = {"ingredient": "tomato", "user_id": self.user.id}
+    #     response = self.client.get(self.get_recipe_url, params)
+    #     # Depending on the business logic, the response status could be 200 or other statuses if the external API fails.
+    #     self.assertIn(
+    #         response.status_code,
+    #         [status.HTTP_200_OK, status.HTTP_400_BAD_REQUEST, status.HTTP_500_INTERNAL_SERVER_ERROR]
+    #     )
+
     def test_get_recipe(self):
         """
         Test the recipe generation endpoint.
         Note: This endpoint calls an external API and may rely on external services.
         In real integration tests, it is recommended to use mocks for external API calls.
         """
+        # Reverse the URL for the custom action 'get_recipe' in the RecipeViewSet
+        url = reverse('recipe-get_recipe')  # Make sure this matches the name defined in your urls.py
+
         # Simulate a GET request to the get_recipe endpoint
         params = {"ingredient": "tomato", "user_id": self.user.id}
-        response = self.client.get(self.get_recipe_url, params)
+        response = self.client.get(url, params)
+
         # Depending on the business logic, the response status could be 200 or other statuses if the external API fails.
         self.assertIn(
-            response.status_code, 
+            response.status_code,
             [status.HTTP_200_OK, status.HTTP_400_BAD_REQUEST, status.HTTP_500_INTERNAL_SERVER_ERROR]
         )
