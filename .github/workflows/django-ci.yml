@@ -11,41 +11,51 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. 检出仓库代码
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      # 2. 设置 Python 环境
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: 3.11
 
+      # 3. 安装 MySQLclient 依赖（如果后端用 MySQL）
       - name: Install system dependencies for mysqlclient
         run: |
           sudo apt-get update
           sudo apt-get install -y default-libmysqlclient-dev build-essential
 
-      - name: Install dependencies
+      # 4. 安装后端依赖
+      - name: Install backend dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
 
-      - name: Install mysqlclient module (if not already in requirements.txt)
+      # 5. 安装 mysqlclient 模块（如果在 requirements.txt 没有包含的话）
+      - name: Install mysqlclient module
         run: pip install mysqlclient
 
+      # 6. 安装 coverage（如果需要统计后端覆盖率）
       - name: Install coverage
         run: pip install coverage
 
+      # 7. 运行数据库迁移
       - name: Run migrations
         run: |
           python backend/manage.py makemigrations --noinput
           python backend/manage.py migrate --noinput
 
-      # - name: Run tests
-      #   run: |
-      #     python backend/manage.py test core.test_core
-
-      - name: Run tests with coverage
+      # 8. 运行后端测试（集成测试）
+      - name: Run backend tests with coverage
         run: |
           coverage run --source=core backend/manage.py test core.test_core
           coverage report -m
 
+      # 9. 安装前端依赖并运行测试
+      - name: Run frontend tests
+        run: |
+          cd fridgeui
+          npm install
+          npm test -- --coverage
