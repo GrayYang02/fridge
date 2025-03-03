@@ -497,6 +497,8 @@ def extract_clean_data(long_string):
         #
         if first_brace_index != -1 and last_brace_index != -1:
             ans = long_string[first_brace_index:last_brace_index+1]
+            ans = ans.replace('\n', '')
+            ans.strip()
             ans = eval(ans)
 
             return ans
