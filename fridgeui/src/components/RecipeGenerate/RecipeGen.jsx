@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
-import api from '../../api';
-import profilepic from "./assets/profilepic.png";
-import potpic from "./assets/potpic.png"; 
-import applepic from "./assets/applepic.png";
+import api from '../../api'; 
+import potpic from "./assets/potpic.png";  
 import React from 'react';
 import Navbar from "../../components/Navbar";
 
@@ -30,8 +28,9 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
       try {
         const userId = 111;
         const response = await api.get(`core/get_food_list/?uid=${userId}`);
-        const data = response.data.data;
-        console.log(data);
+        const data = response.data.data; // Get the data from response
+        console.log(data.foods);
+        // Check if the response contains foods and tags
         if (data && data.foods && data.tags) {
           setFoods(data.foods);
           setTags(data.tags);
