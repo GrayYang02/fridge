@@ -39,7 +39,7 @@ class User(AbstractUser):
 class Recipe(models.Model):
     recipe_name = models.CharField(max_length=255)
     uid = models.IntegerField()
-    food = models.TextField()
+    food = models.CharField(max_length=255)
     direction = models.TextField(default="", null=True, blank=True)  # Front-end directions use to save steps
     recipe = models.TextField(null=True, blank=True)
     img_url = models.CharField(max_length=255, null=True, blank=True)
