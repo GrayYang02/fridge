@@ -1,4 +1,4 @@
-from .models import User, Recipe, UserRecipeLog, FridgeItem
+from .models import User, Recipe, UserRecipeLog, FridgeItem, PicUrls
 from .serializers import UserSerializer, RecipeSerializer, UserRecipeLogSerializer, FridgeItemSerializer, ProfileSerializer
 from rest_framework import generics, status
 from django.contrib.auth.hashers import check_password
@@ -374,20 +374,56 @@ def get_food_list(request):
     from .log import logger
     try:
         uid = request.GET.get('uid')
-        if uid  == '':
-            return Response.error(msg= f'[user_id] not Valid {uid}' )
+        if uid == '':
+            return Response.error(msg=f'[user_id] not valid: {uid}')
         uid = int(uid)
-        queryset = FridgeItem.objects.filter(uid=uid)
-        queryset = queryset.order_by('create_time')
-        if queryset is None:
-            return Response.error(msg= 'Failed to fatch' )
+        queryset = FridgeItem.objects.filter(uid=uid).order_by('create_time')
+
+        if not queryset:
+            return Response.error(msg='Failed to fetch items')
         foods = []
-        tags = ['sweet','spice','salty','creamy','savory']
+        tags = ['sweet', 'spicy', 'salty', 'creamy', 'savory']
         for item in queryset:
-            foods.append(item.name)
-        return Response.ok(data ={"foods":foods, 'tags' : tags} , msg=f"recieve all the foods")
+            pic = PicUrls.objects.filter(name=item.name).first()
+            foods.append({"name":item.name, "pic":pic.url})
+        return Response.ok(data={"foods": foods, "tags": tags }, msg="Received all the foods")
+
     except Exception as err:
-        return Response.error(msg=err)
+        # Log the error for debugging
+        print(f"Error: {err}")
+        # Return a serializable error message
+        return Response.error(msg=str(err))
+
+
+def search_food_list(request):
+    from .response import Response
+
+    uid = request.GET.get('uid')
+    name = request.GET.get('name')
+
+    # Search for FridgeItem with the given name
+    fridge_items = FridgeItem.objects.filter(uid=uid, name__icontains=name)
+
+    foods = []
+    for item in fridge_items:
+        pic = PicUrls.objects.filter(name=item.name).first()
+        foods.append({"name": item.name, "pic": pic.url})
+    return Response.ok( data={"foods": foods}, msg="Received all the foods")
+
+
+def build_food_pic(request):
+    from .response import Response
+
+    # default_data = {'beef':'https://images.unsplash.com/photo-1602473812169-ede177b00aea?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    #                  }
+    # for name, pic_url in default_data.items():
+    #     PicUrls.objects.update_or_create(
+    #         name=name,
+    #         url=pic_url
+    #     )
+    # pic = PicUrls.objects.filter(name='beef').first()
+    # print(pic.url)
+    return Response.ok(msg="Received all the foods")
 
 
 #################################################
@@ -415,7 +451,7 @@ def get_recipe(request):
         response = Application.call(
             api_key= API_KEY,
             app_id= APP_ID,
-            prompt=f'My food is {foods}, output in [dict] format!'
+            prompt=f'My food is {foods},generate English recipe! remember to output in [dict] format!'
         )
 
         # Check response status
@@ -461,6 +497,8 @@ def extract_clean_data(long_string):
         #
         if first_brace_index != -1 and last_brace_index != -1:
             ans = long_string[first_brace_index:last_brace_index+1]
+            ans = ans.replace('\n', '')
+            ans.strip()
             ans = eval(ans)
 
             return ans
@@ -474,31 +512,26 @@ def extract_clean_data(long_string):
     return ''
 
 
-async def recipe_detail_recieve(request):
-    from .response import Response
+def recipe_detail_recieve(request):
+    from django.forms.models import model_to_dict
+    from .response import Response  # Assuming you have a custom response handler
+    uid = request.GET.get('user_id')  # Ensure you're using the correct query parameter name
+    id = request.GET.get('id')
+    if not uid or not id:
+        return Response.error(msg="Missing user_id or id")
+    uid = int(uid)
+    id = int(id)
+    try:
+        recipe = Recipe.objects.filter(uid=uid, id=id).first()
+        if not recipe:
+            return Response.error(msg="Recipe not found")
 
-    temp_res = {"recipes": [
-        {
-            "name": "Apple and Banana Smoothie",
-            "ingredients": [
-                "2 medium-sized apples, peeled and chopped",
-                "1 large banana, peeled",
-                "1 cup of milk (dairy or non-dairy)",
-                "1 tablespoon honey (optional)"
-            ],
-            "steps": [
-                "Place the chopped apples and banana into a blender.",
-                "Add the milk and honey if using.",
-                "Blend all ingredients until smooth and creamy.",
-                "Pour the smoothie into glasses and serve immediately."
-            ]
-        }
-    ]
-    }
+        # Convert the Recipe object to a dictionary for JSON serialization
+        recipe_data = model_to_dict(recipe)
 
-    # Get the ingredient parameter from the request
-    recipe_id = request.GET.get('recipe_id')
-    user_id = request.GET.get('user_id')
+    except Exception as e:
+        return Response.error(msg=f"Error retrieving recipe: {str(e)}")
 
-    return Response.ok(data=temp_res, msg=f"recipe_id = {recipe_id}, user_id = {user_id}")
+    # Return the recipe data as JSON
+    return Response.ok(data=recipe_data, msg=f"Success in recipe_id = {id}, user_id = {uid}")
 
