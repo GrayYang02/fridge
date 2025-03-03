@@ -26,6 +26,8 @@ from .serializers import (
 from asgiref.sync import sync_to_async
 
 from datetime import datetime
+from django.utils import timezone
+from datetime import timedelta
 from django.shortcuts import get_object_or_404
 FOOD_TAGS = {
     1: {"name": "meat", "icon": "/icons/meat.png"},
@@ -213,9 +215,9 @@ class FridgeItemViewSet(ModelViewSet):
         sort_by = request.query_params.get('sort_by', 'create_time_desc')
         keyword = request.query_params.get('keyword', '').strip()
         tag = request.query_params.get('tag', None)
+        is_expire = request.query_params.get('is_expire', None)
 
         queryset = FridgeItem.objects.filter(uid=request.user.id, is_del=0)
-
 
         if tag is not None:
             try:
@@ -229,6 +231,11 @@ class FridgeItemViewSet(ModelViewSet):
         
         if keyword:
             queryset = queryset.filter(name__icontains=keyword)
+        
+        if is_expire is not None:
+            now = timezone.now()
+            expire_threshold = now + timedelta(days=1)
+            queryset = queryset.filter(expire_time__lte=expire_threshold).order_by('expire_time')
         
         if sort_by == 'tag':
             queryset = queryset.order_by('tag')
@@ -252,6 +259,7 @@ class FridgeItemViewSet(ModelViewSet):
             "page_size": page_size,
             "foods": food_data
         }, status=status.HTTP_200_OK)
+
     
     @action(detail=False, methods=['get'])
     def food_tags(self, request):

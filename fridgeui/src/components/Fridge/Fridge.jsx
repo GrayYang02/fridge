@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { fetchFridgeItems, addFridgeItem, deleteFridgeItem, fetchFoodTags } from "../../api";
 import Navbar from "../../components/Navbar";
+import Pagination from "../Pagination/Pagination";
 
 const FridgePage = () => {
   const [fridgeItems, setFridgeItems] = useState([]);
@@ -21,30 +22,38 @@ const FridgePage = () => {
     tag: "", 
   });
 
+  const [currentPageExpiring, setCurrentPageExpiring] = useState(1);
+  const [totalPagesExpiring, setTotalPagesExpiring] = useState(1);
 
+  const [currentPageNormal, setCurrentPageNormal] = useState(1);
+  const [totalPagesNormal, setTotalPagesNormal] = useState(1);
   const [sortBy, setSortBy] = useState("create_time_desc"); // Default sort option
   useEffect(() => {
     loadItems();
     loadFoodTags();
-  }, [searchTerm, sortBy]);
+  }, [searchTerm, sortBy, currentPageExpiring, currentPageNormal]); //
+  
   const loadItems = async () => {
     setLoading(true);
     try {
-      const items = await fetchFridgeItems(1, 20, sortBy, searchTerm); // Include sortBy in API call
-      const now = new Date();
-      const expiring = items.filter(
-        (item) => new Date(item.expire_time) <= new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000)
-      );
-      setExpiringItems(expiring);
-      setFridgeItems(items.filter((item) => !expiring.includes(item)));
+      const items = await fetchFridgeItems(currentPageNormal, 10, sortBy, searchTerm);
+      const expitems = await fetchFridgeItems(currentPageExpiring, 5, sortBy, searchTerm, true);
+  
+      setTotalPagesExpiring(Math.ceil((expitems.total || 0) / 5));
+      setTotalPagesNormal(Math.ceil((items.total || 0) / 10));
+  console.log(totalPagesExpiring);
+  console.log(totalPagesNormal);
+
+      setExpiringItems(expitems.foods);
+      setFridgeItems(items.foods);
     } catch (err) {
+      console.error(err);
       setError("Failed to load items.");
     } finally {
       setLoading(false);
     }
   };
   
-
   
   const loadFoodTags = async () => {
     try {
@@ -104,10 +113,15 @@ const FridgePage = () => {
       </li>
     ))}
   </ul>
+  <Pagination
+              currentPage={currentPageExpiring}
+              totalPages={totalPagesExpiring}
+              onPageChange={setCurrentPageExpiring}
+            />
 </div>
 
+            
           {/* Fridge Items */}
- {/* Fridge Items (修正 grid 结构) */}
 <div className="bg-white p-4 shadow rounded-lg flex-grow">
   <div className="flex items-center gap-2 mb-4">
     <input
@@ -148,12 +162,21 @@ const FridgePage = () => {
               <img src={item.icon || "https://placehold.co/50x50/png"} alt={item.name} className="h-8 w-8" />
               <span>{item.name}</span>
             </div>
+            
           ))}
       </div>
+      
     )}
   </div>
+  <Pagination
+              currentPage={currentPageNormal}
+              totalPages={totalPagesNormal}
+              onPageChange={setCurrentPageNormal}
+            />
 </div>
+
         </section>
+   
       </main>
 
       {/* Add Food Button */}
