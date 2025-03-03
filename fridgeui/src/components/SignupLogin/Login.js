@@ -25,6 +25,7 @@ function Login() {
       const response = await api.post('/core/token/', formData);
       localStorage.setItem(ACCESS_TOKEN, response.data.access);
       localStorage.setItem(REFRESH_TOKEN, response.data.refresh);
+
       navigate('/profile');
 
     } catch (err) {
