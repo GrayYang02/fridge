@@ -24,6 +24,9 @@ modify .env file if necessary (replace any placeholder)
    ```
    The frontend will be accessible at [http://localhost:3000](http://localhost:3000).
 
+5. If you want to run all unit tests
+   npm test -- --watchAll
+
 ### Option 2: Run with Docker Compose
 
 1. Clone the Repository:
