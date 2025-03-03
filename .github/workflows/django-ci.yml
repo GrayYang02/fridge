@@ -1,0 +1,51 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ '*' ]
+  pull_request:
+    branches: [ '*' ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+
+      - name: Install system dependencies for mysqlclient
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y default-libmysqlclient-dev build-essential
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name: Install mysqlclient module (if not already in requirements.txt)
+        run: pip install mysqlclient
+
+      - name: Install coverage
+        run: pip install coverage
+
+      - name: Run migrations
+        run: |
+          python backend/manage.py makemigrations --noinput
+          python backend/manage.py migrate --noinput
+
+      # - name: Run tests
+      #   run: |
+      #     python backend/manage.py test core.test_core
+
+      - name: Run tests with coverage
+        run: |
+          coverage run --source=core backend/manage.py test core.test_core
+          coverage report -m
+
