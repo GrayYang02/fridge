@@ -80,6 +80,7 @@ WSGI_APPLICATION = 'fridgeserver.wsgi.application'
 
 
 
+
 if 'test' in sys.argv:
     DATABASES = {
         'default': {
@@ -101,6 +102,7 @@ else:
             },
         }
     }
+
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
