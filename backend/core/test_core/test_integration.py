@@ -16,7 +16,7 @@ class IntegrationTests(APITestCase):
 
         # Reverse the 'get_recipe' action in the RecipeViewSet
         # Assuming 'recipe-get_recipe' is the correct name for the action in urls.py
-        self.get_recipe_url = reverse('recipe-get_recipe')
+        self.get_recipe_url = reverse('recipes-get_recipe')
 
         # For viewsets registered via DefaultRouter:
         # For example, FridgeItemViewSet is registered as 'fridge', so its list URL is reverse('fridge-list')
@@ -183,7 +183,7 @@ class IntegrationTests(APITestCase):
         In real integration tests, it is recommended to use mocks for external API calls.
         """
         # Reverse the URL for the custom action 'get_recipe' in the RecipeViewSet
-        url = reverse('recipe-get_recipe')  # Make sure this matches the name defined in your urls.py
+        url = reverse('recipes-get_recipe')  # Make sure this matches the name defined in your urls.py
 
         # Simulate a GET request to the get_recipe endpoint
         params = {"ingredient": "tomato", "user_id": self.user.id}
