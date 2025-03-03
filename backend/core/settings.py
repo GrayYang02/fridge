@@ -26,15 +26,12 @@ SIMPlE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     # 'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-        # 'AUTH_HEADER_TYPES': ('Bearer',),  # 确保这里包含 'Bearer'
 
 }
-CORS_ALLOW_HEADERS = ['Authorization', 'Content-Type']
 
 INSTALLED_APPS = [
     'corsheaders',
     'django.contrib.admin',
-    'rest_framework_simplejwt',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

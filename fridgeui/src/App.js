@@ -52,15 +52,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
  
-        {/* <Route path="/profile" element={<ProtectedRoute><Profile></Profile></ProtectedRoute>} />
-        <Route path="/fridge" element={<ProtectedRoute><Fridge></Fridge></ProtectedRoute>} />
-         */}
-        {/* <Route path="/recipe" element={<Recipe />} /> */}
-        {/* <Route path="/profile" element={<ProtectedRoute><Profile></Profile></ProtectedRoute>} />
-        <Route path="/fridge" element={<Fridge />} />
-        <Route path="/recipe_gen" element={<RecipeGen />} /> */}
-
-
         {/* Pages that require the common navbar */}
         
           <Route path="/profile" element={<UserProvider><ProtectedRoute><Profile /></ProtectedRoute></UserProvider>} />
