@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
-import api from '../../api';
-import profilepic from "./assets/profilepic.png";
-import potpic from "./assets/potpic.png"; 
-import applepic from "./assets/applepic.png";
+import api from '../../api'; 
+import potpic from "./assets/potpic.png";  
 import React from 'react';
 import Navbar from "../../components/Navbar";  
 
@@ -18,7 +16,7 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
         const userId = 111;
         const response = await api.get(`core/get_food_list/?uid=${userId}`);
         const data = response.data.data; // Get the data from response
-        console.log(data);
+        console.log(data.foods);
 
         // Check if the response contains foods and tags
         if (data && data.foods && data.tags) {
@@ -64,11 +62,19 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
           <div className="mt-4 space-y-2">
             {foods.map((food, index) => (
               <div key={index} className="border rounded-lg flex items-center p-2 h-12">
-                <span className="font-semibold">{food}</span>
-                <img src="foodPicPlaceholder" alt={food} className="ml-auto h-10" /> {/* Use actual images if available */}
+                <span className="font-semibold">{food.name}</span>
+               
+                {/* Dynamically load the image based on food's imageUrl */}
+                <img
+                  
+                  src={food.pic }  // Fallback image in case imageUrl is unavailable
+                  alt={food.name}
+                  className="ml-auto h-10"
+                />
               </div>
             ))}
-          </div>
+          </div>  
+          
 
           <button className="mt-4 bg-gray-800 text-white py-2 px-4 rounded-lg">
             Organize Fridge

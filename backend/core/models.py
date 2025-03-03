@@ -75,6 +75,7 @@ class FridgeItem(models.Model):
     expire_time = models.DateField(default=default_expire_time)  
     save_time = models.IntegerField(default=30)  # default 90 days
     pic = models.IntegerField(null=True, blank=True)
+    # pic_url = models.CharField(max_length=255)
     is_del = models.IntegerField(default=0)
     update_time = models.DateTimeField(auto_now=True)
     uid = models.IntegerField() 
@@ -83,4 +84,8 @@ class ItemTag(models.Model):
     tag = models.IntegerField()
     name = models.CharField(max_length=255)
     create_time = models.DateTimeField(auto_now_add=True)
- 
+
+
+class PicUrls(models.Model):
+    name = models.CharField(max_length=255,unique=True)
+    url = models.CharField(max_length=255)

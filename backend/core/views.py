@@ -1,4 +1,4 @@
-from .models import User, Recipe, UserRecipeLog, FridgeItem
+from .models import User, Recipe, UserRecipeLog, FridgeItem, PicUrls
 from .serializers import UserSerializer, RecipeSerializer, UserRecipeLogSerializer, FridgeItemSerializer, ProfileSerializer
 from rest_framework import generics, status
 from django.contrib.auth.hashers import check_password
@@ -371,20 +371,41 @@ def get_food_list(request):
     from .log import logger
     try:
         uid = request.GET.get('uid')
-        if uid  == '':
-            return Response.error(msg= f'[user_id] not Valid {uid}' )
+        if uid == '':
+            return Response.error(msg=f'[user_id] not valid: {uid}')
         uid = int(uid)
-        queryset = FridgeItem.objects.filter(uid=uid)
-        queryset = queryset.order_by('create_time')
-        if queryset is None:
-            return Response.error(msg= 'Failed to fatch' )
+        queryset = FridgeItem.objects.filter(uid=uid).order_by('create_time')
+
+        if not queryset:
+            return Response.error(msg='Failed to fetch items')
         foods = []
-        tags = ['sweet','spice','salty','creamy','savory']
+        tags = ['sweet', 'spicy', 'salty', 'creamy', 'savory']
         for item in queryset:
-            foods.append(item.name)
-        return Response.ok(data ={"foods":foods, 'tags' : tags} , msg=f"recieve all the foods")
+            pic = PicUrls.objects.filter(name=item.name).first()
+            foods.append({"name":item.name, "pic":pic.url})
+        return Response.ok(data={"foods": foods, "tags": tags }, msg="Received all the foods")
+
     except Exception as err:
-        return Response.error(msg=err)
+        # Log the error for debugging
+        print(f"Error: {err}")
+        # Return a serializable error message
+        return Response.error(msg=str(err))
+
+
+
+def build_food_pic(request):
+    from .response import Response
+
+    # default_data = {'beef':'https://images.unsplash.com/photo-1602473812169-ede177b00aea?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    #                  }
+    # for name, pic_url in default_data.items():
+    #     PicUrls.objects.update_or_create(
+    #         name=name,
+    #         url=pic_url
+    #     )
+    # pic = PicUrls.objects.filter(name='beef').first()
+    # print(pic.url)
+    return Response.ok(msg="Received all the foods")
 
 
 #################################################
