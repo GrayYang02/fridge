@@ -12,10 +12,9 @@ const [loading, setLoading] = useState(true);
 useEffect(() => {
   async function fetchRecipe() {
     try {
-      const response = await api.get(`/core/recipe_detail/`, {
-        params: { user_id: userId, id: recipeId },
-      });
-
+      const response = await api.get(
+        `/core/recipes/recipe_detail/?recipe_id=${recipeId}`
+      );
       if (response.status!==200){
         throw new Error("Failed to fetch");
       }

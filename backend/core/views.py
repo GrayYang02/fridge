@@ -1,3 +1,5 @@
+from pyasn1_modules.rfc3820 import id_ppl_anyLanguage
+
 from .models import User, Recipe, UserRecipeLog, FridgeItem, PicUrls
 from .serializers import UserSerializer, RecipeSerializer, UserRecipeLogSerializer, FridgeItemSerializer, ProfileSerializer
 from rest_framework import generics, status
@@ -45,10 +47,105 @@ class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
 
+    @action(detail=False, methods=["get"], url_path="get_recipe")
+    def get_recipe(self,request):
+        from .log import logger
+        from dashscope import Application
+        from http import HTTPStatus
+        from core.settings import APP_ID, API_KEY
+        from .response import Response
+        from datetime import datetime
 
-    # @action(detail=False, methods=["get"], url_path="is_collected")
+        try:
+            # Ensure only GET requests are processed
+            if request.method != "GET":
+                return Response.error(msg="Invalid request method, only GET allowed")
 
-     #todo: dix user token in recipe
+            # Get the ingredient parameter from the request
+            foods = request.GET.get('ingredient')
+
+            user_id = request.user.id
+            if user_id is None:
+                return Response.error(msg="cannot search with invalid user")
+
+            if foods == '':
+                return Response.error(msg="cannot generate with no food")
+            user_id = int(user_id)
+
+            # Call the external API
+            # response = Application.call(
+            #
+            #     api_key=API_KEY,
+            #     app_id=APP_ID,
+            #     prompt=f'My food is {foods},generate English recipe! remember to output in [dict] format!'
+            # )
+            #
+            # # Check response status
+            # if response.status_code != HTTPStatus.OK:
+            #     msg_info = (
+            #         f"request_id={response.request_id}, code={response.status_code}, message={response.message}.\n"
+            #         f"See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code"
+            #     )
+            #     logger.error(msg_info)
+            #     return Response.error(msg=msg_info)
+            #
+            # res = response.output.text
+            # res_clean = extract_clean_data(res)
+            #
+            # if res_clean == '':
+            #     return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
+            #
+            # recipes_with_ids = []
+            # try:
+            #     for d in res_clean['recipes']:
+            #         recipe = Recipe.objects.create(
+            #             recipe_name=d['name'],
+            #             food=d['ingredients'],
+            #             flavor_tag=d['flavor_tag'],
+            #             recipe=d['steps'],
+            #             uid=user_id,
+            #             create_time=datetime.now()
+            #         )
+            #         d['id'] = recipe.id  # 直接在菜谱结构中添加 ID
+            #         recipes_with_ids.append(d)
+            # except Exception as e:
+            #     logger.error(f'failed to store info to Recipe, err_msg:{e}')
+            recipes_with_ids = 127
+            return Response.ok(data={'recipes': recipes_with_ids}, msg="Successfully retrieved recipes")
+        except Exception as e:
+            return Response.error(msg=f"Internal Server Error: {str(e)}")
+
+    @action(detail=False, methods=["get"], url_path="recipe_detail")
+    def recipe_detail_recieve(self,request):
+        from django.forms.models import model_to_dict
+        from .response import Response  # Assuming you have a custom response handler
+        user_id = request.user.id
+        print(user_id)
+        if user_id is None:
+            return Response.error(msg="cannot search with invalid user")
+
+        id = request.GET.get('recipe_id')
+
+        if not id:
+            return Response.error(msg="cannot search without id")
+
+        uid = int(user_id)
+        id = int(id)
+        try:
+            recipe = Recipe.objects.filter(uid=uid, id=id).first()
+            if not recipe:
+                return Response.error(msg="Recipe not found")
+
+            # Convert the Recipe object to a dictionary for JSON serialization
+            recipe_data = model_to_dict(recipe)
+
+        except Exception as e:
+            return Response.error(msg=f"Error retrieving recipe: {str(e)}")
+
+        # Return the recipe data as JSON
+        return Response.ok(data=recipe_data, msg=f"Success in recipe_id = {id}, user_id = {uid}")
+
+
 
 class UserRecipeLogViewSet(ModelViewSet):
     queryset = UserRecipeLog.objects.all()
@@ -211,7 +308,6 @@ class FridgeItemViewSet(ModelViewSet):
         if request.user.is_anonymous:
             return Response({"error": "Unauthorized - Invalid Token"}, status=401)
 
-        """获取食物列表，支持分页、排序、按用户 ID 过滤，并根据 keyword 进行模糊查询"""
         page = int(request.query_params.get('page', 1))
         page_size = int(request.query_params.get('page_size', 10))
         sort_by = request.query_params.get('sort_by', 'create_time_desc')
@@ -394,14 +490,6 @@ class UserProfileView(generics.GenericAPIView):
         return R.ok(serializer.data)
         
 
-
-    #         return Response({
-    #             "id": user.id,
-    #             "username": user.username,
-    #             "email": user.email,
-    #         })
-
-
 def get_food_list(request):
     from .response import Response
     from .log import logger
@@ -423,7 +511,7 @@ def get_food_list(request):
 
     except Exception as err:
         # Log the error for debugging
-        print(f"Error: {err}")
+        logger.error(f"Error: {err}")
         # Return a serializable error message
         return Response.error(msg=str(err))
 
@@ -450,69 +538,6 @@ def build_food_pic(request):
                    #API PORT #
 
 #################################################
-def get_recipe(request):
-    from .log import logger
-    from dashscope import Application
-    from http import HTTPStatus
-    from core.settings import APP_ID, API_KEY
-    from .response import Response
-    from datetime import datetime
-    from .models import Recipe
-    
-    try:
-        # Ensure only GET requests are processed
-        if request.method != "GET":
-            return Response.error(msg="Invalid request method, only GET allowed")
-
-        # Get the ingredient parameter from the request
-        foods = request.GET.get('ingredient')
-        user_id = int(request.GET.get('user_id'))
-        if foods == '':
-            return Response.error(msg="cannot generate with no food")
-        # print(user_id)
-        # Call the external API
-        response = Application.call(
-
-            api_key= API_KEY,
-            app_id= APP_ID,
-            prompt=f'My food is {foods},generate English recipe! remember to output in [dict] format!'
-        )
-
-        # Check response status
-        if response.status_code != HTTPStatus.OK:
-            msg_info = (
-                f"request_id={response.request_id}, code={response.status_code}, message={response.message}.\n"
-                f"See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code"
-            )
-            logger.error(msg_info)
-            return Response.error(msg=msg_info)
-
-        res = response.output.text
-        res_clean = extract_clean_data(res)
-
-        if res_clean == '':
-            return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
-        
-        recipes_with_ids = []
-        try:
-            for d in res_clean['recipes']:
-                recipe = Recipe.objects.create(
-                    recipe_name=d['name'],
-                    food=d['ingredients'],
-                    flavor_tag=d['flavor_tag'],
-                    recipe=d['steps'],
-                    uid=user_id,
-                    create_time=datetime.now()
-                )
-                d['id'] = recipe.id  # 直接在菜谱结构中添加 ID
-                recipes_with_ids.append(d)
-        except Exception as e:
-            logger.error(f'failed to store info to Recipe, err_msg:{e}')
-        
-        return Response.ok(data={'recipes': recipes_with_ids}, msg="Successfully retrieved recipes")
-    except Exception as e:
-        return Response.error(msg=f"Internal Server Error: {str(e)}")
-
 
 def extract_clean_data(long_string):
     from .log import logger
@@ -540,27 +565,4 @@ def extract_clean_data(long_string):
 
     return ''
 
-
-def recipe_detail_recieve(request):
-    from django.forms.models import model_to_dict
-    from .response import Response  # Assuming you have a custom response handler
-    uid = request.GET.get('user_id')  # Ensure you're using the correct query parameter name
-    id = request.GET.get('id')
-    if not uid or not id:
-        return Response.error(msg="Missing user_id or id")
-    uid = int(uid)
-    id = int(id)
-    try:
-        recipe = Recipe.objects.filter(uid=uid, id=id).first()
-        if not recipe:
-            return Response.error(msg="Recipe not found")
-
-        # Convert the Recipe object to a dictionary for JSON serialization
-        recipe_data = model_to_dict(recipe)
-
-    except Exception as e:
-        return Response.error(msg=f"Error retrieving recipe: {str(e)}")
-
-    # Return the recipe data as JSON
-    return Response.ok(data=recipe_data, msg=f"Success in recipe_id = {id}, user_id = {uid}")
 
