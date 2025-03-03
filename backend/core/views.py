@@ -171,6 +171,36 @@ class FridgeItemViewSet(ModelViewSet):
         }, status=status.HTTP_201_CREATED)
     
     @action(detail=False, methods=['get'])
+    def search_food_list(self, request):
+        from .response import Response
+        user = request.user
+        print(user.id)
+        uid = user.id
+        # uid=111
+        name = request.GET.get('name')
+
+        # Search for FridgeItem with or without name filter
+        if name:
+            fridge_items = FridgeItem.objects.filter(uid=uid, name__icontains=name)
+        else:
+            fridge_items = FridgeItem.objects.filter(uid=uid)
+
+        foods = []
+        for item in fridge_items:
+            pic = PicUrls.objects.filter(name=item.name).first()
+            tag_icon = FOOD_TAGS.get(item.tag, {}).get("icon", "")  # 获取对应 tag 的 icon
+            foods.append({
+                "name": item.name,
+                "pic": tag_icon,
+                "tag_icon": tag_icon
+            })
+        
+        flatags = ['sweet', 'spicy', 'salty', 'creamy', 'savory']
+
+        return Response.ok(data={"foods": foods, "tags": flatags}, msg="Received all the foods")
+
+
+    @action(detail=False, methods=['get'])
     def food_list(self, request):
         print(f"Authenticated user: {request.user}")  
         print(f"Authenticated user: {request.user.id}") 
@@ -395,31 +425,6 @@ def get_food_list(request):
         return Response.error(msg=str(err))
 
 
-def search_food_list(request):
-    from .response import Response
-    user = request.user
-    print(user.id)
-    uid = user.id
-    uid=111
-    name = request.GET.get('name')
-
-    # Search for FridgeItem with or without name filter
-    if name:
-        fridge_items = FridgeItem.objects.filter(uid=uid, name__icontains=name)
-    else:
-        fridge_items = FridgeItem.objects.filter(uid=uid)
-
-    foods = []
-    for item in fridge_items:
-        pic = PicUrls.objects.filter(name=item.name).first()
-        foods.append({"name": item.name, "pic": pic.url})
-    
-
-    tags = ['sweet', 'spicy', 'salty', 'creamy', 'savory']
-
-    return Response.ok(data={"foods": foods, "tags": tags }, msg="Received all the foods")
-
-
 
 
 def build_food_pic(request):
@@ -462,9 +467,10 @@ def get_recipe(request):
 
         # Call the external API
         response = Application.call(
-            api_key=API_KEY,
-            app_id=APP_ID,
-            prompt=f'My food is {foods}, output in [dict] format!'
+
+            api_key= API_KEY,
+            app_id= APP_ID,
+            prompt=f'My food is {foods},generate English recipe! remember to output in [dict] format!'
         )
 
         # Check response status
@@ -515,6 +521,8 @@ def extract_clean_data(long_string):
         #
         if first_brace_index != -1 and last_brace_index != -1:
             ans = long_string[first_brace_index:last_brace_index+1]
+            ans = ans.replace('\n', '')
+            ans.strip()
             ans = eval(ans)
 
             return ans
@@ -528,31 +536,26 @@ def extract_clean_data(long_string):
     return ''
 
 
-async def recipe_detail_recieve(request):
-    from .response import Response
+def recipe_detail_recieve(request):
+    from django.forms.models import model_to_dict
+    from .response import Response  # Assuming you have a custom response handler
+    uid = request.GET.get('user_id')  # Ensure you're using the correct query parameter name
+    id = request.GET.get('id')
+    if not uid or not id:
+        return Response.error(msg="Missing user_id or id")
+    uid = int(uid)
+    id = int(id)
+    try:
+        recipe = Recipe.objects.filter(uid=uid, id=id).first()
+        if not recipe:
+            return Response.error(msg="Recipe not found")
 
-    temp_res = {"recipes": [
-        {
-            "name": "Apple and Banana Smoothie",
-            "ingredients": [
-                "2 medium-sized apples, peeled and chopped",
-                "1 large banana, peeled",
-                "1 cup of milk (dairy or non-dairy)",
-                "1 tablespoon honey (optional)"
-            ],
-            "steps": [
-                "Place the chopped apples and banana into a blender.",
-                "Add the milk and honey if using.",
-                "Blend all ingredients until smooth and creamy.",
-                "Pour the smoothie into glasses and serve immediately."
-            ]
-        }
-    ]
-    }
+        # Convert the Recipe object to a dictionary for JSON serialization
+        recipe_data = model_to_dict(recipe)
 
-    # Get the ingredient parameter from the request
-    recipe_id = request.GET.get('recipe_id')
-    user_id = request.GET.get('user_id')
+    except Exception as e:
+        return Response.error(msg=f"Error retrieving recipe: {str(e)}")
 
-    return Response.ok(data=temp_res, msg=f"recipe_id = {recipe_id}, user_id = {user_id}")
+    # Return the recipe data as JSON
+    return Response.ok(data=recipe_data, msg=f"Success in recipe_id = {id}, user_id = {uid}")
 

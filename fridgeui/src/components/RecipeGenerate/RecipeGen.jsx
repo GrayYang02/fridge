@@ -26,7 +26,7 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
     async function fetchRecipe() {
       try {
         const userId = 111;
-        const response = await api.get(`core/search_food_list/?uid=${userId}`);
+        const response = await api.get(`core/fridge/search_food_list/?uid=${userId}`);
         const data = response.data.data;
         // Check if the response contains foods and tags
         if (data && data.foods && data.tags) {
@@ -52,8 +52,8 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
       const userId = 111;
       const trimmedQuery = searchQuery.trim();
       const url = trimmedQuery === ""
-        ? `core/search_food_list/?uid=${userId}`
-        : `core/search_food_list/?uid=${userId}&name=${trimmedQuery}`;
+        ? `core/fridge/search_food_list/?uid=${userId}`
+        : `core/fridge/search_food_list/?uid=${userId}&name=${trimmedQuery}`;
       const response = await api.get(url);
       const data = response.data.data;
       if (data && data.foods) {
