@@ -3,6 +3,7 @@ import api from '../../api';
 import potpic from "./assets/potpic.png";  
 import React from 'react';
 import Navbar from "../../components/Navbar";
+import RecipeDetail from "../RecipeDetail/RecipeDetail";
 
 const FridgeRecipePage = ({ userId, recipeId }) => {
   const [foods, setFoods] = useState([]);
@@ -18,6 +19,7 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
   const [isFalling, setIsFalling] = useState(false);
   const [isRecipeLoading, setIsRecipeLoading] = useState(false);
   const [showRecipeButtons, setShowRecipeButtons] = useState(false);
+  const [selectedRecipeId, setSelectedRecipeId] = useState(null);
 
   // We'll store the top 2 returned recipes in this state.
   const [topRecipes, setTopRecipes] = useState([]);
@@ -337,11 +339,14 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
                     textAlign: 'center',
                     padding: '6px'
                   }}
+                  onClick={()=> setSelectedRecipeId(topRecipes[0].id)}
+
                 >
                   {/* Show recipe name (or ID) */}
                   {topRecipes[0].name}
                 </button>
               )}
+
               {topRecipes[1] && (
                 <button
                   className="pop-out-animation"
@@ -363,6 +368,8 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
                     textAlign: 'center',
                     padding: '6px'
                   }}
+                  onClick={()=> setSelectedRecipeId(topRecipes[1].id)}
+
                 >
                   {topRecipes[1].name}
                 </button>
@@ -413,7 +420,16 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
           </div>
         </section>
       </main>
+      {selectedRecipeId && (
+                        <RecipeDetail
+                          userId= {121}
+                          recipeId={selectedRecipeId}
+                          onClose={() => setSelectedRecipeId(null)}
+                        />
+                      )}
     </div>
+    
+                   
   );
 };
 
