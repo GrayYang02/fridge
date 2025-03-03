@@ -411,9 +411,6 @@ def search_food_list(request):
     return Response.ok( data={"foods": foods}, msg="Received all the foods")
 
 
-
-
-
 def build_food_pic(request):
     from .response import Response
 
@@ -513,31 +510,26 @@ def extract_clean_data(long_string):
     return ''
 
 
-async def recipe_detail_recieve(request):
-    from .response import Response
+def recipe_detail_recieve(request):
+    from django.forms.models import model_to_dict
+    from .response import Response  # Assuming you have a custom response handler
+    uid = request.GET.get('user_id')  # Ensure you're using the correct query parameter name
+    id = request.GET.get('id')
+    if not uid or not id:
+        return Response.error(msg="Missing user_id or id")
+    uid = int(uid)
+    id = int(id)
+    try:
+        recipe = Recipe.objects.filter(uid=uid, id=id).first()
+        if not recipe:
+            return Response.error(msg="Recipe not found")
 
-    temp_res = {"recipes": [
-        {
-            "name": "Apple and Banana Smoothie",
-            "ingredients": [
-                "2 medium-sized apples, peeled and chopped",
-                "1 large banana, peeled",
-                "1 cup of milk (dairy or non-dairy)",
-                "1 tablespoon honey (optional)"
-            ],
-            "steps": [
-                "Place the chopped apples and banana into a blender.",
-                "Add the milk and honey if using.",
-                "Blend all ingredients until smooth and creamy.",
-                "Pour the smoothie into glasses and serve immediately."
-            ]
-        }
-    ]
-    }
+        # Convert the Recipe object to a dictionary for JSON serialization
+        recipe_data = model_to_dict(recipe)
 
-    # Get the ingredient parameter from the request
-    recipe_id = request.GET.get('recipe_id')
-    user_id = request.GET.get('user_id')
+    except Exception as e:
+        return Response.error(msg=f"Error retrieving recipe: {str(e)}")
 
-    return Response.ok(data=temp_res, msg=f"recipe_id = {recipe_id}, user_id = {user_id}")
+    # Return the recipe data as JSON
+    return Response.ok(data=recipe_data, msg=f"Success in recipe_id = {id}, user_id = {uid}")
 

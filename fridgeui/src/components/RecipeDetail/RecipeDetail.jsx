@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import api from '../../api';
  
 export default function RecipeDetail({ userId, recipeId }) {
+  userId = 121;
+  recipeId = 10;
   const [recipe, setRecipe] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
