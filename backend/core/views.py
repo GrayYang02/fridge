@@ -171,6 +171,36 @@ class FridgeItemViewSet(ModelViewSet):
         }, status=status.HTTP_201_CREATED)
     
     @action(detail=False, methods=['get'])
+    def search_food_list(self, request):
+        from .response import Response
+        user = request.user
+        print(user.id)
+        uid = user.id
+        # uid=111
+        name = request.GET.get('name')
+
+        # Search for FridgeItem with or without name filter
+        if name:
+            fridge_items = FridgeItem.objects.filter(uid=uid, name__icontains=name)
+        else:
+            fridge_items = FridgeItem.objects.filter(uid=uid)
+
+        foods = []
+        for item in fridge_items:
+            pic = PicUrls.objects.filter(name=item.name).first()
+            tag_icon = FOOD_TAGS.get(item.tag, {}).get("icon", "")  # 获取对应 tag 的 icon
+            foods.append({
+                "name": item.name,
+                "pic": tag_icon,
+                "tag_icon": tag_icon
+            })
+        
+        flatags = ['sweet', 'spicy', 'salty', 'creamy', 'savory']
+
+        return Response.ok(data={"foods": foods, "tags": flatags}, msg="Received all the foods")
+
+
+    @action(detail=False, methods=['get'])
     def food_list(self, request):
         print(f"Authenticated user: {request.user}")  
         print(f"Authenticated user: {request.user.id}") 
@@ -395,20 +425,6 @@ def get_food_list(request):
         return Response.error(msg=str(err))
 
 
-def search_food_list(request):
-    from .response import Response
-
-    uid = request.GET.get('uid')
-    name = request.GET.get('name')
-
-    # Search for FridgeItem with the given name
-    fridge_items = FridgeItem.objects.filter(uid=uid, name__icontains=name)
-
-    foods = []
-    for item in fridge_items:
-        pic = PicUrls.objects.filter(name=item.name).first()
-        foods.append({"name": item.name, "pic": pic.url})
-    return Response.ok( data={"foods": foods}, msg="Received all the foods")
 
 
 def build_food_pic(request):
@@ -437,7 +453,9 @@ def get_recipe(request):
     from http import HTTPStatus
     from core.settings import APP_ID, API_KEY
     from .response import Response
-
+    from datetime import datetime
+    from .models import Recipe
+    
     try:
         # Ensure only GET requests are processed
         if request.method != "GET":
@@ -449,6 +467,7 @@ def get_recipe(request):
 
         # Call the external API
         response = Application.call(
+
             api_key= API_KEY,
             app_id= APP_ID,
             prompt=f'My food is {foods},generate English recipe! remember to output in [dict] format!'
@@ -463,15 +482,16 @@ def get_recipe(request):
             logger.error(msg_info)
             return Response.error(msg=msg_info)
 
-
         res = response.output.text
         res_clean = extract_clean_data(res)
 
         if res_clean == '':
             return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
+        
+        recipes_with_ids = []
         try:
             for d in res_clean['recipes']:
-                Recipe.objects.create(
+                recipe = Recipe.objects.create(
                     recipe_name=d['name'],
                     food=d['ingredients'],
                     flavor_tag=d['flavor_tag'],
@@ -479,11 +499,15 @@ def get_recipe(request):
                     uid=user_id,
                     create_time=datetime.now()
                 )
+                d['id'] = recipe.id  # 直接在菜谱结构中添加 ID
+                recipes_with_ids.append(d)
         except Exception as e:
             logger.error(f'failed to store info to Recipe, err_msg:{e}')
-        return Response.ok(data=res_clean, msg="Successfully retrieved recipes")
+        
+        return Response.ok(data={'recipes': recipes_with_ids}, msg="Successfully retrieved recipes")
     except Exception as e:
         return Response.error(msg=f"Internal Server Error: {str(e)}")
+
 
 def extract_clean_data(long_string):
     from .log import logger
