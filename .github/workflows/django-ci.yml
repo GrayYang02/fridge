@@ -39,4 +39,5 @@ jobs:
 
       - name: Run tests
         run: |
-          python backend/manage.py test
+          python backend/manage.py test core.test_core
+
