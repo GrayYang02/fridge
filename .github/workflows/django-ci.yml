@@ -32,12 +32,20 @@ jobs:
       - name: Install mysqlclient module (if not already in requirements.txt)
         run: pip install mysqlclient
 
+      - name: Install coverage
+        run: pip install coverage
+
       - name: Run migrations
         run: |
           python backend/manage.py makemigrations --noinput
           python backend/manage.py migrate --noinput
 
-      - name: Run tests
+      # - name: Run tests
+      #   run: |
+      #     python backend/manage.py test core.test_core
+
+      - name: Run tests with coverage
         run: |
-          python backend/manage.py test core.test_core
+          coverage run --source=core backend/manage.py test core.test_core
+          coverage report -m
 
