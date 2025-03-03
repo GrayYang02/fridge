@@ -379,10 +379,9 @@ def get_food_list(request):
         if queryset is None:
             return Response.error(msg= 'Failed to fatch' )
         foods = []
-        tags = []
+        tags = ['sweet','spice','salty','creamy','savory']
         for item in queryset:
             foods.append(item.name)
-            tags.append(item.tag)
         return Response.ok(data ={"foods":foods, 'tags' : tags} , msg=f"recieve all the foods")
     except Exception as err:
         return Response.error(msg=err)
