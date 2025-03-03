@@ -2,6 +2,8 @@ from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
 import os
+import sys
+from pathlib import Path
 
 load_dotenv()
 
@@ -26,8 +28,8 @@ SIMPlE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     # 'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-}
 
+}
 
 INSTALLED_APPS = [
     'corsheaders',
@@ -78,27 +80,29 @@ WSGI_APPLICATION = 'fridgeserver.wsgi.application'
 
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'django_db',
-        'USER': 'django_user',
-        'PASSWORD': 'wb4697',
-        'HOST': 'database-1.czm20ai6yn1e.us-east-2.rds.amazonaws.com',
-        'PORT': '3306',
-        'OPTIONS': {
-            'auth_plugin': 'caching_sha2_password',
-        },
 
+if 'test' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'django_db',
+            'USER': 'django_user',
+            'PASSWORD': 'wb4697',
+            'HOST': 'database-1.czm20ai6yn1e.us-east-2.rds.amazonaws.com',
+            'PORT': '3306',
+            'OPTIONS': {
+                'auth_plugin': 'caching_sha2_password',
+            },
+        }
+    }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'

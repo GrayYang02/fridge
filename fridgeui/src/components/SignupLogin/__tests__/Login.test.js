@@ -1,8 +1,8 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Login from '../Login'; // Adjust path as needed
 import api from '../../../api';
-import { ACCESS_TOKEN } from '../../../constants';
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '../../../constants';
 
 // 1. Mock api.post
 jest.mock('../../../api', () => ({
@@ -39,7 +39,7 @@ describe('Login component', () => {
 
     render(<Login />);
 
-    // **Wait for input fields to render**
+    // Wait for input fields to render
     await waitFor(() => expect(screen.getByLabelText(/email/i)).toBeInTheDocument());
 
     // Fill out the form
@@ -66,7 +66,7 @@ describe('Login component', () => {
         'mock_access_token'
       );
       expect(localStorage.setItem).toHaveBeenCalledWith(
-        ACCESS_TOKEN,
+        REFRESH_TOKEN,
         'mock_refresh_token'
       );
 
@@ -81,7 +81,7 @@ describe('Login component', () => {
 
     render(<Login />);
 
-    // **Wait for input fields to render**
+    // Wait for input fields to render
     await waitFor(() => expect(screen.getByLabelText(/email/i)).toBeInTheDocument());
 
     fireEvent.change(screen.getByLabelText(/email/i), {

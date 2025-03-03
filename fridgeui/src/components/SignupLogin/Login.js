@@ -3,7 +3,7 @@ import api from '../../api';
 import './signuplogin.css';
 import { useNavigate } from 'react-router-dom';
 import { ACCESS_TOKEN, REFRESH_TOKEN } from '../../constants';
-
+import {jwtDecode} from 'jwt-decode'
 
 function Login() {
   const navigate = useNavigate();
@@ -25,6 +25,17 @@ function Login() {
       const response = await api.post('/core/token/', formData);
       localStorage.setItem(ACCESS_TOKEN, response.data.access);
       localStorage.setItem(REFRESH_TOKEN, response.data.refresh);
+
+      // Decode the JWT to get user ID
+    const decodedToken = jwtDecode( response.data.access);
+    const userId = decodedToken?.user_id;
+
+    // Store user ID in localStorage
+    if (userId) {
+      localStorage.setItem("user_id", userId);
+    }
+    
+
       navigate('/profile');
 
     } catch (err) {

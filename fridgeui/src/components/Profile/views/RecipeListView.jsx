@@ -3,8 +3,10 @@ import recipepic from "../assets/recipepic.png";
 import api from "../../../api";
 import { UserContext } from "./UserProvider";
 import Pagination from "../../Pagination/Pagination";
+import RecipeDetail from "../../RecipeDetail/RecipeDetail";
 
 const RecipeListView = ({ title, operationName }) => {
+const pagesize = 4;
   const { userinfo } = useContext(UserContext);
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,11 +14,14 @@ const RecipeListView = ({ title, operationName }) => {
   const [collectedRecipes, setCollectedRecipes] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedRecipeId, setSelectedRecipeId] = useState(null);
   const opmap = {
     cooked: 1,
     collected: 2,
     viewed: 3,
   };
+
+ 
 
   useEffect(() => {
     const fetchRecipes = async () => {
@@ -28,14 +33,17 @@ const RecipeListView = ({ title, operationName }) => {
             userid: userinfo.id,
             op: opmap[operationName],
             page: currentPage,
-            page_size: 1,
+            page_size: pagesize,
           },
         });
 
         if (response.status !== 200) throw new Error("Failed to fetch recipes");
-
+       
+        // console.log(response.data.count)
+        setTotalPages(Math.ceil(response.data.count / pagesize));
+        
         setRecipes(response.data.results);
-        setTotalPages(response.data.count);
+        
       } catch (err) {
         console.error("Error fetching recipes:", err);
         setError("Failed to load recipes");
@@ -119,6 +127,7 @@ const RecipeListView = ({ title, operationName }) => {
             <div
               key={recipe.id}
               className="flex items-center bg-gray-50 rounded-lg p-4 shadow-sm"
+              onClick={()=> setSelectedRecipeId(recipe.recipe_id)}
             >
               {/* Recipe pic */}
               <img
@@ -139,7 +148,7 @@ const RecipeListView = ({ title, operationName }) => {
                         ? "text-yellow-500"
                         : "text-gray-400"
                     }`}
-                    onClick={() => toggleCollected(recipe.recipe_details.id)}
+                    onClick={(e) =>{e.stopPropagation(); toggleCollected(recipe.recipe_details.id)}}
                   >
                     ★
                   </button>
@@ -148,7 +157,7 @@ const RecipeListView = ({ title, operationName }) => {
                   <p className="text-lg text-gray-500">Required Food:</p>
                 </div>
                 <div className="flex gap-2 mt-1">
-                  {recipe.recipe_details.food?.split(",").map((food, index) => (
+                  {JSON.parse(recipe.recipe_details.food.replace(/'/g, '"')).map((food, index) => (
                     <span
                       key={index}
                       className="bg-black text-white px-2 py-1 text-xs rounded"
@@ -167,6 +176,15 @@ const RecipeListView = ({ title, operationName }) => {
         totalPages={totalPages}
         onPageChange={setCurrentPage}
       ></Pagination>
+
+      {/* Recipe Detail Modal */}
+      {selectedRecipeId && (
+        <RecipeDetail
+          userId={userinfo.id}
+          recipeId={selectedRecipeId}
+          onClose={() => setSelectedRecipeId(null)}
+        />
+      )}
     </>
   );
 };

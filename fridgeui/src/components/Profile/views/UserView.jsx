@@ -178,7 +178,7 @@ const UserView = () => {
             <button
               type="button"
               onClick={() => handleSave()}
-              className="bg-red-500 text-white px-4 py-2 rounded"
+              className="bg-green-500 text-white px-4 py-2 rounded"
             >
               Save
             </button>
