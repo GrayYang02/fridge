@@ -22,13 +22,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r backend/requirements.txt  
 
       - name: Run migrations
         run: |
-          python manage.py makemigrations --noinput
-          python manage.py migrate --noinput
+          python backend/manage.py makemigrations --noinput
+          python backend/manage.py migrate --noinput
 
       - name: Run tests
         run: |
-          python manage.py test
+          python backend/manage.py test
