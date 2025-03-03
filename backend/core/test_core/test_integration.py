@@ -13,7 +13,8 @@ class IntegrationTests(APITestCase):
         self.login_url = reverse('login')
         self.token_url = reverse('get_token')
         self.profile_url = reverse('profileinfo')
-        self.get_recipe_url = reverse('get_recipe')
+        # self.get_recipe_url = reverse('get_recipe')
+
         # For viewsets registered via DefaultRouter:
         # For example, FridgeItemViewSet is registered as 'fridge', so its list URL is reverse('fridge-list')
         self.fridge_list_url = reverse('fridge-list')
