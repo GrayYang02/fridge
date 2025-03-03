@@ -16,6 +16,7 @@ import { RxAvatar } from "react-icons/rx";
 const Profile = () => {
   const [tab, setTab] = useState("profile");
   const { userinfo, setUserinfo, loading, error } = useContext(UserContext);
+  // const [editProfile, setEditProfile] = useState("")
 
   // useEffect(() => {
   //   const fetchUser = async () => {
