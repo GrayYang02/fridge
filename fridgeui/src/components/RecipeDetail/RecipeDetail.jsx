@@ -1,18 +1,25 @@
 import React, { useEffect, useState } from "react";
 import api from '../../api';
- 
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '../../constants';
+
 export default function RecipeDetail({ userId, recipeId }) {
   const [recipe, setRecipe] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
- 
+
   useEffect(() => {
     async function fetchRecipe() {
       try {
-        const response = await api.get(`core/recipe_detail/?user_id=${userId}&recipe_id=${recipeId}`);
-        const data = response.data.data.recipes; // Check if this is an array
+        // const response = await api.get(`core/recipe_detail/?user_id=${userId}&recipe_id=${recipeId}`);
+        const response = await api.get(
+          `core/recipe_detail/?user_id=${userId}&recipe_id=${recipeId}`, 
+          {
+            headers: { Authorization: `Bearer ${localStorage.getItem(ACCESS_TOKEN)}` },
+          }
+        );
+        const data = response.data.data.recipes;
         if (data && data.length > 0) {
-          setRecipe(data[0]); // Get the first recipe
+          setRecipe(data[0]);
         } else {
           setError("No recipe found.");
         }
@@ -41,7 +48,7 @@ export default function RecipeDetail({ userId, recipeId }) {
           {/* Ingredients Section */}
           <div className="border border-gray-300 rounded-lg p-4 bg-blue-50">
             <h2 className="text-xl font-semibold text-blue-900 mb-4">Ingredients</h2>
-            <ul className="list-disc list-inside text-gray-600 mb-4">
+            <ul className="list-disc list-inside text-gray-600">
               {recipe.ingredients?.map((ingredient, index) => (
                 <li key={index}>{ingredient}</li>
               )) || <p>No ingredients listed.</p>}
@@ -55,6 +62,9 @@ export default function RecipeDetail({ userId, recipeId }) {
               <div className="flex space-x-4">
                 <button className="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600">
                   Save
+                </button>
+                <button className="bg-yellow-500 text-white px-4 py-2 rounded-lg shadow hover:bg-yellow-600">
+                  Cook
                 </button>
                 <button className="bg-gray-700 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-800">
                   Print
