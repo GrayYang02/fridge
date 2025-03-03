@@ -451,7 +451,7 @@ def get_recipe(request):
         response = Application.call(
             api_key= API_KEY,
             app_id= APP_ID,
-            prompt=f'My food is {foods}, output in [dict] format!'
+            prompt=f'My food is {foods},generate English recipe! remember to output in [dict] format!'
         )
 
         # Check response status
