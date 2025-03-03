@@ -395,6 +395,24 @@ def get_food_list(request):
         return Response.error(msg=str(err))
 
 
+def search_food_list(request):
+    from .response import Response
+
+    uid = request.GET.get('uid')
+    name = request.GET.get('name')
+
+    # Search for FridgeItem with the given name
+    fridge_items = FridgeItem.objects.filter(uid=uid, name__icontains=name)
+
+    foods = []
+    for item in fridge_items:
+        pic = PicUrls.objects.filter(name=item.name).first()
+        foods.append({"name": item.name, "pic": pic.url})
+    return Response.ok( data={"foods": foods}, msg="Received all the foods")
+
+
+
+
 
 def build_food_pic(request):
     from .response import Response
