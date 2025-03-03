@@ -46,6 +46,9 @@ class RecipeViewSet(ModelViewSet):
     serializer_class = RecipeSerializer
 
 
+    # @action(detail=False, methods=["get"], url_path="is_collected")
+
+     #todo: dix user token in recipe
 
 class UserRecipeLogViewSet(ModelViewSet):
     queryset = UserRecipeLog.objects.all()
@@ -117,9 +120,9 @@ class UserRecipeLogViewSet(ModelViewSet):
         queryset = queryset.filter(userid=userid)  
         
         op = self.request.query_params.get('op')
-        
 
-        
+
+
         if op is not None:
             queryset = queryset.filter(op=int(op))
 
@@ -174,7 +177,7 @@ class FridgeItemViewSet(ModelViewSet):
     def search_food_list(self, request):
         from .response import Response
         user = request.user
-        print(user.id)
+        # print(user.id)
         uid = user.id
         # uid=111
         name = request.GET.get('name')
@@ -464,7 +467,9 @@ def get_recipe(request):
         # Get the ingredient parameter from the request
         foods = request.GET.get('ingredient')
         user_id = int(request.GET.get('user_id'))
-
+        if foods == '':
+            return Response.error(msg="cannot generate with no food")
+        # print(user_id)
         # Call the external API
         response = Application.call(
 
