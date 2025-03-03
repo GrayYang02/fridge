@@ -6,6 +6,7 @@ import Pagination from "../../Pagination/Pagination";
 import RecipeDetail from "../../RecipeDetail/RecipeDetail";
 
 const RecipeListView = ({ title, operationName }) => {
+const pagesize = 4;
   const { userinfo } = useContext(UserContext);
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,6 +21,8 @@ const RecipeListView = ({ title, operationName }) => {
     viewed: 3,
   };
 
+ 
+
   useEffect(() => {
     const fetchRecipes = async () => {
       if (!userinfo?.id) return; // Ensure userinfo is loaded
@@ -30,14 +33,17 @@ const RecipeListView = ({ title, operationName }) => {
             userid: userinfo.id,
             op: opmap[operationName],
             page: currentPage,
-            page_size: 1,
+            page_size: pagesize,
           },
         });
 
         if (response.status !== 200) throw new Error("Failed to fetch recipes");
-
+       
+        // console.log(response.data.count)
+        setTotalPages(Math.ceil(response.data.count / pagesize));
+        
         setRecipes(response.data.results);
-        setTotalPages(response.data.count);
+        
       } catch (err) {
         console.error("Error fetching recipes:", err);
         setError("Failed to load recipes");

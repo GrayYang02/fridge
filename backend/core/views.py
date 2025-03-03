@@ -57,10 +57,7 @@ class UserRecipeLogViewSet(ModelViewSet):
 
     @action(detail=False, methods=["post"], url_path="toggle-log")
     def toggle_user_recipe_log(self, request):
-        """
-        If the (userid, recipe_id, op) combination exists, toggle is_del (soft delete).
-        If it does not exist, create a new record.
-        """
+    
         user_id = request.data.get("userid")
         recipe_id = request.data.get("recipe_id")
         op = request.data.get("op")
@@ -77,10 +74,13 @@ class UserRecipeLogViewSet(ModelViewSet):
             ).first()
             
             if user_recipe_log:
-                # Toggle is_del (soft delete/restore)
-                user_recipe_log.is_del = 0 if user_recipe_log.is_del else 1
-                user_recipe_log.save()
-                action = "Restored" if user_recipe_log.is_del == 0 else "Deleted"
+                if op == 1 or op == 2:
+                    # Toggle is_del (soft delete/restore)
+                    user_recipe_log.is_del = 0 if user_recipe_log.is_del else 1
+                    user_recipe_log.save()
+                    action = "Restored" if user_recipe_log.is_del == 0 else "Deleted"
+                else:
+                    pass
             else:
                 # Create a new record if it does not exist
                 user_recipe_log = UserRecipeLog.objects.create(

@@ -2,6 +2,7 @@
 import React from "react";
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+
   if (totalPages <= 1) return null; // Hide pagination if only one page exists
 
   const getPageNumbers = () => {

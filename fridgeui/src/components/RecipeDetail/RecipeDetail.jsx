@@ -27,6 +27,7 @@ useEffect(() => {
         setRecipe(JSON.parse(response.data.data.recipe.replace(/'/g, '"')));
         setIngredient(JSON.parse(response.data.data.food.replace(/'/g, '"')))
         setRecipeName(response.data.data.recipe_name)
+       
       
       
     } catch (err) {
