@@ -29,6 +29,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
 
+      - name: Install mysqlclient module (if not already in requirements.txt)
+        run: pip install mysqlclient
+
       - name: Run migrations
         run: |
           python backend/manage.py makemigrations --noinput
