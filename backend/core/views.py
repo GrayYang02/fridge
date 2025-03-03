@@ -244,6 +244,29 @@ class UserProfileView(generics.GenericAPIView):
     #             "email": user.email,
     #         })
 
+
+def get_food_list(request):
+    from .response import Response
+    from .log import logger
+    try:
+        uid = request.GET.get('uid')
+        if uid  == '':
+            return Response.error(msg= f'[user_id] not Valid {uid}' )
+        uid = int(uid)
+        queryset = FridgeItem.objects.filter(uid=uid)
+        queryset = queryset.order_by('create_time')
+        if queryset is None:
+            return Response.error(msg= 'Failed to fatch' )
+        foods = []
+        tags = []
+        for item in queryset:
+            foods.append(item.name)
+            tags.append(item.tag)
+        return Response.ok(data ={"foods":foods, 'tags' : tags} , msg=f"recieve all the foods")
+    except Exception as err:
+        return Response.error(msg=err)
+
+
 #################################################
 
                    #API PORT #
@@ -263,13 +286,13 @@ def get_recipe(request):
 
         # Get the ingredient parameter from the request
         foods = request.GET.get('ingredient')
-        user_id = request.GET.get('user_id')
+        user_id = int(request.GET.get('user_id'))
 
         # Call the external API
         response = Application.call(
             api_key= API_KEY,
             app_id= APP_ID,
-            prompt=f'My food is {foods}'
+            prompt=f'My food is {foods}, output in [dict] format!'
         )
 
         # Check response status
@@ -281,12 +304,9 @@ def get_recipe(request):
             logger.error(msg_info)
             return Response.error(msg=msg_info)
 
-        # Process the response
 
         res = response.output.text
         res_clean = extract_clean_data(res)
-
-
 
         if res_clean == '':
             return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
@@ -295,7 +315,9 @@ def get_recipe(request):
                 Recipe.objects.create(
                     recipe_name=d['name'],
                     food=d['ingredients'],
+                    flavor_tag=d['flavor_tag'],
                     recipe=d['steps'],
+                    uid=user_id,
                     create_time=datetime.now()
                 )
         except Exception as e:
