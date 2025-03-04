@@ -264,22 +264,25 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
   const isExpiringSoon = expireDate <= oneDayLater; // 过期或 1 天内过期
 
   return (
-    <div
-      key={index}
-      className="border rounded-lg flex flex-col items-start p-2 h-16 cursor-move"
-      draggable
-      onDragStart={(e) => handleDragStart(e, food.name, "food")}
-    >
-      <span className="font-semibold">{food.name}</span>
-      <span className={isExpiringSoon ? "text-red-500 text-sm" : "text-gray-500 text-sm"}>
-        Exp: {food.expire_time}
-      </span>
-      <img
-        src={food.pic || "foodPicPlaceholder"}
-        alt={food.name}
-        className="ml-auto h-10"
-      />
-    </div>
+<div
+  key={index}
+  className="border rounded-lg flex items-center p-2 h-16 cursor-move"
+  draggable
+  onDragStart={(e) => handleDragStart(e, food.name, 'food')}
+>
+  <div className="flex flex-col">
+    <span className="font-semibold">{food.name}</span>
+    <span className={isExpiringSoon ? "text-red-500 text-sm" : "text-gray-500 text-sm"}>
+      Exp: {food.expire_time}
+    </span>
+  </div>
+  <img
+    src={food.pic || "foodPicPlaceholder"}
+    alt={food.name}
+    className="ml-auto h-10"
+  />
+</div>
+
   );
 })}
 
