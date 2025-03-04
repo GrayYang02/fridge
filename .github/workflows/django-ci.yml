@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: 3.11
 
-      # 3. Install system dependencies (for mysqlclient, build tools, etc.)
+      # 3. Install system dependencies (for mysqlclient and build tools)
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -33,15 +33,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
 
-      # 5. (可选) Install mysqlclient if不在requirements.txt里
+      # 5. Install mysqlclient module (if not already in requirements.txt)
       - name: Install mysqlclient module
         run: pip install mysqlclient
 
-      # 6. Install coverage for test coverage
+      # 6. Install coverage (for test coverage reporting)
       - name: Install coverage
         run: pip install coverage
 
-      # 7. Run migrations
+      # 7. Run database migrations
       - name: Run migrations
         run: |
           python backend/manage.py makemigrations --noinput
@@ -50,9 +50,9 @@ jobs:
       # 8. Run backend tests with coverage
       - name: Run backend tests with coverage
         run: |
-          # --source=core 用来统计 core 目录下的覆盖率
-          # --pattern='test_*.py' 指定测试文件命名模式
-          coverage run --source=core backend/manage.py test core --pattern='test_*.py'
+          # --source=. 用于统计整个项目的覆盖率
+          # 指定只运行 core app 下文件名为 test_*.py 的测试
+          coverage run --source=. python backend/manage.py test core --pattern="test_*.py"
           coverage report -m
 
       # # 9. Install frontend dependencies and run frontend tests
