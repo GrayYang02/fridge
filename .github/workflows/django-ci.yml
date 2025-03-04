@@ -47,12 +47,11 @@ jobs:
           python backend/manage.py makemigrations --noinput
           python backend/manage.py migrate --noinput
 
-      # 8. Run backend tests with coverage
+      # 8. Run backend tests with coverage (切换到 backend 目录)
       - name: Run backend tests with coverage
+        working-directory: backend
         run: |
-          # --source=. 用于统计整个项目的覆盖率
-          # 指定只运行 core app 下文件名为 test_*.py 的测试
-          coverage run --source=. python backend/manage.py test core --pattern="test_*.py"
+          coverage run --source=. manage.py test core --pattern="test_*.py"
           coverage report -m
 
       # # 9. Install frontend dependencies and run frontend tests
