@@ -144,6 +144,7 @@ const UserView = () => {
             </span>
             .
           </p>
+          <p>🔗{" "}<a className="underline italic" target="_blank" rel="noopener noreferrer" href="https://www.canada.ca/en/health-canada/services/food-nutrition/healthy-eating/healthy-weights/canadian-guidelines-body-weight-classification-adults/questions-answers-public.html#a2">reference</a></p>
         </div>
 
         {/* Profile Picture Upload */}

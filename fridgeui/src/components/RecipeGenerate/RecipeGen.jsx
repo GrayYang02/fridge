@@ -164,7 +164,7 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
       // 2) Call the "get_recipe" API
       //    Adjust user_id to whichever you need; example below uses 121.
       try {
-        const userIdParam = 121; // or another userId as needed
+        const userIdParam = 2; // or another userId as needed
         const queryString = encodeURIComponent(ingredientNames.join(", "));
         // Example: GET /core/get_recipe/?ingredient=chicken%2C%20salt&user_id=121
         const response = await api.get(

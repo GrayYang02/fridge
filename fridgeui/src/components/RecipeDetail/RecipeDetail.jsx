@@ -128,7 +128,8 @@ if (!recipeId) return null; // Don't render modal if no recipe is selected
 
 return (
   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-    <div className="bg-white rounded-lg p-6 w-11/12 md:w-2/3 lg:w-1/2 shadow-lg relative">
+    <div className="relative bg-white rounded-lg shadow-lg max-w-3xl w-full max-h-[90vh] overflow-hidden">
+      <div className="overflow-y-auto max-h-[85vh] p-6">
       {/* Close Button */}
       <button
         className="absolute top-2 right-4 text-2xl text-gray-600 hover:text-gray-800"
@@ -194,6 +195,7 @@ return (
       ) : (
         <p>No recipe available.</p>
       )}
+    </div>
     </div>
   </div>
 );
