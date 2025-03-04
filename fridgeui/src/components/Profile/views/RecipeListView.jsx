@@ -15,12 +15,30 @@ const pagesize = 4;
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedRecipeId, setSelectedRecipeId] = useState(null);
+  const [closed, setClosed] = useState(0)
   const opmap = {
     cooked: 1,
     collected: 2,
     viewed: 3,
   };
+  const handleCreateViewRecord = async () => {
+    try {
+      await api.post(`/core/user-recipe-log/toggle-log/`, {
+        userid: userinfo.id,
+        recipe_id: selectedRecipeId,
+        op: 3,
+      });
+    } catch (error) {
+      console.error("Failed to create view record:", error);
+    }
+  
+  }
 
+  useEffect(() => {
+    if (selectedRecipeId) {
+      handleCreateViewRecord();
+    }
+  }, [selectedRecipeId]);
  
 
   useEffect(() => {
@@ -83,7 +101,7 @@ const pagesize = 4;
     };
 
     fetchCollectedRecipes();
-  }, [userinfo]);
+  }, [userinfo, closed]);
 
   const toggleCollected = async (recipeId) => {
     try {
@@ -182,7 +200,7 @@ const pagesize = 4;
         <RecipeDetail
           userId={userinfo.id}
           recipeId={selectedRecipeId}
-          onClose={() => setSelectedRecipeId(null)}
+          onClose={() => {if (closed===0) {setClosed(1)}else{setClosed(0)};setSelectedRecipeId(null)}}
         />
       )}
     </>

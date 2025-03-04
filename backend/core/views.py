@@ -71,25 +71,28 @@ class UserRecipeLogViewSet(ModelViewSet):
         try:
             user = get_object_or_404(User, id=user_id) 
             recipe = get_object_or_404(Recipe, id=recipe_id)
+
             # Check if a record exists
             user_recipe_log = UserRecipeLog.objects.filter(
                 userid=user, recipe_id=recipe, op=op
             ).first()
+            print(UserRecipeLogSerializer(user_recipe_log).data)
+            
             
             if user_recipe_log:
-                if op == 1 or op == 2:
-                    # Toggle is_del (soft delete/restore)
+                if op in [2]:  
                     user_recipe_log.is_del = 0 if user_recipe_log.is_del else 1
                     user_recipe_log.save()
                     action = "Restored" if user_recipe_log.is_del == 0 else "Deleted"
                 else:
-                    pass
+                    action = "No action needed" 
             else:
                 # Create a new record if it does not exist
                 user_recipe_log = UserRecipeLog.objects.create(
                     userid=user, recipe_id=recipe, op=op, is_del=0
                 )
                 action = "Created"
+                
 
             return Response({"message": f"Record {action} successfully", "data": UserRecipeLogSerializer(user_recipe_log).data}, status=200)
 

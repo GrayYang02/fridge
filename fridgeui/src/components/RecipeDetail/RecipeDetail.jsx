@@ -8,6 +8,83 @@ const [ingredient, setIngredient] = useState([])
 const [recipeName, setRecipeName] = useState("")
 const [error, setError] = useState(null);
 const [loading, setLoading] = useState(true);
+const [isCollected, setIsCollected] = useState(false);
+
+// const handleCreateViewRecord = async () => {
+//   try {
+//     await api.post(`/core/user-recipe-log/toggle-log/`, {
+//       userid: userId,
+//       recipe_id: recipeId,
+//       op: 3,
+//     });
+//   } catch (error) {
+//     console.error("Failed to create view record:", error);
+//   }
+
+// }
+// useEffect(()=> {
+//   async function createViewRecord() {
+//     try {
+//       await api.post(`/core/user-recipe-log/toggle-log/`, {
+//         userid: userId,
+//         recipe_id: recipeId,
+//         op: 3,
+//       });
+//     } catch (error) {
+//       console.error("Failed to create view record:", error);
+//     }
+//   }
+//   createViewRecord()
+// }, [recipeId])
+
+  // Check if the recipe is collected
+  useEffect(() => {
+    async function checkCollected() {
+      try {
+        const response = await api.get(`/core/user-recipe-log/is_collected`, {
+          params: { userid: userId, recipe_id: recipeId },
+        });
+
+        if (response.status === 200) {
+          setIsCollected(response.data.is_collected);
+        }
+      } catch (error) {
+        console.error("Failed to check collection status:", error);
+      }
+    }
+
+    if (recipeId) checkCollected();
+  }, [userId, recipeId]);
+
+  // Toggle Recipe Collection
+  const handleToggleCollection = async () => {
+    try {
+      await api.post(`/core/user-recipe-log/toggle-log/`, {
+        userid: userId,
+        recipe_id: recipeId,
+        op: 2, // 2 means collected
+      });
+
+      setIsCollected((prev) => !prev);
+    } catch (error) {
+      console.error("Failed to toggle collection:", error);
+    }
+  };
+
+  // Mark Recipe as Cooked
+  const handleCook = async () => {
+    try {
+      await api.post(`/core/user-recipe-log/toggle-log/`, {
+        userid: userId,
+        recipe_id: recipeId,
+        op: 1, // 1 means cooked
+      });
+
+      alert("Recipe marked as cooked!");
+    } catch (error) {
+      console.error("Failed to log cooked recipe:", error);
+    }
+  };
 
 useEffect(() => {
   async function fetchRecipe() {
@@ -55,7 +132,9 @@ return (
       {/* Close Button */}
       <button
         className="absolute top-2 right-4 text-2xl text-gray-600 hover:text-gray-800"
-        onClick={onClose}
+        onClick={() => {
+          onClose();
+        }}
       >
         ✖
       </button>
@@ -90,6 +169,25 @@ return (
                   <li key={index}> {step}</li>
                 )) || <p>No steps provided.</p>}
               </ol>
+            </div>
+            <div className="w-full max-w-lg mt-6 flex justify-end space-x-4">
+              {/* Collect Button */}
+              <button
+                className={`px-4 py-2 text-lg font-semibold rounded-lg ${
+                  isCollected ? "bg-yellow-300 text-white-500" : "bg-gray-300 text-gray-500"
+                }`}
+                onClick={handleToggleCollection}
+              >
+                {isCollected ? "★ Collected" : "☆ Collect"}
+              </button>
+
+              {/* Cook Button */}
+              <button
+                className="px-4 py-2 text-lg font-semibold bg-green-500 text-white rounded-lg"
+                onClick={handleCook}
+              >
+                🍳 Cook
+              </button>
             </div>
           </div>
         </div>
