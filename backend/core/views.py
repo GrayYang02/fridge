@@ -32,7 +32,11 @@ from django.shortcuts import get_object_or_404
 FOOD_TAGS = {
     1: {"name": "meat", "icon": "/icons/meat.png"},
     2: {"name": "vegetable", "icon": "/icons/vegetable.png"},
-    3: {"name": "dairy", "icon": "/icons/dairy.png"}
+    3: {"name": "dairy", "icon": "/icons/dairy.png"},
+    4: {"name": "staple", "icon": "/icons/staple.png"},
+    5: {"name": "fruit", "icon": "/icons/fruit.png"},
+    6: {"name": "egg", "icon": "/icons/egg.png"}
+
 }
 
 from .response import Response as R
@@ -186,9 +190,9 @@ class FridgeItemViewSet(ModelViewSet):
 
         # Search for FridgeItem with or without name filter
         if name:
-            fridge_items = FridgeItem.objects.filter(uid=uid, name__icontains=name)
+            fridge_items = FridgeItem.objects.filter(uid=uid, name__icontains=name).order_by('expire_time')
         else:
-            fridge_items = FridgeItem.objects.filter(uid=uid)
+            fridge_items = FridgeItem.objects.filter(uid=uid).order_by('expire_time')
 
         foods = []
         for item in fridge_items:
@@ -197,7 +201,8 @@ class FridgeItemViewSet(ModelViewSet):
             foods.append({
                 "name": item.name,
                 "pic": tag_icon,
-                "tag_icon": tag_icon
+                "tag_icon": tag_icon,
+                "expire_time":item.expire_time,
             })
         
         flatags = ['sweet', 'spicy', 'salty', 'creamy', 'savory']
@@ -234,11 +239,15 @@ class FridgeItemViewSet(ModelViewSet):
         
         if keyword:
             queryset = queryset.filter(name__icontains=keyword)
-        
+        now = timezone.now()
+        expire_threshold = now + timedelta(days=1)
         if is_expire is not None:
-            now = timezone.now()
-            expire_threshold = now + timedelta(days=1)
+            
             queryset = queryset.filter(expire_time__lte=expire_threshold).order_by('expire_time')
+        else:
+            queryset = queryset.filter(expire_time__gt=expire_threshold)
+
+
         
         if sort_by == 'tag':
             queryset = queryset.order_by('tag')
@@ -284,7 +293,74 @@ class FridgeItemViewSet(ModelViewSet):
 
     def get_queryset(self):
         return FridgeItem.objects.filter(user=self.request.user)
+    
+    @action(detail=False, methods=['get'])
+    def get_recipe(self,request):
+        from .log import logger
+        from dashscope import Application
+        from http import HTTPStatus
+        from core.settings import APP_ID, API_KEY
+        from .response import Response
+        from datetime import datetime
+        from .models import Recipe
+        print(f"Authenticated user: {request.user}")  
+        print(f"Authenticated user: {request.user.id}") 
 
+        if request.user.is_anonymous:
+            return Response({"error": "Unauthorized - Invalid Token"}, status=401)
+        try:
+            # Ensure only GET requests are processed
+            if request.method != "GET":
+                return Response.error(msg="Invalid request method, only GET allowed")
+
+            # Get the ingredient parameter from the request
+            foods = request.GET.get('ingredient')
+            user_id = request.user.id
+            if foods == '':
+                return Response.error(msg="cannot generate with no food")
+            # print(user_id)
+            # Call the external API
+            response = Application.call(
+
+                api_key= API_KEY,
+                app_id= APP_ID,
+                prompt=f'My food is {foods},generate English recipe! remember to output in [dict] format!'
+            )
+
+            # Check response status
+            if response.status_code != HTTPStatus.OK:
+                msg_info = (
+                    f"request_id={response.request_id}, code={response.status_code}, message={response.message}.\n"
+                    f"See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code"
+                )
+                logger.error(msg_info)
+                return Response.error(msg=msg_info)
+
+            res = response.output.text
+            res_clean = extract_clean_data(res)
+
+            if res_clean == '':
+                return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
+            
+            recipes_with_ids = []
+            try:
+                for d in res_clean['recipes']:
+                    recipe = Recipe.objects.create(
+                        recipe_name=d['name'],
+                        food=d['ingredients'],
+                        flavor_tag=d['flavor_tag'],
+                        recipe=d['steps'],
+                        uid=user_id,
+                        create_time=datetime.now()
+                    )
+                    d['id'] = recipe.id  # 直接在菜谱结构中添加 ID
+                    recipes_with_ids.append(d)
+            except Exception as e:
+                logger.error(f'failed to store info to Recipe, err_msg:{e}')
+            
+            return Response.ok(data={'recipes': recipes_with_ids}, msg="Successfully retrieved recipes")
+        except Exception as e:
+            return Response.error(msg=f"Internal Server Error: {str(e)}")
 
     @action(detail=False, methods=['delete'])
     def delete_food(self, request):
@@ -396,68 +472,68 @@ def build_food_pic(request):
                    #API PORT #
 
 #################################################
-def get_recipe(request):
-    from .log import logger
-    from dashscope import Application
-    from http import HTTPStatus
-    from core.settings import APP_ID, API_KEY
-    from .response import Response
-    from datetime import datetime
-    from .models import Recipe
+# def get_recipe(request):
+#     from .log import logger
+#     from dashscope import Application
+#     from http import HTTPStatus
+#     from core.settings import APP_ID, API_KEY
+#     from .response import Response
+#     from datetime import datetime
+#     from .models import Recipe
     
-    try:
-        # Ensure only GET requests are processed
-        if request.method != "GET":
-            return Response.error(msg="Invalid request method, only GET allowed")
+#     try:
+#         # Ensure only GET requests are processed
+#         if request.method != "GET":
+#             return Response.error(msg="Invalid request method, only GET allowed")
 
-        # Get the ingredient parameter from the request
-        foods = request.GET.get('ingredient')
-        user_id = int(request.GET.get('user_id'))
-        if foods == '':
-            return Response.error(msg="cannot generate with no food")
-        # print(user_id)
-        # Call the external API
-        response = Application.call(
+#         # Get the ingredient parameter from the request
+#         foods = request.GET.get('ingredient')
+#         user_id = int(request.GET.get('user_id'))
+#         if foods == '':
+#             return Response.error(msg="cannot generate with no food")
+#         # print(user_id)
+#         # Call the external API
+#         response = Application.call(
 
-            api_key= API_KEY,
-            app_id= APP_ID,
-            prompt=f'My food is {foods},generate English recipe! remember to output in [dict] format!'
-        )
+#             api_key= API_KEY,
+#             app_id= APP_ID,
+#             prompt=f'My food is {foods},generate English recipe! remember to output in [dict] format!'
+#         )
 
-        # Check response status
-        if response.status_code != HTTPStatus.OK:
-            msg_info = (
-                f"request_id={response.request_id}, code={response.status_code}, message={response.message}.\n"
-                f"See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code"
-            )
-            logger.error(msg_info)
-            return Response.error(msg=msg_info)
+#         # Check response status
+#         if response.status_code != HTTPStatus.OK:
+#             msg_info = (
+#                 f"request_id={response.request_id}, code={response.status_code}, message={response.message}.\n"
+#                 f"See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code"
+#             )
+#             logger.error(msg_info)
+#             return Response.error(msg=msg_info)
 
-        res = response.output.text
-        res_clean = extract_clean_data(res)
+#         res = response.output.text
+#         res_clean = extract_clean_data(res)
 
-        if res_clean == '':
-            return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
+#         if res_clean == '':
+#             return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
         
-        recipes_with_ids = []
-        try:
-            for d in res_clean['recipes']:
-                recipe = Recipe.objects.create(
-                    recipe_name=d['name'],
-                    food=d['ingredients'],
-                    flavor_tag=d['flavor_tag'],
-                    recipe=d['steps'],
-                    uid=user_id,
-                    create_time=datetime.now()
-                )
-                d['id'] = recipe.id  # 直接在菜谱结构中添加 ID
-                recipes_with_ids.append(d)
-        except Exception as e:
-            logger.error(f'failed to store info to Recipe, err_msg:{e}')
+#         recipes_with_ids = []
+#         try:
+#             for d in res_clean['recipes']:
+#                 recipe = Recipe.objects.create(
+#                     recipe_name=d['name'],
+#                     food=d['ingredients'],
+#                     flavor_tag=d['flavor_tag'],
+#                     recipe=d['steps'],
+#                     uid=user_id,
+#                     create_time=datetime.now()
+#                 )
+#                 d['id'] = recipe.id  # 直接在菜谱结构中添加 ID
+#                 recipes_with_ids.append(d)
+#         except Exception as e:
+#             logger.error(f'failed to store info to Recipe, err_msg:{e}')
         
-        return Response.ok(data={'recipes': recipes_with_ids}, msg="Successfully retrieved recipes")
-    except Exception as e:
-        return Response.error(msg=f"Internal Server Error: {str(e)}")
+#         return Response.ok(data={'recipes': recipes_with_ids}, msg="Successfully retrieved recipes")
+#     except Exception as e:
+#         return Response.error(msg=f"Internal Server Error: {str(e)}")
 
 
 def extract_clean_data(long_string):

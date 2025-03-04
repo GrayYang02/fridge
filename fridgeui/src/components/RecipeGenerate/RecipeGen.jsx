@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect,useContext } from 'react';
 import api from '../../api'; 
 import potpic from "./assets/potpic.png";  
 import React from 'react';
 import Navbar from "../../components/Navbar";
 import RecipeDetail from "../RecipeDetail/RecipeDetail";
+import { UserContext } from "../Profile/views/UserProvider";
 
 const FridgeRecipePage = ({ userId, recipeId }) => {
   const [foods, setFoods] = useState([]);
@@ -20,6 +21,7 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
   const [isRecipeLoading, setIsRecipeLoading] = useState(false);
   const [showRecipeButtons, setShowRecipeButtons] = useState(false);
   const [selectedRecipeId, setSelectedRecipeId] = useState(null);
+  // const { userinfo } = useContext(UserContext);
 
   // We'll store the top 2 returned recipes in this state.
   const [topRecipes, setTopRecipes] = useState([]);
@@ -27,8 +29,8 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
   useEffect(() => {
     async function fetchRecipe() {
       try {
-        const userId = 111;
-        const response = await api.get(`core/fridge/search_food_list/?uid=${userId}`);
+        // const userId = 111;
+        const response = await api.get(`core/fridge/search_food_list/`);
         const data = response.data.data;
         // Check if the response contains foods and tags
         if (data && data.foods && data.tags) {
@@ -51,11 +53,11 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
   // Handle food search
   const handleSearch = async () => {
     try {
-      const userId = 111;
+      // const userId = 111;
       const trimmedQuery = searchQuery.trim();
       const url = trimmedQuery === ""
-        ? `core/fridge/search_food_list/?uid=${userId}`
-        : `core/fridge/search_food_list/?uid=${userId}&name=${trimmedQuery}`;
+        ? `core/fridge/search_food_list/`
+        : `core/fridge/search_food_list/?name=${trimmedQuery}`;
       const response = await api.get(url);
       const data = response.data.data;
       if (data && data.foods) {
@@ -164,11 +166,11 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
       // 2) Call the "get_recipe" API
       //    Adjust user_id to whichever you need; example below uses 121.
       try {
-        const userIdParam = 121; // or another userId as needed
+        // const userIdParam = 121; // or another userId as needed
         const queryString = encodeURIComponent(ingredientNames.join(", "));
         // Example: GET /core/get_recipe/?ingredient=chicken%2C%20salt&user_id=121
         const response = await api.get(
-          `core/get_recipe/?ingredient=${queryString}&user_id=${userIdParam}`
+          `core/fridge/get_recipe/?ingredient=${queryString}`
         );
         const recipes = response?.data?.data?.recipes || [];
         
@@ -255,22 +257,32 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
             onDragOver={handleDragOver}
             onDrop={handleReturnToFood}
           >
-            {foods.map((food, index) => (
-              <div
-                key={index}
-                className="border rounded-lg flex items-center p-2 h-12 cursor-move"
-                draggable
-                // Notice we use `food.name` as the 'item' for easier dropping
-                onDragStart={(e) => handleDragStart(e, food.name, "food")}
-              >
-                <span className="font-semibold">{food.name}</span>
-                <img
-                  src={food.pic || "foodPicPlaceholder"}
-                  alt={food.name}
-                  className="ml-auto h-10"
-                />
-              </div>
-            ))}
+{foods.map((food, index) => {
+  const now = new Date();
+  const expireDate = new Date(food.expire_time);
+  const oneDayLater = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  const isExpiringSoon = expireDate <= oneDayLater; // 过期或 1 天内过期
+
+  return (
+    <div
+      key={index}
+      className="border rounded-lg flex flex-col items-start p-2 h-16 cursor-move"
+      draggable
+      onDragStart={(e) => handleDragStart(e, food.name, "food")}
+    >
+      <span className="font-semibold">{food.name}</span>
+      <span className={isExpiringSoon ? "text-red-500 text-sm" : "text-gray-500 text-sm"}>
+        Exp: {food.expire_time}
+      </span>
+      <img
+        src={food.pic || "foodPicPlaceholder"}
+        alt={food.name}
+        className="ml-auto h-10"
+      />
+    </div>
+  );
+})}
+
           </div>
         </section>
 
@@ -422,7 +434,7 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
       </main>
       {selectedRecipeId && (
                         <RecipeDetail
-                          userId= {121}
+                          userId= {2}
                           recipeId={selectedRecipeId}
                           onClose={() => setSelectedRecipeId(null)}
                         />
