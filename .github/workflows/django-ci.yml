@@ -21,23 +21,23 @@ jobs:
         with:
           python-version: 3.11
 
-      # 3. Install system dependencies for mysqlclient (if using MySQL in backend)
-      - name: Install system dependencies for mysqlclient
+      # 3. Install system dependencies for mysqlclient and build tools
+      - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y default-libmysqlclient-dev build-essential
 
-      # 4. Install backend dependencies (requirements.txt is located in the backend folder)
+      # 4. Install backend dependencies
       - name: Install backend dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
 
-      # 5. Install mysqlclient module (if not included in requirements.txt)
+      # 5. Install mysqlclient module (if not already in requirements.txt)
       - name: Install mysqlclient module
         run: pip install mysqlclient
 
-      # 6. Install coverage (for backend test coverage reporting)
+      # 6. Install coverage for backend test reporting
       - name: Install coverage
         run: pip install coverage
 
@@ -50,7 +50,7 @@ jobs:
       # 8. Run backend tests with coverage reporting
       - name: Run backend tests with coverage
         run: |
-          coverage run --source=core backend/manage.py test core.test_core
+          coverage run --source=. backend/manage.py test
           coverage report -m
 
       # 9. Install frontend dependencies and run frontend tests
