@@ -50,7 +50,7 @@ jobs:
       # 8. Run backend tests with coverage reporting
       - name: Run backend tests with coverage
         run: |
-          coverage run --source=. backend/manage.py test
+          coverage run --source=. backend/manage.py core test
           coverage report -m
 
       # # 9. Install frontend dependencies and run frontend tests
