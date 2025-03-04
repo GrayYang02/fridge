@@ -27,8 +27,8 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
   useEffect(() => {
     async function fetchRecipe() {
       try {
-        const userId = 111;
-        const response = await api.get(`core/fridge/search_food_list/?uid=${userId}`);
+        // const userId = 111;
+        const response = await api.get(`core/fridge/search_food_list/`);
         const data = response.data.data;
         // Check if the response contains foods and tags
         if (data && data.foods && data.tags) {
@@ -160,15 +160,18 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
       // START COOK
       // 1) Gather dropped items (foods + flavors) into a single list
       const ingredientNames = droppedItems.map(d => d.item);
-
+      if (ingredientNames.length === 0) {
+        alert("Please add ingredients before cooking!");
+        return;
+      }
       // 2) Call the "get_recipe" API
       //    Adjust user_id to whichever you need; example below uses 121.
       try {
-        const userIdParam = 121; // or another userId as needed
+        // const userIdParam = 121; // or another userId as needed
         const queryString = encodeURIComponent(ingredientNames.join(", "));
         // Example: GET /core/get_recipe/?ingredient=chicken%2C%20salt&user_id=121
         const response = await api.get(
-          `core/get_recipe/?ingredient=${queryString}&user_id=${userIdParam}`
+          `core/recipes/get_recipe/?ingredient=${queryString}`
         );
         const recipes = response?.data?.data?.recipes || [];
         
@@ -422,7 +425,7 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
       </main>
       {selectedRecipeId && (
                         <RecipeDetail
-                          userId= {121}
+                          // userId= {121}
                           recipeId={selectedRecipeId}
                           onClose={() => setSelectedRecipeId(null)}
                         />
