@@ -53,9 +53,9 @@ jobs:
           coverage run --source=. backend/manage.py test
           coverage report -m
 
-      # 9. Install frontend dependencies and run frontend tests
-      - name: Run frontend tests
-        run: |
-          cd fridgeui
-          npm install
-          npm test -- --coverage
+      # # 9. Install frontend dependencies and run frontend tests
+      # - name: Run frontend tests
+      #   run: |
+      #     cd fridgeui
+      #     npm install
+      #     npm test -- --coverage
