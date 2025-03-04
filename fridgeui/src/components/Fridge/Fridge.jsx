@@ -10,6 +10,7 @@ const FridgePage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [expLoading, setExpLoading] = useState(false);
 
   const getCurrentDate = () => new Date().toISOString().split("T")[0];
 
@@ -31,20 +32,24 @@ const FridgePage = () => {
   useEffect(() => {
     loadItems();
     loadFoodTags();
-  }, [searchTerm, sortBy, currentPageExpiring, currentPageNormal]); //
+  }, [searchTerm, sortBy, currentPageNormal]); //
+  useEffect(() => {
+    loadExpItems();
+
+  }, [currentPageExpiring]); //
   
   const loadItems = async () => {
     setLoading(true);
     try {
       const items = await fetchFridgeItems(currentPageNormal, 10, sortBy, searchTerm);
-      const expitems = await fetchFridgeItems(currentPageExpiring, 5, sortBy, searchTerm, true);
+      // const expitems = await fetchFridgeItems(currentPageExpiring, 5, sortBy, searchTerm, true);
   
-      setTotalPagesExpiring(Math.ceil((expitems.total || 0) / 5));
+      // setTotalPagesExpiring(Math.ceil((expitems.total || 0) / 5));
       setTotalPagesNormal(Math.ceil((items.total || 0) / 10));
-  console.log(totalPagesExpiring);
+  // console.log(totalPagesExpiring);
   console.log(totalPagesNormal);
 
-      setExpiringItems(expitems.foods);
+      // setExpiringItems(expitems.foods);
       setFridgeItems(items.foods);
     } catch (err) {
       console.error(err);
@@ -54,7 +59,23 @@ const FridgePage = () => {
     }
   };
   
+  const loadExpItems = async () => {
+    setExpLoading(true);
+    try {
+      const expitems = await fetchFridgeItems(currentPageExpiring, 5, sortBy, searchTerm, true);
   
+      setTotalPagesExpiring(Math.ceil((expitems.total || 0) / 5));
+  console.log(totalPagesExpiring);
+
+      setExpiringItems(expitems.foods);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load items.");
+    } finally {
+      setExpLoading(false);
+    }
+  };
+
   const loadFoodTags = async () => {
     try {
       const tags = await fetchFoodTags();
@@ -64,30 +85,55 @@ const FridgePage = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, expire_time) => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
+    
     const result = await deleteFridgeItem(id);
     if (result?.success) {
-      loadItems();
+      // 计算是否过期时间在 1 天内或已经过期
+      const now = new Date();
+      const expireDate = new Date(expire_time);
+      const oneDayLater = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  
+      if (expireDate <= oneDayLater) {
+        loadExpItems(); // 只更新 expiring 列表
+      } else {
+        loadItems(); // 重新加载所有数据
+      }
     } else {
       alert("Failed to delete item.");
     }
   };
+  
 
-  const handleAddFood = async () => {
-    if (!newFood.name  || !newFood.add_time || !newFood.expire_time || !newFood.tag) {
-      alert("Please fill in all fields.");
-      return;
-    }
+ 
 
-    const result = await addFridgeItem(newFood);
-    if (result) {
-      setIsModalOpen(false);
-      setNewFood({ name: "", user_id: "", add_time: getCurrentDate(), expire_time: "", tag: "" });
-      loadItems();
-    } else {
-      alert("Failed to add food.");
-    }
+    const handleAddFood = async () => {
+      if (!newFood.name || !newFood.add_time || !newFood.expire_time || !newFood.tag) {
+        alert("Please fill in all fields.");
+        return;
+      }
+    
+      const result = await addFridgeItem(newFood);
+      if (result) {
+        setIsModalOpen(false);
+        setNewFood({ name: "", user_id: "", add_time: getCurrentDate(), expire_time: "", tag: "" });
+    
+        // 计算是否过期时间在 1 天内或已经过期
+        const now = new Date();
+        const expireDate = new Date(newFood.expire_time);
+        const oneDayLater = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    
+        if (expireDate <= oneDayLater) {
+          loadExpItems(); // 只更新 expiring 列表
+        } else {
+          loadItems(); // 重新加载所有数据
+        }
+      } else {
+        alert("Failed to add food.");
+      }
+    
+    
   };
 
   return (
@@ -99,20 +145,29 @@ const FridgePage = () => {
 {/* Expiring Items */}
 <div className="bg-white p-4 shadow rounded-lg w-60">
   <h3 className="font-semibold text-red-500">Expiring Soon</h3>
-  <ul className="mt-4 space-y-3 overflow-y-auto max-h-60">
-    {expiringItems.map((item) => (
-      <li key={item.id} className="flex items-center gap-2 border-b pb-2 relative">
-        <button
-          onClick={() => handleDelete(item.id)}
-          className="absolute top-1 right-1 text-xs bg-red-500 text-white px-2 py-1 rounded"
-        >
-          ✕
-        </button>
-        <img src={item.icon || "https://placehold.co/50x50/png"} alt={item.name} className="h-8 w-8" />
-        <span className="text-red-500">{item.name}</span>
-      </li>
-    ))}
-  </ul>
+  {expLoading ? (
+    <p className="text-center text-gray-500">Loading...</p>
+  ) : (
+    <ul className="mt-4 space-y-3 overflow-y-auto max-h-60">
+      {expiringItems.map((item) => (
+        <li key={item.id} className="flex items-center gap-2 border-b pb-2 relative">
+          <button
+            onClick={() => handleDelete(item.id, item.expire_time)}
+            className="absolute top-1 right-1 text-xs bg-red-500 text-white px-2 py-1 rounded"
+          >
+            ✕
+          </button>
+          <img src={item.icon || "https://placehold.co/50x50/png"} alt={item.name} className="h-8 w-8" />
+
+          <div className="flex flex-col">
+            <span className="text-red-500">{item.name}</span>
+            <span className="text-xs text-red-500">Expires: {item.expire_time}</span>
+          </div>
+
+        </li>
+      ))}
+    </ul>
+  )}
   <Pagination
               currentPage={currentPageExpiring}
               totalPages={totalPagesExpiring}
@@ -154,13 +209,15 @@ const FridgePage = () => {
           .map((item) => (
             <div key={item.id} className="bg-white flex flex-col items-center p-2 shadow rounded-lg relative">
               <button
-                onClick={() => handleDelete(item.id)}
+          onClick={() => handleDelete(item.id,item.expire_time)}
                 className="absolute top-1 right-1 text-xs bg-red-500 text-white px-2 py-1 rounded"
               >
                 ✕
               </button>
               <img src={item.icon || "https://placehold.co/50x50/png"} alt={item.name} className="h-8 w-8" />
               <span>{item.name}</span>
+              <span className="text-xs text-gray-500">Expires: {item.expire_time}</span>
+
             </div>
             
           ))}

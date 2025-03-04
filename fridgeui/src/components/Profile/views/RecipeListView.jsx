@@ -174,7 +174,7 @@ const pagesize = 4;
                 <div className="flex">
                   <p className="text-lg text-gray-500">Required Food:</p>
                 </div>
-                <div className="flex gap-2 mt-1">
+                <div className="flex gap-2 mt-1 flex-wrap">
                   {JSON.parse(recipe.recipe_details.food.replace(/'/g, '"')).map((food, index) => (
                     <span
                       key={index}
