@@ -21,7 +21,7 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
   const [isRecipeLoading, setIsRecipeLoading] = useState(false);
   const [showRecipeButtons, setShowRecipeButtons] = useState(false);
   const [selectedRecipeId, setSelectedRecipeId] = useState(null);
-  // const { userinfo } = useContext(UserContext);
+  const { userinfo } = useContext(UserContext);
 
   // We'll store the top 2 returned recipes in this state.
   const [topRecipes, setTopRecipes] = useState([]);
@@ -434,7 +434,7 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
       </main>
       {selectedRecipeId && (
                         <RecipeDetail
-                          userId= {2}
+                          userId= {userinfo.id}
                           recipeId={selectedRecipeId}
                           onClose={() => setSelectedRecipeId(null)}
                         />
