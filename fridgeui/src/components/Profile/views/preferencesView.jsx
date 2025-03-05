@@ -3,20 +3,6 @@ import { LuX } from "react-icons/lu";
 import api from "../../../api";
 import { UserContext } from "./UserProvider";
 
-const tags = [
-  "Tagggggggggg",
-  "Tag",
-  "Tag",
-  "Tag",
-  "Tag",
-  "Tag",
-  "Tag",
-  "Tag",
-  "Tag",
-  "Tag",
-  "Tag",
-  "Tag",
-];
 
 const TagInput = ({ title, icon, tagList, onUpdate }) => {
   const [dynamicTags, setDynamicTags] = useState(tagList || []);
@@ -143,7 +129,7 @@ const PreferencesView = () => {
         throw new Error("Failed to update user data");
 
       setUserinfo(updatedUser);
-      console.log(`Updated ${field}:`, newTags);
+    //   console.log(`Updated ${field}:`, newTags);
     } catch (error) {
       console.error(`Error updating ${field}:`, error);
     }

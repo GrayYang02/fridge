@@ -63,9 +63,9 @@ const Profile = () => {
   };
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
     <Navbar /> 
-    <div className="flex min-h-screen bg-gray-100 p-6">
+    <div className="flex flex-1 bg-gray-100 p-6">
      {/* Add Navbar here */}
       {/* left side */}
       <aside className="w-1/4 bg-white shadow-lg rounded-lg p-6">
@@ -126,14 +126,14 @@ const Profile = () => {
       </aside>
 
       {/* content */}
-      <main className="flex-1 ml-6 min-h-screen">
-        <div className="bg-white shadow-lg rounded-lg p-6">
+      <main className="flex-1 ml-6 h-full overflow-auto">
+        <div className="bg-white shadow-lg rounded-lg p-6 h-full">
           {/* cooked recipes */}
           {renderRightContent()}
         </div>
       </main>
     </div>
-    </>
+    </div>
   );
 };
 

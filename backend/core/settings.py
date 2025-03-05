@@ -20,14 +20,14 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',  
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ),
 
 }
 SIMPlE_JWT = {
     # 'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv("ACCESS_TOKEN_LIFETIME"))),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=int(os.getenv("REFRESH_TOKEN_LIFETIME"))),
 
 }
 
@@ -92,11 +92,11 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'django_db',
-            'USER': 'django_user',
-            'PASSWORD': 'wb4697',
-            'HOST': 'database-1.czm20ai6yn1e.us-east-2.rds.amazonaws.com',
-            'PORT': '3306',
+            'NAME': os.getenv("DB_NAME"),
+            'USER': os.getenv("DB_USER"),
+            'PASSWORD': os.getenv("DB_PASSWORD"),
+            'HOST': os.getenv("DB_HOST"),
+            'PORT': os.getenv("DB_PORT"),
             'OPTIONS': {
                 'auth_plugin': 'caching_sha2_password',
             },
@@ -118,6 +118,6 @@ CORS_ALLOW_CREDENTIALS = True
 
 
 ### API parts
-API_KEY = "sk-94945667a547494a9adeefcff1d5a3a1"
-APP_ID = 'a78c9f45e02c411da89cd9c95a1b86aa'
+API_KEY = os.getenv("API_KEY")
+APP_ID = os.getenv("API_ID")
 

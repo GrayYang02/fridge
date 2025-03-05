@@ -31,13 +31,7 @@ function RegisterAndLogout() {
   return <SignUp />;
 }
 
-// Common layout: includes Navbar and nested routes
-const LayoutWithNavbar = () => (
-  <>
-    <Navbar />
-    {/* <Outlet /> */}
-  </>
-);
+
 
 function App() {
   return (

@@ -56,7 +56,7 @@ export default api;
 
 const API_BASE_URL_FRIDGE = "/core/fridge";
 
-const API_BASE_URL = "http://127.0.0.1:8000/demo"; // Django 后端 URL
+const API_BASE_URL = "http://127.0.0.1:8000/demo"; // Django backend URL
 const API_BASE_URL_fri = "http://127.0.0.1:8000/demo/fridge";
 
 export async function fetchFridgeItems(

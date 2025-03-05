@@ -43,7 +43,7 @@ const pagesize = 4;
 
   useEffect(() => {
     const fetchRecipes = async () => {
-      if (!userinfo?.id) return; // Ensure userinfo is loaded
+      if (!userinfo?.id) return; 
 
       try {
         const response = await api.get(`/core/user-recipe-log/`, {
