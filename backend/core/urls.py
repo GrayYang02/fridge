@@ -16,6 +16,7 @@ from .views import (
     UserProfileView,
 )
 
+app_name = 'core'
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)  # `/users/`
