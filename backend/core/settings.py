@@ -20,7 +20,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',  
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ),
 
 }
@@ -119,5 +119,5 @@ CORS_ALLOW_CREDENTIALS = True
 
 ### API parts
 API_KEY = os.getenv("API_KEY")
-APP_ID = os.getenv("API_ID")
+APP_ID = os.getenv("APP_ID")
 
