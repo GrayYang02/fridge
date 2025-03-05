@@ -24,9 +24,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class LoginSerializer(serializers.Serializer):
 
-    """
-    专门处理登录逻辑
-    """
     email = serializers.EmailField()
 
     password = serializers.CharField(write_only=True)
@@ -43,7 +40,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 class UserRecipeLogSerializer(serializers.ModelSerializer):
     recipe_id = serializers.PrimaryKeyRelatedField(
-        queryset=Recipe.objects.all()  # Ensures valid Recipe IDs
+        queryset=Recipe.objects.all()  
     )
     recipe_details = serializers.SerializerMethodField() 
     class Meta:
@@ -51,7 +48,7 @@ class UserRecipeLogSerializer(serializers.ModelSerializer):
         fields = ["id","userid", "recipe_id", "recipe_details", "op", "create_time", "is_del"]
     def get_recipe_details(self, obj):
         if obj.recipe_id:
-            return RecipeSerializer(obj.recipe_id).data  # Fetch full recipe details
+            return RecipeSerializer(obj.recipe_id).data 
         return None
 
 class FridgeItemSerializer(serializers.ModelSerializer):

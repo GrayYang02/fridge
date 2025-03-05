@@ -15,6 +15,7 @@ from .views import (
     LoginView,
     UserProfileView,
 )
+app_name = 'core'
 
 
 router = DefaultRouter()

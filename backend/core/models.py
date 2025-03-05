@@ -2,14 +2,6 @@ from datetime import datetime
 
 from django.db import models
 import datetime 
-# class Food(models.Model):
-#     Name = models.CharField(blank=True, unique=True, max_length=36)
-#     Production_Date = models.DateField(blank=True, null=True)
-#     Expire_Date = models.DateField(blank=True, null=True)
-
-#     def __str__(self):
-#         return self.Name  # 这里把 return self.name 改为 self.Name，保证和字段一致
-
 
 from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
@@ -27,9 +19,8 @@ class User(AbstractUser):
     allergies = models.CharField(max_length=255, null=True, blank=True)
     profilepic = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
 
-    # Set email as the unique identifier for authentication
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []  # You can add fields here if needed for createsuperuser
+    REQUIRED_FIELDS = []  
 
     def __str__(self):
         return self.email
@@ -40,7 +31,7 @@ class Recipe(models.Model):
     recipe_name = models.CharField(max_length=255)
     uid = models.IntegerField()
     food = models.TextField()
-    direction = models.TextField(default="", null=True, blank=True)  # Front-end directions use to save steps
+    direction = models.TextField(default="", null=True, blank=True)  
     recipe = models.TextField(null=True, blank=True)
     img_url = models.CharField(max_length=255, null=True, blank=True)
     create_time = models.DateTimeField(auto_now_add=True)
@@ -72,7 +63,7 @@ class FridgeItem(models.Model):
     tag = models.IntegerField()
     create_time = models.DateTimeField(auto_now_add=True)
     expire_time = models.DateField(default=default_expire_time)  
-    save_time = models.IntegerField(default=30)  # default 90 days
+    save_time = models.IntegerField(default=30) 
     pic = models.IntegerField(null=True, blank=True)
     # pic_url = models.CharField(max_length=255)
     is_del = models.IntegerField(default=0)

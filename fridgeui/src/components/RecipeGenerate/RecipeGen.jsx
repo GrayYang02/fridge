@@ -1,6 +1,6 @@
-import { useState, useEffect,useContext } from 'react';
-import api from '../../api'; 
-import potpic from "./assets/potpic.png";  
+import { useState, useEffect, useContext } from 'react';
+import api from '../../api';
+import potpic from "./assets/potpic.png";
 import React from 'react';
 import Navbar from "../../components/Navbar";
 import RecipeDetail from "../RecipeDetail/RecipeDetail";
@@ -14,25 +14,22 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
   const [droppedItems, setDroppedItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchQuery, setSearchQuery] = useState(''); 
-  const [flavorQuery, setFlavorQuery] = useState(''); 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [flavorQuery, setFlavorQuery] = useState('');
   const [isCooking, setIsCooking] = useState(false);
   const [isFalling, setIsFalling] = useState(false);
   const [isRecipeLoading, setIsRecipeLoading] = useState(false);
   const [showRecipeButtons, setShowRecipeButtons] = useState(false);
   const [selectedRecipeId, setSelectedRecipeId] = useState(null);
-  // const { userinfo } = useContext(UserContext);
+  const { userinfo } = useContext(UserContext);
 
-  // We'll store the top 2 returned recipes in this state.
   const [topRecipes, setTopRecipes] = useState([]);
 
   useEffect(() => {
     async function fetchRecipe() {
       try {
-        // const userId = 111;
         const response = await api.get(`core/fridge/search_food_list/`);
         const data = response.data.data;
-        // Check if the response contains foods and tags
         if (data && data.foods && data.tags) {
           setFoods(data.foods);
           setTags(data.tags);
@@ -50,10 +47,8 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
     fetchRecipe();
   }, [userId, recipeId]);
 
-  // Handle food search
   const handleSearch = async () => {
     try {
-      // const userId = 111;
       const trimmedQuery = searchQuery.trim();
       const url = trimmedQuery === ""
         ? `core/fridge/search_food_list/`
@@ -70,7 +65,6 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
     }
   };
 
-  // Right-side flavor search (enter key adds flavor if not exists)
   const handleFlavorKeyDown = (e) => {
     if (e.key === 'Enter') {
       const trimmedFlavor = flavorQuery.trim();
@@ -96,7 +90,6 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
     const item = e.dataTransfer.getData("text/plain");
     const source = e.dataTransfer.getData("source");
 
-    // Count existing dropped items of same type to enforce limits
     const currentCount = droppedItems.filter(d => d.type === source).length;
     if (source === "food" && currentCount >= 3) {
       alert("You can only add up to 3 food items.");
@@ -107,11 +100,9 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
       return;
     }
 
-    // Add dropped item
     const newDroppedItem = { item, type: source };
     setDroppedItems(prev => [...prev, newDroppedItem]);
 
-    // Remove from original list
     if (source === "food") {
       setFoods(prevFoods => prevFoods.filter(f => f.name !== item));
     } else if (source === "flavor") {
@@ -119,7 +110,6 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
     }
   };
 
-  // Drag items back to the left side (foods)
   const handleReturnToFood = (e) => {
     e.preventDefault();
     const item = e.dataTransfer.getData("text/plain");
@@ -127,7 +117,6 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
 
     if (source === "food") {
       setDroppedItems(prev => prev.filter(d => d.item !== item));
-      // Try to find the original food object by name
       const foodObj = initialFoods.find(f => f.name === item);
       if (foodObj) {
         setFoods(prev => [...prev, foodObj]);
@@ -135,7 +124,6 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
     }
   };
 
-  // Drag items back to the right side (flavors)
   const handleReturnToFlavor = (e) => {
     e.preventDefault();
     const item = e.dataTransfer.getData("text/plain");
@@ -157,46 +145,37 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
       setShowRecipeButtons(false);
       setIsRecipeLoading(false);
       setSearchQuery('');
-      setTopRecipes([]); 
+      setTopRecipes([]);
     } else {
-      // START COOK
-      // 1) Gather dropped items (foods + flavors) into a single list
+
       const ingredientNames = droppedItems.map(d => d.item);
 
-      // 2) Call the "get_recipe" API
-      //    Adjust user_id to whichever you need; example below uses 121.
+     
       try {
-        // const userIdParam = 121; // or another userId as needed
         const queryString = encodeURIComponent(ingredientNames.join(", "));
-        // Example: GET /core/get_recipe/?ingredient=chicken%2C%20salt&user_id=121
         const response = await api.get(
           `core/fridge/get_recipe/?ingredient=${queryString}`
         );
         const recipes = response?.data?.data?.recipes || [];
-        
-        // Take first 2 recipes
+
         setTopRecipes(recipes.slice(0, 2));
       } catch (err) {
         console.error("Failed to get recipe:", err);
         setTopRecipes([]);
       }
 
-      // 3) Animate (falling, cooking, etc.)
       setIsFalling(true);
       setIsCooking(true);
-      // Items fall away in 1s
       setTimeout(() => {
         setDroppedItems([]);
         setIsFalling(false);
       }, 1000);
 
-      // Cooking finishes in another 1s => total 2s
       setTimeout(() => {
         setIsCooking(false);
         setIsRecipeLoading(true);
       }, 2000);
 
-      // After 2 more seconds (total 4s), stop loading and show recipe buttons
       setTimeout(() => {
         setIsRecipeLoading(false);
         setShowRecipeButtons(true);
@@ -234,7 +213,6 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
       <Navbar />
 
       <main className="flex flex-1 gap-4 p-4">
-        {/* Left: Foods */}
         <section className="flex-1 bg-white rounded-lg shadow p-4">
           <div className="relative">
             <input
@@ -252,50 +230,48 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
               🔍
             </button>
           </div>
-          <div 
+          <div
             className="mt-4 space-y-2 overflow-y-auto max-h-96"
             onDragOver={handleDragOver}
             onDrop={handleReturnToFood}
           >
-{foods.map((food, index) => {
-  const now = new Date();
-  const expireDate = new Date(food.expire_time);
-  const oneDayLater = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-  const isExpiringSoon = expireDate <= oneDayLater; // 过期或 1 天内过期
+            {foods.map((food, index) => {
+              const now = new Date();
+              const expireDate = new Date(food.expire_time);
+              const oneDayLater = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+              const isExpiringSoon = expireDate <= oneDayLater; 
 
-  return (
-<div
-  key={index}
-  className="border rounded-lg flex items-center p-2 h-16 cursor-move"
-  draggable
-  onDragStart={(e) => handleDragStart(e, food.name, 'food')}
->
-  <div className="flex flex-col">
-    <span className="font-semibold">{food.name}</span>
-    <span className={isExpiringSoon ? "text-red-500 text-sm" : "text-gray-500 text-sm"}>
-      Exp: {food.expire_time}
-    </span>
-  </div>
-  <img
-    src={food.pic || "foodPicPlaceholder"}
-    alt={food.name}
-    className="ml-auto h-10"
-  />
-</div>
+              return (
+                <div
+                  key={index}
+                  className="border rounded-lg flex items-center p-2 h-16 cursor-move"
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, food.name, 'food')}
+                >
+                  <div className="flex flex-col">
+                    <span className="font-semibold">{food.name}</span>
+                    <span className={isExpiringSoon ? "text-red-500 text-sm" : "text-gray-500 text-sm"}>
+                      Exp: {food.expire_time}
+                    </span>
+                  </div>
+                  <img
+                    src={food.pic || "foodPicPlaceholder"}
+                    alt={food.name}
+                    className="ml-auto h-10"
+                  />
+                </div>
 
-  );
-})}
+              );
+            })}
 
           </div>
         </section>
 
-        {/* Center: Pot */}
         <section
           className="flex-1 bg-white rounded-lg shadow p-4 relative flex flex-col items-center justify-center"
           onDragOver={handleDragOver}
           onDrop={handleDrop}
         >
-          {/* Falling items */}
           <div
             className="absolute left-1/2 transform -translate-x-1/2 flex flex-col items-center space-y-2"
             style={{
@@ -314,7 +290,6 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
             ))}
           </div>
 
-          {/* Start Cook / Restore button */}
           <button
             onClick={handleCookOrRestore}
             style={{ backgroundColor: 'white' }}
@@ -323,14 +298,12 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
             {showRecipeButtons ? "restore" : "start cook"}
           </button>
 
-          {/* Pot image (shaking when cooking) */}
           <img
             src={potpic}
             alt="pot"
             className={`mt-4 ${isCooking ? 'shake-animation' : ''}`}
           />
 
-          {/* Recipe buttons (show the top 2) */}
           {showRecipeButtons && (
             <>
               {topRecipes[0] && (
@@ -354,7 +327,7 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
                     textAlign: 'center',
                     padding: '6px'
                   }}
-                  onClick={()=> setSelectedRecipeId(topRecipes[0].id)}
+                  onClick={() => setSelectedRecipeId(topRecipes[0].id)}
 
                 >
                   {/* Show recipe name (or ID) */}
@@ -383,7 +356,7 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
                     textAlign: 'center',
                     padding: '6px'
                   }}
-                  onClick={()=> setSelectedRecipeId(topRecipes[1].id)}
+                  onClick={() => setSelectedRecipeId(topRecipes[1].id)}
 
                 >
                   {topRecipes[1].name}
@@ -392,7 +365,6 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
             </>
           )}
 
-          {/* Loading spinner */}
           {isRecipeLoading && (
             <div
               className="absolute z-20 flex items-center justify-center"
@@ -407,7 +379,6 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
           )}
         </section>
 
-        {/* Right: Flavors */}
         <section className="flex-1 bg-white rounded-lg shadow p-4">
           <input
             type="text"
@@ -417,7 +388,7 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
             placeholder="Search flavor..."
             className="border rounded-full py-2 pl-4 w-full"
           />
-          <div 
+          <div
             className="mt-4 flex flex-col gap-2 overflow-y-auto max-h-96"
             onDragOver={handleDragOver}
             onDrop={handleReturnToFlavor}
@@ -436,15 +407,15 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
         </section>
       </main>
       {selectedRecipeId && (
-                        <RecipeDetail
-                          userId= {2}
-                          recipeId={selectedRecipeId}
-                          onClose={() => setSelectedRecipeId(null)}
-                        />
-                      )}
+        <RecipeDetail
+          userId={userinfo.id}
+          recipeId={selectedRecipeId}
+          onClose={() => setSelectedRecipeId(null)}
+        />
+      )}
     </div>
-    
-                   
+
+
   );
 };
 

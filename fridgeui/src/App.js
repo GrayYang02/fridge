@@ -56,7 +56,7 @@ function App() {
 
         <Route path="/profile" element={<UserProvider><ProtectedRoute><Profile /></ProtectedRoute></UserProvider>} />
         <Route path="/fridge" element={<UserProvider><ProtectedRoute><Fridge /></ProtectedRoute></UserProvider>} />
-        <Route path="/recipe_gen" element={<RecipeGen />} />
+        <Route path="/recipe_gen" element={<UserProvider><ProtectedRoute><RecipeGen /></ProtectedRoute></UserProvider>} />
 
         {/* <Route path="/recipe_detail" element={<RecipeDetail userId={121} recipeId={10} />} /> */}
 

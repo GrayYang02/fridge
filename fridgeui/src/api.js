@@ -24,8 +24,6 @@ export default api;
 
 const API_BASE_URL_FRIDGE = "/core/fridge";
 
-const API_BASE_URL = "http://127.0.0.1:8000/demo";  // Django 后端 URL
-const API_BASE_URL_fri = "http://127.0.0.1:8000/demo/fridge";
 
 export async function fetchFridgeItems(
   page = 1,
@@ -43,14 +41,14 @@ export async function fetchFridgeItems(
         page_size: pageSize,
         sort_by: sortBy,
         keyword: searchTerm,
-        is_expire: isexp, 
+        is_expire: isexp,
       },
     });
 
-    return response.data || { total: 0, foods: [] }; // 确保返回对象格式一致
+    return response.data || { total: 0, foods: [] }; 
   } catch (error) {
     console.error("Error fetching fridge items:", error);
-    return { total: 0, foods: [] }; // 出错时返回默认值，防止前端崩溃
+    return { total: 0, foods: [] }; 
   }
 }
 
@@ -62,7 +60,7 @@ export async function addFridgeItem(item) {
       user_id: item.user_id,
       add_time: item.add_time,
       expire_time: item.expire_time,
-      tag:item.tag,
+      tag: item.tag,
     });
     return response.data;
   } catch (error) {
@@ -79,25 +77,6 @@ export async function deleteFridgeItem(food_id) {
     });
     return response.data;
 
-    // export const fetchFridgeItems = async () => {
-    //   try {
-    //     const response = await fetch(API_URL);
-    //     if (!response.ok) {
-    //       throw new Error("Failed to fetch fridge items");
-    //     }
-    //     return await response.json();
-    //   } catch (error) {
-    //     console.error("Error fetching fridge items:", error);
-    //     return [];
-    //   }
-    // };
-
-
-    // if (!response.ok) {
-    //   throw new Error("Failed to delete fridge item");
-    // }
-    // return await response.json();
-// >>>>>>> main
   } catch (error) {
     console.error("Error deleting fridge item:", error);
     return null;
