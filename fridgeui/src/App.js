@@ -55,8 +55,8 @@ function App() {
         {/* Pages that require the common navbar */}
 
         <Route path="/profile" element={<UserProvider><ProtectedRoute><Profile /></ProtectedRoute></UserProvider>} />
-        <Route path="/fridge" element={<Fridge />} />
-        <Route path="/recipe_gen" element={<RecipeGen />} />
+        <Route path="/fridge" element={<UserProvider><ProtectedRoute><Fridge /></ProtectedRoute></UserProvider>} />
+        <Route path="/recipe_gen" element={<UserProvider><ProtectedRoute><RecipeGen /></ProtectedRoute></UserProvider>} />
 
         {/* <Route path="/recipe_detail" element={<RecipeDetail userId={121} recipeId={10} />} /> */}
 

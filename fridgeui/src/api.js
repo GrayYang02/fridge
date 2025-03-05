@@ -24,24 +24,34 @@ export default api;
 
 const API_BASE_URL_FRIDGE = "/core/fridge";
 
-const API_BASE_URL = "http://127.0.0.1:8000/demo";  // Django 后端 URL
-const API_BASE_URL_fri = "http://127.0.0.1:8000/demo/fridge";
 
-export async function fetchFridgeItems(page = 1, pageSize = 10, sortBy = "create_time_desc") {
+export async function fetchFridgeItems(
+  page = 1,
+  pageSize = 10,
+  sortBy = "create_time_desc",
+  searchTerm = "",
+  isexp = null
+) {
   try {
-    console.log('sdcfvgbhn')
+    console.log(localStorage.getItem("access"));
 
-    console.log(localStorage.getItem('access'))
-    // console.log(config.headers.Authorization)
     const response = await api.get(`${API_BASE_URL_FRIDGE}/food_list/`, {
-      params: { page, page_size: pageSize, sort_by: sortBy }
+      params: {
+        page,
+        page_size: pageSize,
+        sort_by: sortBy,
+        keyword: searchTerm,
+        is_expire: isexp,
+      },
     });
-    return response.data.foods || [];
+
+    return response.data || { total: 0, foods: [] }; 
   } catch (error) {
     console.error("Error fetching fridge items:", error);
-    return [];
+    return { total: 0, foods: [] }; 
   }
 }
+
 
 export async function addFridgeItem(item) {
   try {
@@ -50,7 +60,7 @@ export async function addFridgeItem(item) {
       user_id: item.user_id,
       add_time: item.add_time,
       expire_time: item.expire_time,
-      tag:item.tag,
+      tag: item.tag,
     });
     return response.data;
   } catch (error) {
@@ -67,25 +77,6 @@ export async function deleteFridgeItem(food_id) {
     });
     return response.data;
 
-    // export const fetchFridgeItems = async () => {
-    //   try {
-    //     const response = await fetch(API_URL);
-    //     if (!response.ok) {
-    //       throw new Error("Failed to fetch fridge items");
-    //     }
-    //     return await response.json();
-    //   } catch (error) {
-    //     console.error("Error fetching fridge items:", error);
-    //     return [];
-    //   }
-    // };
-
-
-    // if (!response.ok) {
-    //   throw new Error("Failed to delete fridge item");
-    // }
-    // return await response.json();
-// >>>>>>> main
   } catch (error) {
     console.error("Error deleting fridge item:", error);
     return null;

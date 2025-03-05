@@ -13,7 +13,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* 让内容垂直居中 */
+    height: 100vh; 
   }
   
   .auth-box {
@@ -54,7 +54,7 @@
   }
   
   .auth-input:focus {
-    border-color: #a28275; /* 选中时颜色 */
+    border-color: #a28275; 
   }
   
   .auth-button {
