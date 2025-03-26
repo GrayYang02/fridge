@@ -26,11 +26,17 @@ from .serializers import (
 from asgiref.sync import sync_to_async
 
 from datetime import datetime
+from django.utils import timezone
+from datetime import timedelta
 from django.shortcuts import get_object_or_404
 FOOD_TAGS = {
     1: {"name": "meat", "icon": "/icons/meat.png"},
     2: {"name": "vegetable", "icon": "/icons/vegetable.png"},
-    3: {"name": "dairy", "icon": "/icons/dairy.png"}
+    3: {"name": "dairy", "icon": "/icons/dairy.png"},
+    4: {"name": "staple", "icon": "/icons/staple.png"},
+    5: {"name": "fruit", "icon": "/icons/fruit.png"},
+    6: {"name": "egg", "icon": "/icons/egg.png"}
+
 }
 
 from .response import Response as R
@@ -45,10 +51,6 @@ class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
 
-
-    # @action(detail=False, methods=["get"], url_path="is_collected")
-
-     #todo: dix user token in recipe
 
 class UserRecipeLogViewSet(ModelViewSet):
     queryset = UserRecipeLog.objects.all()
@@ -137,9 +139,7 @@ class FridgeItemViewSet(ModelViewSet):
     serializer_class = FridgeItemSerializer
     permission_classes = [IsAuthenticated]  
     def get_queryset(self):
-        """确保用户只能看到自己的食物"""
-        return FridgeItem.objects.filter(user=self.request.user)
-
+        return FridgeItem.objects.filter(uid=self.request.user.id)
 
     @action(detail=False, methods=['post'])
     def add_food(self, request):
@@ -154,8 +154,6 @@ class FridgeItemViewSet(ModelViewSet):
         expire_time = request.data.get('expire_time')
         tag = request.data.get('tag')
 
-        # Check if user exists
-        # user = get_object_or_404(User, id=user_id)
 
         # Create FridgeItem
         fridge_item = FridgeItem.objects.create(
@@ -177,25 +175,23 @@ class FridgeItemViewSet(ModelViewSet):
     def search_food_list(self, request):
         from .response import Response
         user = request.user
-        # print(user.id)
         uid = user.id
-        # uid=111
         name = request.GET.get('name')
 
-        # Search for FridgeItem with or without name filter
         if name:
-            fridge_items = FridgeItem.objects.filter(uid=uid, name__icontains=name)
+            fridge_items = FridgeItem.objects.filter(uid=uid, name__icontains=name).order_by('expire_time')
         else:
-            fridge_items = FridgeItem.objects.filter(uid=uid)
+            fridge_items = FridgeItem.objects.filter(uid=uid).order_by('expire_time')
 
         foods = []
         for item in fridge_items:
-            pic = PicUrls.objects.filter(name=item.name).first()
-            tag_icon = FOOD_TAGS.get(item.tag, {}).get("icon", "")  # 获取对应 tag 的 icon
+            # pic = PicUrls.objects.filter(name=item.name).first()
+            tag_icon = FOOD_TAGS.get(item.tag, {}).get("icon", "") 
             foods.append({
                 "name": item.name,
                 "pic": tag_icon,
-                "tag_icon": tag_icon
+                "tag_icon": tag_icon,
+                "expire_time":item.expire_time,
             })
         
         flatags = ['sweet', 'spicy', 'salty', 'creamy', 'savory']
@@ -211,16 +207,15 @@ class FridgeItemViewSet(ModelViewSet):
         if request.user.is_anonymous:
             return Response({"error": "Unauthorized - Invalid Token"}, status=401)
 
-        """获取食物列表，支持分页、排序、按用户 ID 过滤，并根据 keyword 进行模糊查询"""
         page = int(request.query_params.get('page', 1))
         page_size = int(request.query_params.get('page_size', 10))
         sort_by = request.query_params.get('sort_by', 'create_time_desc')
         keyword = request.query_params.get('keyword', '').strip()
         tag = request.query_params.get('tag', None)
+        is_expire = request.query_params.get('is_expire', None)
 
         queryset = FridgeItem.objects.filter(uid=request.user.id, is_del=0)
 
-        # 按 tag 过滤
         if tag is not None:
             try:
                 tag = int(tag)
@@ -231,11 +226,18 @@ class FridgeItemViewSet(ModelViewSet):
             except ValueError:
                 return Response({"error": "Tag must be an integer"}, status=status.HTTP_400_BAD_REQUEST)
         
-        # 按名称模糊匹配
         if keyword:
-            queryset = queryset.filter(Q(name__icontains=keyword))
+            queryset = queryset.filter(name__icontains=keyword)
+        now = timezone.now()
+        expire_threshold = now + timedelta(days=1)
+        if is_expire is not None:
+            
+            queryset = queryset.filter(expire_time__lte=expire_threshold).order_by('expire_time')
+        else:
+            queryset = queryset.filter(expire_time__gt=expire_threshold)
+
+
         
-        # 排序逻辑
         if sort_by == 'tag':
             queryset = queryset.order_by('tag')
         elif sort_by == 'create_time':
@@ -258,15 +260,14 @@ class FridgeItemViewSet(ModelViewSet):
             "page_size": page_size,
             "foods": food_data
         }, status=status.HTTP_200_OK)
+
     
     @action(detail=False, methods=['get'])
     def food_tags(self, request):
-        """获取所有食品标签及其 icon"""
         return Response(FOOD_TAGS, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['delete'])
     def delete_food(self, request):
-        """删除食物"""
         food_id = request.data.get('food_id')
         
         try:
@@ -279,69 +280,75 @@ class FridgeItemViewSet(ModelViewSet):
     
 
 
-    def get_queryset(self):
-        """确保用户只能看到自己的食物"""
-        return FridgeItem.objects.filter(user=self.request.user)
-
-
-    # @action(detail=False, methods=['post'])
-    # def add_food(self, request):
-    #     food_name = request.data.get('name')
-    #     user_id = request.data.get('user_id')
-    #     add_time = request.data.get('add_time')
-    #     expire_time = request.data.get('expire_time')
-
-    #     # Check if user exists
-    #     # user = get_object_or_404(User, id=user_id)
-
-    #     # Create FridgeItem
-    #     fridge_item = FridgeItem.objects.create(
-    #         name=food_name,
-    #         uid=user_id,
-    #         create_time=add_time,
-    #         expire_time=expire_time,
-    #         tag=1
-    #     )
-    #     return Response({
-    #         'id': fridge_item.id,
-    #         'name': fridge_item.name,
-    #         'pic': fridge_item.pic,
-    #         'create_time': fridge_item.create_time,
-    #         'expire_time': fridge_item.expire_time
-    #     }, status=status.HTTP_201_CREATED)
+    # def get_queryset(self):
+    #     return FridgeItem.objects.filter(user=self.request.user)
     
-    # @action(detail=False, methods=['get'])
-    # def food_list(self, request):
-    #     """获取食物列表，支持分页和排序"""
-    #     page = int(request.query_params.get('page', 1))
-    #     page_size = int(request.query_params.get('page_size', 10))
-    #     sort_by = request.query_params.get('sort_by', 'create_time_desc')
+    @action(detail=False, methods=['get'])
+    def get_recipe(self,request):
+        from .log import logger
+        from dashscope import Application
+        from http import HTTPStatus
+        from core.settings import APP_ID, API_KEY
+        from .response import Response
+        from datetime import datetime
+        from .models import Recipe
+        print(f"Authenticated user: {request.user}")  
+        print(f"Authenticated user: {request.user.id}") 
 
-    #     # queryset = FridgeItem.objects.filter(user=request.user)
-    #     queryset = FridgeItem.objects.filter()
-    #     # 排序逻辑
-    #     if sort_by == 'tag':
-    #         queryset = queryset.order_by('tag')
-    #     elif sort_by == 'create_time':
-    #         queryset = queryset.order_by('create_time')
-    #     elif sort_by == 'create_time_desc':
-    #         queryset = queryset.order_by('-create_time')
-    #     else:
-    #         return Response({"error": "Invalid sort_by parameter"}, status=status.HTTP_400_BAD_REQUEST)
+        if request.user.is_anonymous:
+            return Response({"error": "Unauthorized - Invalid Token"}, status=401)
+        try:
+            if request.method != "GET":
+                return Response.error(msg="Invalid request method, only GET allowed")
 
-    #     paginator = Paginator(queryset, page_size)
-    #     foods = paginator.get_page(page)
+            foods = request.GET.get('ingredient')
+            user_id = request.user.id
+            if foods == '':
+                return Response.error(msg="cannot generate with no food")
+  
+            response = Application.call(
 
-    #     return Response({
-    #         "total": paginator.count,
-    #         "page": page,
-    #         "page_size": page_size,
-    #         "foods": FridgeItemSerializer(foods, many=True).data
-    #     }, status=status.HTTP_200_OK)
+                api_key= API_KEY,
+                app_id= APP_ID,
+                prompt=f'My food is {foods},generate English recipe! remember to output in [dict] format!'
+            )
+
+            if response.status_code != HTTPStatus.OK:
+                msg_info = (
+                    f"request_id={response.request_id}, code={response.status_code}, message={response.message}.\n"
+                    f"See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code"
+                )
+                logger.error(msg_info)
+                return Response.error(msg=msg_info)
+
+            res = response.output.text
+            res_clean = extract_clean_data(res)
+
+            if res_clean == '':
+                return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
+            
+            recipes_with_ids = []
+            try:
+                for d in res_clean['recipes']:
+                    recipe = Recipe.objects.create(
+                        recipe_name=d['name'],
+                        food=d['ingredients'],
+                        flavor_tag=d['flavor_tag'],
+                        recipe=d['steps'],
+                        uid=user_id,
+                        create_time=datetime.now()
+                    )
+                    d['id'] = recipe.id 
+                    recipes_with_ids.append(d)
+            except Exception as e:
+                logger.error(f'failed to store info to Recipe, err_msg:{e}')
+            
+            return Response.ok(data={'recipes': recipes_with_ids}, msg="Successfully retrieved recipes")
+        except Exception as e:
+            return Response.error(msg=f"Internal Server Error: {str(e)}")
 
     @action(detail=False, methods=['delete'])
     def delete_food(self, request):
-        """删除食物"""
         food_id = request.data.get('food_id')
         
         try:
@@ -422,9 +429,7 @@ def get_food_list(request):
         return Response.ok(data={"foods": foods, "tags": tags }, msg="Received all the foods")
 
     except Exception as err:
-        # Log the error for debugging
         print(f"Error: {err}")
-        # Return a serializable error message
         return Response.error(msg=str(err))
 
 
@@ -450,68 +455,68 @@ def build_food_pic(request):
                    #API PORT #
 
 #################################################
-def get_recipe(request):
-    from .log import logger
-    from dashscope import Application
-    from http import HTTPStatus
-    from core.settings import APP_ID, API_KEY
-    from .response import Response
-    from datetime import datetime
-    from .models import Recipe
+# def get_recipe(request):
+#     from .log import logger
+#     from dashscope import Application
+#     from http import HTTPStatus
+#     from core.settings import APP_ID, API_KEY
+#     from .response import Response
+#     from datetime import datetime
+#     from .models import Recipe
     
-    try:
-        # Ensure only GET requests are processed
-        if request.method != "GET":
-            return Response.error(msg="Invalid request method, only GET allowed")
+#     try:
+#         # Ensure only GET requests are processed
+#         if request.method != "GET":
+#             return Response.error(msg="Invalid request method, only GET allowed")
 
-        # Get the ingredient parameter from the request
-        foods = request.GET.get('ingredient')
-        user_id = int(request.GET.get('user_id'))
-        if foods == '':
-            return Response.error(msg="cannot generate with no food")
-        # print(user_id)
-        # Call the external API
-        response = Application.call(
+#         # Get the ingredient parameter from the request
+#         foods = request.GET.get('ingredient')
+#         user_id = int(request.GET.get('user_id'))
+#         if foods == '':
+#             return Response.error(msg="cannot generate with no food")
+#         # print(user_id)
+#         # Call the external API
+#         response = Application.call(
 
-            api_key= API_KEY,
-            app_id= APP_ID,
-            prompt=f'My food is {foods},generate English recipe! remember to output in [dict] format!'
-        )
+#             api_key= API_KEY,
+#             app_id= APP_ID,
+#             prompt=f'My food is {foods},generate English recipe! remember to output in [dict] format!'
+#         )
 
-        # Check response status
-        if response.status_code != HTTPStatus.OK:
-            msg_info = (
-                f"request_id={response.request_id}, code={response.status_code}, message={response.message}.\n"
-                f"See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code"
-            )
-            logger.error(msg_info)
-            return Response.error(msg=msg_info)
+#         # Check response status
+#         if response.status_code != HTTPStatus.OK:
+#             msg_info = (
+#                 f"request_id={response.request_id}, code={response.status_code}, message={response.message}.\n"
+#                 f"See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code"
+#             )
+#             logger.error(msg_info)
+#             return Response.error(msg=msg_info)
 
-        res = response.output.text
-        res_clean = extract_clean_data(res)
+#         res = response.output.text
+#         res_clean = extract_clean_data(res)
 
-        if res_clean == '':
-            return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
+#         if res_clean == '':
+#             return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
         
-        recipes_with_ids = []
-        try:
-            for d in res_clean['recipes']:
-                recipe = Recipe.objects.create(
-                    recipe_name=d['name'],
-                    food=d['ingredients'],
-                    flavor_tag=d['flavor_tag'],
-                    recipe=d['steps'],
-                    uid=user_id,
-                    create_time=datetime.now()
-                )
-                d['id'] = recipe.id  # 直接在菜谱结构中添加 ID
-                recipes_with_ids.append(d)
-        except Exception as e:
-            logger.error(f'failed to store info to Recipe, err_msg:{e}')
+#         recipes_with_ids = []
+#         try:
+#             for d in res_clean['recipes']:
+#                 recipe = Recipe.objects.create(
+#                     recipe_name=d['name'],
+#                     food=d['ingredients'],
+#                     flavor_tag=d['flavor_tag'],
+#                     recipe=d['steps'],
+#                     uid=user_id,
+#                     create_time=datetime.now()
+#                 )
+#                 d['id'] = recipe.id 
+#                 recipes_with_ids.append(d)
+#         except Exception as e:
+#             logger.error(f'failed to store info to Recipe, err_msg:{e}')
         
-        return Response.ok(data={'recipes': recipes_with_ids}, msg="Successfully retrieved recipes")
-    except Exception as e:
-        return Response.error(msg=f"Internal Server Error: {str(e)}")
+#         return Response.ok(data={'recipes': recipes_with_ids}, msg="Successfully retrieved recipes")
+#     except Exception as e:
+#         return Response.error(msg=f"Internal Server Error: {str(e)}")
 
 
 def extract_clean_data(long_string):
@@ -543,8 +548,8 @@ def extract_clean_data(long_string):
 
 def recipe_detail_recieve(request):
     from django.forms.models import model_to_dict
-    from .response import Response  # Assuming you have a custom response handler
-    uid = request.GET.get('user_id')  # Ensure you're using the correct query parameter name
+    from .response import Response  
+    uid = request.GET.get('user_id')  
     id = request.GET.get('id')
     if not uid or not id:
         return Response.error(msg="Missing user_id or id")
@@ -555,12 +560,10 @@ def recipe_detail_recieve(request):
         if not recipe:
             return Response.error(msg="Recipe not found")
 
-        # Convert the Recipe object to a dictionary for JSON serialization
         recipe_data = model_to_dict(recipe)
 
     except Exception as e:
         return Response.error(msg=f"Error retrieving recipe: {str(e)}")
 
-    # Return the recipe data as JSON
     return Response.ok(data=recipe_data, msg=f"Success in recipe_id = {id}, user_id = {uid}")
 
