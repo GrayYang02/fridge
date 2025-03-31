@@ -19,7 +19,7 @@ const FridgePage = () => {
     name: "",
     user_id: "",
     add_time: getCurrentDate(),
-    expire_time: "",
+    expire_time: getCurrentDate(),
     tag: "",
   });
 
