@@ -57,12 +57,12 @@ class UserRecipeLogViewSet(ModelViewSet):
     serializer_class = UserRecipeLogSerializer
     permission_classes = [AllowAny]
     pagination_class = UserRecipeLogPagination
-    
+
 
 
     @action(detail=False, methods=["post"], url_path="toggle-log")
     def toggle_user_recipe_log(self, request):
-    
+
         user_id = request.data.get("userid")
         recipe_id = request.data.get("recipe_id")
         op = request.data.get("op")
@@ -71,13 +71,13 @@ class UserRecipeLogViewSet(ModelViewSet):
             return Response({"error": "userid, recipe_id, and op are required"}, status=400)
 
         try:
-            user = get_object_or_404(User, id=user_id) 
+            user = get_object_or_404(User, id=user_id)
             recipe = get_object_or_404(Recipe, id=recipe_id)
             # Check if a record exists
             user_recipe_log = UserRecipeLog.objects.filter(
                 userid=user, recipe_id=recipe, op=op
             ).first()
-            
+
             if user_recipe_log:
                 if op == 1 or op == 2:
                     # Toggle is_del (soft delete/restore)
@@ -98,7 +98,7 @@ class UserRecipeLogViewSet(ModelViewSet):
         except Exception as e:
             return Response({"error": str(e)}, status=500)
 
-  
+
 
     @action(detail=False, methods=["get"], url_path="is_collected")
     def is_recipe_collected(self, request):
@@ -115,12 +115,12 @@ class UserRecipeLogViewSet(ModelViewSet):
         return Response({"is_collected": exists})
 
     def get_queryset(self):
-        
+
         queryset = UserRecipeLog.objects.select_related("recipe_id").all()
-        
+
         userid = self.request.query_params.get('userid')
-        queryset = queryset.filter(userid=userid)  
-        
+        queryset = queryset.filter(userid=userid)
+
         op = self.request.query_params.get('op')
 
 
@@ -128,23 +128,23 @@ class UserRecipeLogViewSet(ModelViewSet):
         if op is not None:
             queryset = queryset.filter(op=int(op))
 
-        
+
         queryset = queryset.filter(is_del=0)
-        
-        return queryset  
+
+        return queryset
 
 
 class FridgeItemViewSet(ModelViewSet):
     queryset = FridgeItem.objects.all()
     serializer_class = FridgeItemSerializer
-    permission_classes = [IsAuthenticated]  
+    permission_classes = [IsAuthenticated]
     def get_queryset(self):
         return FridgeItem.objects.filter(uid=self.request.user.id)
 
     @action(detail=False, methods=['post'])
     def add_food(self, request):
-        print(f"Authenticated user: {request.user}")  
-        print(f"Authenticated user: {request.user.id}") 
+        print(f"Authenticated user: {request.user}")
+        print(f"Authenticated user: {request.user.id}")
 
         if request.user.is_anonymous:
             return Response({"error": "Unauthorized - Invalid Token"}, status=401)
@@ -170,7 +170,7 @@ class FridgeItemViewSet(ModelViewSet):
             'create_time': fridge_item.create_time,
             'expire_time': fridge_item.expire_time
         }, status=status.HTTP_201_CREATED)
-    
+
     @action(detail=False, methods=['get'])
     def search_food_list(self, request):
         from .response import Response
@@ -186,14 +186,14 @@ class FridgeItemViewSet(ModelViewSet):
         foods = []
         for item in fridge_items:
             # pic = PicUrls.objects.filter(name=item.name).first()
-            tag_icon = FOOD_TAGS.get(item.tag, {}).get("icon", "") 
+            tag_icon = FOOD_TAGS.get(item.tag, {}).get("icon", "")
             foods.append({
                 "name": item.name,
                 "pic": tag_icon,
                 "tag_icon": tag_icon,
                 "expire_time":item.expire_time,
             })
-        
+
         flatags = ['sweet', 'spicy', 'salty', 'creamy', 'savory']
 
         return Response.ok(data={"foods": foods, "tags": flatags}, msg="Received all the foods")
@@ -201,8 +201,8 @@ class FridgeItemViewSet(ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def food_list(self, request):
-        print(f"Authenticated user: {request.user}")  
-        print(f"Authenticated user: {request.user.id}") 
+        print(f"Authenticated user: {request.user}")
+        print(f"Authenticated user: {request.user.id}")
 
         if request.user.is_anonymous:
             return Response({"error": "Unauthorized - Invalid Token"}, status=401)
@@ -225,19 +225,19 @@ class FridgeItemViewSet(ModelViewSet):
                     return Response({"error": "Invalid tag value"}, status=status.HTTP_400_BAD_REQUEST)
             except ValueError:
                 return Response({"error": "Tag must be an integer"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         if keyword:
             queryset = queryset.filter(name__icontains=keyword)
         now = timezone.now()
         expire_threshold = now + timedelta(days=1)
         if is_expire is not None:
-            
+
             queryset = queryset.filter(expire_time__lte=expire_threshold).order_by('expire_time')
         else:
             queryset = queryset.filter(expire_time__gt=expire_threshold)
 
 
-        
+
         if sort_by == 'tag':
             queryset = queryset.order_by('tag')
         elif sort_by == 'create_time':
@@ -246,7 +246,7 @@ class FridgeItemViewSet(ModelViewSet):
             queryset = queryset.order_by('-create_time')
         else:
             return Response({"error": "Invalid sort_by parameter"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         paginator = Paginator(queryset, page_size)
         foods = paginator.get_page(page)
 
@@ -261,7 +261,7 @@ class FridgeItemViewSet(ModelViewSet):
             "foods": food_data
         }, status=status.HTTP_200_OK)
 
-    
+
     @action(detail=False, methods=['get'])
     def food_tags(self, request):
         return Response(FOOD_TAGS, status=status.HTTP_200_OK)
@@ -269,7 +269,7 @@ class FridgeItemViewSet(ModelViewSet):
     @action(detail=False, methods=['delete'])
     def delete_food(self, request):
         food_id = request.data.get('food_id')
-        
+
         try:
             food = FridgeItem.objects.get(id=food_id)
         except ObjectDoesNotExist:
@@ -277,12 +277,12 @@ class FridgeItemViewSet(ModelViewSet):
 
         food.delete()
         return Response({"success": True}, status=status.HTTP_200_OK)
-    
+
 
 
     # def get_queryset(self):
     #     return FridgeItem.objects.filter(user=self.request.user)
-    
+
     @action(detail=False, methods=['get'])
     def get_recipe(self,request):
         from .log import logger
@@ -292,8 +292,8 @@ class FridgeItemViewSet(ModelViewSet):
         from .response import Response
         from datetime import datetime
         from .models import Recipe
-        print(f"Authenticated user: {request.user}")  
-        print(f"Authenticated user: {request.user.id}") 
+        print(f"Authenticated user: {request.user}")
+        print(f"Authenticated user: {request.user.id}")
 
         if request.user.is_anonymous:
             return Response({"error": "Unauthorized - Invalid Token"}, status=401)
@@ -305,7 +305,7 @@ class FridgeItemViewSet(ModelViewSet):
             user_id = request.user.id
             if foods == '':
                 return Response.error(msg="cannot generate with no food")
-  
+
             response = Application.call(
 
                 api_key= API_KEY,
@@ -326,7 +326,7 @@ class FridgeItemViewSet(ModelViewSet):
 
             if res_clean == '':
                 return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
-            
+
             recipes_with_ids = []
             try:
                 for d in res_clean['recipes']:
@@ -338,11 +338,17 @@ class FridgeItemViewSet(ModelViewSet):
                         uid=user_id,
                         create_time=datetime.now()
                     )
-                    d['id'] = recipe.id 
+                    # query food object from fridge_item
+                    for food in foods.split(","):
+                        fridge_items = FridgeItem.objects.filter(name=food.strip(), uid=user_id)
+                        if len(fridge_items) > 0:
+                            recipe.fridge_item.add(fridge_items[0])
+
+                    d['id'] = recipe.id
                     recipes_with_ids.append(d)
             except Exception as e:
                 logger.error(f'failed to store info to Recipe, err_msg:{e}')
-            
+
             return Response.ok(data={'recipes': recipes_with_ids}, msg="Successfully retrieved recipes")
         except Exception as e:
             return Response.error(msg=f"Internal Server Error: {str(e)}")
@@ -350,7 +356,7 @@ class FridgeItemViewSet(ModelViewSet):
     @action(detail=False, methods=['delete'])
     def delete_food(self, request):
         food_id = request.data.get('food_id')
-        
+
         try:
             food = FridgeItem.objects.get(id=food_id)
         except ObjectDoesNotExist:
@@ -358,7 +364,7 @@ class FridgeItemViewSet(ModelViewSet):
 
         food.delete()
         return Response({"success": True}, status=status.HTTP_200_OK)
-    
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -389,17 +395,17 @@ class LoginView(generics.GenericAPIView):
             "email": user.email,
             "username": user.username
         }, status=status.HTTP_200_OK)
-    
+
 class UserProfileView(generics.GenericAPIView):
     serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated]  
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
         # print(user)
         serializer = self.get_serializer(user)
         return R.ok(serializer.data)
-        
+
 
 
     #         return Response({
@@ -463,7 +469,7 @@ def build_food_pic(request):
 #     from .response import Response
 #     from datetime import datetime
 #     from .models import Recipe
-    
+
 #     try:
 #         # Ensure only GET requests are processed
 #         if request.method != "GET":
@@ -497,7 +503,7 @@ def build_food_pic(request):
 
 #         if res_clean == '':
 #             return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
-        
+
 #         recipes_with_ids = []
 #         try:
 #             for d in res_clean['recipes']:
@@ -509,11 +515,11 @@ def build_food_pic(request):
 #                     uid=user_id,
 #                     create_time=datetime.now()
 #                 )
-#                 d['id'] = recipe.id 
+#                 d['id'] = recipe.id
 #                 recipes_with_ids.append(d)
 #         except Exception as e:
 #             logger.error(f'failed to store info to Recipe, err_msg:{e}')
-        
+
 #         return Response.ok(data={'recipes': recipes_with_ids}, msg="Successfully retrieved recipes")
 #     except Exception as e:
 #         return Response.error(msg=f"Internal Server Error: {str(e)}")
@@ -548,8 +554,8 @@ def extract_clean_data(long_string):
 
 def recipe_detail_recieve(request):
     from django.forms.models import model_to_dict
-    from .response import Response  
-    uid = request.GET.get('user_id')  
+    from .response import Response
+    uid = request.GET.get('user_id')
     id = request.GET.get('id')
     if not uid or not id:
         return Response.error(msg="Missing user_id or id")
@@ -560,7 +566,7 @@ def recipe_detail_recieve(request):
         if not recipe:
             return Response.error(msg="Recipe not found")
 
-        recipe_data = model_to_dict(recipe)
+        recipe_data = RecipeSerializer(recipe).data
 
     except Exception as e:
         return Response.error(msg=f"Error retrieving recipe: {str(e)}")

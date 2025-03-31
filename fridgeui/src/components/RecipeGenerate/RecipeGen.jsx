@@ -150,7 +150,7 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
 
       const ingredientNames = droppedItems.map(d => d.item);
 
-     
+
       try {
         const queryString = encodeURIComponent(ingredientNames.join(", "));
         const response = await api.get(
@@ -232,14 +232,13 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
           </div>
           <div
             className="mt-4 space-y-2 overflow-y-auto max-h-96"
-            onDragOver={handleDragOver}
             onDrop={handleReturnToFood}
           >
             {foods.map((food, index) => {
               const now = new Date();
               const expireDate = new Date(food.expire_time);
               const oneDayLater = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-              const isExpiringSoon = expireDate <= oneDayLater; 
+              const isExpiringSoon = expireDate <= oneDayLater;
 
               return (
                 <div
@@ -390,7 +389,6 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
           />
           <div
             className="mt-4 flex flex-col gap-2 overflow-y-auto max-h-96"
-            onDragOver={handleDragOver}
             onDrop={handleReturnToFlavor}
           >
             {tags.map((tag, index) => (
