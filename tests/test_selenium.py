@@ -22,7 +22,8 @@ def driver():
     # 指定 Chromium 的二进制路径
     chrome_options.binary_location = "/usr/bin/chromium-browser"
 
-    driver = webdriver.Chrome()  
+    #driver = webdriver.Chrome()  
+    driver = webdriver.Chrome(options=chrome_options)
     driver.maximize_window()
     yield driver
     driver.quit()
