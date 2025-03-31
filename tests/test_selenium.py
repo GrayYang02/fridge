@@ -19,6 +19,8 @@ def driver():
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    # 指定 Chromium 的二进制路径
+    chrome_options.binary_location = "/usr/bin/chromium-browser"
 
     driver = webdriver.Chrome()  
     driver.maximize_window()
