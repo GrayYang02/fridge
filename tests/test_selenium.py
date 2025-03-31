@@ -9,11 +9,17 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import ActionChains
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.chrome.options import Options
 
 BASE_URL = "http://localhost:3000"
 
 @pytest.fixture(scope="module")
 def driver():
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
     driver = webdriver.Chrome()  
     driver.maximize_window()
     yield driver
@@ -51,7 +57,7 @@ def test_signup_and_login_flow(driver):
     WebDriverWait(driver, 10).until(EC.alert_is_present())
     alert = driver.switch_to.alert
     alert_text = alert.text
-    assert "Sign Up Successful!" in alert_text, f"注册提示异常，收到提示：{alert_text}"
+    assert "Sign Up Successful!" in alert_text, f"The registration prompt is abnormal, and a prompt is received:{alert_text}"
     alert.accept()
 
     WebDriverWait(driver, 10).until(EC.url_contains("/login"))
@@ -112,8 +118,8 @@ def test_full_flow(driver):
     alert.accept()
     time.sleep(2)
     
-    assert weight_input.get_attribute("disabled") is not None, "Weight input 未禁用"
-    assert height_input.get_attribute("disabled") is not None, "Height input 未禁用"
+    assert weight_input.get_attribute("disabled") is not None, "Weight input not ban"
+    assert height_input.get_attribute("disabled") is not None, "Height input not ban"
 
     preferences_btn = wait_for_element(driver, By.XPATH, "//button[contains(text(), 'Preferences')]")
     preferences_btn.click()
@@ -154,7 +160,7 @@ def test_fridge_add_food(driver):
         fridge_option.click()
         time.sleep(2)
     except Exception as e:
-        print("【Fridge】未能点击 Navbar 中的 'FRIDGE' 链接。页面源码：")
+        print("【Fridge】 Failed to click the 'FRIDGE' link in Navbar. Page source code:")
         print(driver.page_source)
         raise e
 
@@ -165,7 +171,7 @@ def test_fridge_add_food(driver):
         add_food_btn.click()
         time.sleep(2)
     except Exception as e:
-        print("【Fridge】未能点击 '+ Add Food' 按钮。页面源码：")
+        print("Fridge failed to click the '+ Add Food' button. Page source code:")
         print(driver.page_source)
         raise e
 
@@ -176,7 +182,7 @@ def test_fridge_add_food(driver):
         food_name_input.clear()
         food_name_input.send_keys("beef")
     except Exception as e:
-        print("【Fridge】未能定位到 'Food Name' 输入框。页面源码：")
+        print("Fridge could not locate the 'Food Name' input box. Page source code:")
         print(driver.page_source)
         raise e
 
@@ -191,7 +197,7 @@ def test_fridge_add_food(driver):
         select_obj.select_by_visible_text("meat")
         time.sleep(1)
     except Exception as e:
-        print("【Fridge】未能选择分类 'meat'。页面源码：")
+        print("Fridge failed to select category 'meat'. Page source code:")
         print(driver.page_source)
         raise e
     
@@ -204,7 +210,7 @@ def test_fridge_add_food(driver):
         driver.execute_script("arguments[0].click();", add_button)
         time.sleep(2)
     except Exception as e:
-        print("【Fridge】未能点击 'Add' 按钮。页面源码：")
+        print("Fridge failed to select category 'meat'. Page source code:")
         print(driver.page_source)
         raise e
 
@@ -218,7 +224,7 @@ def test_recipe_drag_spicy_and_start_cook(driver):
         recipe_link.click()
         time.sleep(2)
     except Exception as e:
-        print("【Recipe】未能点击 Navbar 中的 'RECIPE' 链接。页面源码：")
+        print("【Recipe】 Failed to click the 'RECIPE' link in Navbar. Page source code:")
         print(driver.page_source)
         raise e
 
@@ -227,7 +233,7 @@ def test_recipe_drag_spicy_and_start_cook(driver):
             EC.visibility_of_element_located((By.XPATH, "//div[@class='inline-block bg-gray-800 text-white rounded px-2 py-1 cursor-move' and text()='sweet']"))
         )
     except Exception as e:
-        print("【Recipe】未能定位 'sweet' 标签。页面源码：")
+        print("【Recipe】 Failed to locate the 'sweet' tag. Page source code:")
         print(driver.page_source)
         raise e
     
@@ -235,9 +241,9 @@ def test_recipe_drag_spicy_and_start_cook(driver):
         beef_label = WebDriverWait(driver, 10).until(
             EC.visibility_of_element_located((By.XPATH, "//span[normalize-space(text())='beef']"))
         )
-        print("找到 food 标签:", beef_label.text)
+        print("find food tag:", beef_label.text)
     except Exception as e:
-        print("未能找到 'beef' 标签。页面源码：")
+        print("cannot find 'beef' Tag. Page source code:")
         print(driver.page_source)
         raise e
 
@@ -246,7 +252,7 @@ def test_recipe_drag_spicy_and_start_cook(driver):
             EC.visibility_of_element_located((By.XPATH, "//section[contains(@class,'relative flex flex-col items-center justify-center') and .//button[contains(text(),'start cook')]]"))
         )
     except Exception as e:
-        print("【Recipe】未能定位锅区域。页面源码：")
+        print("【Recipe】 Failed to position pot area. Page source code:")
         print(driver.page_source)
         raise e
 
@@ -255,7 +261,7 @@ def test_recipe_drag_spicy_and_start_cook(driver):
         action.drag_and_drop(sweet_tag, pot_area).perform()
         time.sleep(1)
     except Exception as e:
-        print("【Recipe】拖拽 'sweet' 标签到锅区域失败。页面源码：")
+        print("【Recipe】 Dragging 'sweet' TAB to pot area fails. Page source code:")
         print(driver.page_source)
         raise e
     
@@ -264,7 +270,7 @@ def test_recipe_drag_spicy_and_start_cook(driver):
         action.drag_and_drop(beef_label, pot_area).perform()
         time.sleep(1)
     except Exception as e:
-        print("【Recipe】拖拽 'sweet' 标签到锅区域失败。页面源码：")
+        print("【Recipe】 Dragging 'sweet' TAB to pot area fails. Page source code:")
         print(driver.page_source)
         raise e
 
@@ -281,7 +287,7 @@ def test_recipe_drag_spicy_and_start_cook(driver):
         start_cook_button.click()
         time.sleep(2)
     except Exception as e:
-        print("【Recipe】未能点击锅区域内的 'start cook' 按钮。页面源码：")
+        print("[Recipe] The 'start cook' button in the pot area could not be clicked. Page source code:")
         print(driver.page_source)
         raise e
 
@@ -293,6 +299,6 @@ def test_recipe_drag_spicy_and_start_cook(driver):
         pop_out_button.click()
         time.sleep(2)
     except Exception as e:
-        print("【Recipe】未能点击圆形按钮（pop-out-animation）。页面源码：")
+        print("【Recipe: Failed to click the round button (pop-out animation). Page source code:")
         print(driver.page_source)
         raise e
