@@ -64,7 +64,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y chromium-browser chromium-chromedriver
-          
+
       # 10. 运行 Selenium 测试
       - name: Run Selenium tests
         run: |

@@ -1,5 +1,6 @@
 import time
 import uuid
+import os
 import pytest
 from datetime import datetime, timedelta
 from selenium import webdriver
@@ -13,17 +14,18 @@ from selenium.webdriver.chrome.options import Options
 
 BASE_URL = "http://localhost:3000"
 
+
 @pytest.fixture(scope="module")
 def driver():
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    # 指定 Chromium 的二进制路径
-    chrome_options.binary_location = "/usr/bin/chromium-browser"
-
-    #driver = webdriver.Chrome()  
-    driver = webdriver.Chrome(options=chrome_options)
+    if os.getenv("GITHUB_ACTIONS") == "true":
+        chrome_options.binary_location = "/usr/bin/chromium-browser"
+        driver = webdriver.Chrome(options=chrome_options)
+    else:
+        driver = webdriver.Chrome()  # 本地测试时使用默认配置
     driver.maximize_window()
     yield driver
     driver.quit()
