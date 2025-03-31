@@ -59,3 +59,9 @@ jobs:
       #     cd fridgeui
       #     npm install
       #     npm test -- --coverage
+
+      # 10. 运行 Selenium 测试
+      - name: Run Selenium tests
+        run: |
+          python -m pip install selenium pytest
+          pytest test_selenium.py --maxfail=1 --disable-warnings -q
