@@ -121,10 +121,14 @@ const PreferencesView = () => {
   const updateUserTags = async (field, newTags) => {
     try {
       const updatedUser = { ...userinfo, [field]: newTags.join(",") };
+      const patchData = { [field]: newTags.join(",") };
       const response = await api.patch(
         `/core/users/${userinfo.id}/`,
-        updatedUser
-      );
+        patchData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },}
+    );
       if (response.status !== 200)
         throw new Error("Failed to update user data");
 
