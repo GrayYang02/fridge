@@ -5,7 +5,7 @@ import os
 import sys
 from pathlib import Path
 
-load_dotenv()
+load_dotenv(override=True)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -15,6 +15,12 @@ DEBUG = True
 
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+SIMPLE_JWT = {
+    # 'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=10),
+
+}
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',  
@@ -24,12 +30,7 @@ REST_FRAMEWORK = {
     ),
 
 }
-SIMPlE_JWT = {
-    # 'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv("ACCESS_TOKEN_LIFETIME"))),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=int(os.getenv("REFRESH_TOKEN_LIFETIME"))),
 
-}
 
 INSTALLED_APPS = [
     'corsheaders',
@@ -97,9 +98,9 @@ else:
             'PASSWORD': os.getenv("DB_PASSWORD"),
             'HOST': os.getenv("DB_HOST"),
             'PORT': os.getenv("DB_PORT"),
-            'OPTIONS': {
-                'auth_plugin': 'caching_sha2_password',
-            },
+            # 'OPTIONS': {
+            #     'auth_plugin': 'caching_sha2_password',
+            # },
         }
     }
 
@@ -117,7 +118,14 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 
+### Media - profile pics
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 ### API parts
 API_KEY = os.getenv("API_KEY")
 APP_ID = os.getenv("APP_ID")
 
+print("Using DB:", DATABASES['default'])
+
+print("📦 DB in use:", os.getenv('DB_NAME'))

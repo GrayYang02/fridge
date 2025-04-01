@@ -39,6 +39,10 @@ const Profile = () => {
     console.log("Active Tab:", tab);
   }, [tab]);
 
+  useEffect(() => {
+    console.log("xxxxx", userinfo);
+  }, [userinfo]);
+
 
   // useEffect(() => {
   //   console.log('userinfo:', userinfo);
@@ -63,20 +67,26 @@ const Profile = () => {
   };
 
   return (
+  
     <div className="min-h-screen flex flex-col">
-    <Navbar /> 
+    <Navbar userinfo={userinfo}/> 
     <div className="flex flex-1 bg-gray-100 p-6">
      {/* Add Navbar here */}
       {/* left side */}
       <aside className="w-1/4 bg-white shadow-lg rounded-lg p-6">
         {/* profile pic */}
         <div className="flex flex-col items-center">
+          {userinfo && userinfo.profile_pic ? <img
+            className="w-24 h-24 rounded-full border-4 border-gray-300"
+            src={userinfo.profile_pic}
+            alt="ProfilePic"
+          />:<RxAvatar className="w-24 h-24 rounded-full"></RxAvatar>}
           {/* <img
             className="w-24 h-24 rounded-full border-4 border-gray-300"
             src={profilepic}
             alt="ProfilePic"
           /> */}
-          <RxAvatar className="w-24 h-24 rounded-full"></RxAvatar>
+          {/* <RxAvatar className="w-24 h-24 rounded-full"></RxAvatar> */}
 
           <h2 className="mt-3 text-lg font-bold">
             {userinfo ? userinfo.username : "loading..."}

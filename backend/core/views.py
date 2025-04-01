@@ -29,6 +29,8 @@ from datetime import datetime
 from django.utils import timezone
 from datetime import timedelta
 from django.shortcuts import get_object_or_404
+
+from rest_framework.parsers import MultiPartParser, FormParser
 FOOD_TAGS = {
     1: {"name": "meat", "icon": "/icons/meat.png"},
     2: {"name": "vegetable", "icon": "/icons/vegetable.png"},
@@ -46,6 +48,29 @@ from .response import Response as R
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    parser_classes = (MultiPartParser, FormParser)
+
+
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        # Use partial=True to allow updating only some fields
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response({
+                "code": 200,
+                "msg": "User updated successfully!",
+                "data": serializer.data
+            })
+        return Response({
+            "code": 400,
+            "msg": "Validation failed",
+            "errors": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
+
 
 class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
@@ -408,15 +433,34 @@ class LoginView(generics.GenericAPIView):
             "username": user.username
         }, status=status.HTTP_200_OK)
     
-class UserProfileView(generics.GenericAPIView):
-    serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated]  
+# class UserProfileView(generics.GenericAPIView):
+#     serializer_class = ProfileSerializer
+#     # permission_classes = [IsAuthenticated]  
+
+#     def get(self, request):
+#         user = request.user
+#         # print(user)
+#         serializer = self.get_serializer(user)
+#         return R.ok(serializer.data)
+
+class UserProfileView(APIView):
+    # permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
 
     def get(self, request):
         user = request.user
-        # print(user)
-        serializer = self.get_serializer(user)
+        print(user)
+        serializer = ProfileSerializer(user)
         return R.ok(serializer.data)
+
+    def patch(self, request, format=None):
+        user = request.user
+        print(request.data)
+        serializer = ProfileSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return R.ok(serializer.data)
+        return R.error(serializer.errors)
         
 
 

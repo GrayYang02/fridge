@@ -1,11 +1,20 @@
 // src/components/Navbar.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { RxAvatar } from "react-icons/rx";
 
-const Navbar = () => {
-  const userId = localStorage.getItem("user_id");
-  const profilePic = localStorage.getItem("profile_pic")
+const Navbar = (userinfo) => {
+  const userId = userinfo.userinfo?.id
+  const profilePic = userinfo.userinfo?.profile_pic
+  useEffect(() => {
+    console.log('userinfo', userinfo);
+  }
+  , [userinfo]);
+
+  useEffect(() => {
+    console.log('profilepic:', profilePic);
+  }
+  , [profilePic]);
   return (
     <nav className="flex justify-between items-center px-8 py-4 shadow-sm">
       <span className="font-bold text-xl">eFridge</span>

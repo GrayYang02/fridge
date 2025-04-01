@@ -32,9 +32,18 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
 class UserSerializer(serializers.ModelSerializer):
+    profile_pic = serializers.ImageField(required=False)
     class Meta:
         model = User
         fields = '__all__'
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get("request")
+
+        
+        if data.get('profile_pic') and request:
+            data['profile_pic'] = request.build_absolute_uri(data['profile_pic']).replace('/media/', '/core/media/')
+        return data
 
 class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -63,7 +72,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'username', 'age', 'height', 'weight', 'BMI', 'userlike', 'dislike', 'allergies']
+        fields = ['id', 'email', 'username', 'age', 'height', 'weight', 'BMI', 'userlike', 'dislike', 'allergies', 'profile_pic']
         extra_kwargs = {
             'email': {'write_only': True}
         }
