@@ -46,7 +46,7 @@ class RecipeViewSet(ModelViewSet):
         from .log import logger
         from dashscope import Application
         from http import HTTPStatus
-        from core.settings import APP_ID, API_KEY
+        from core.settings import RECIPE_APP_ID, API_KEY
         from .response import Response
         from datetime import datetime
 
@@ -70,7 +70,7 @@ class RecipeViewSet(ModelViewSet):
             response = Application.call(
 
                 api_key=API_KEY,
-                app_id=APP_ID,
+                app_id=RECIPE_APP_ID,
                 prompt=f'My food is {foods},generate English recipe! remember to output in [dict] format!'
             )
 
@@ -95,6 +95,7 @@ class RecipeViewSet(ModelViewSet):
                     recipe = Recipe.objects.create(
                         recipe_name=d['name'],
                         food=d['ingredients'],
+                        calories=d['calories'],# new attribute
                         flavor_tag=d['flavor_tag'],
                         recipe=d['steps'],
                         uid=user_id,
