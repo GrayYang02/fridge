@@ -11,3 +11,6 @@ dotenv==0.9.9
 dashscope==1.22.1
 pillow==11.1.0
 mysqlclient==2.2.7
+PyMySQL==1.1.1
+cryptography==44.0.2
+
