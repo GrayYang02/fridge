@@ -37,6 +37,61 @@ class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    @action(detail=False, methods=["get"], url_path="daily_recommand")
+    def user_daily_recommandation(self,request):
+        from core.settings import SUGGEST_APP_ID, API_KEY
+        from dashscope import Application
+        from .response import Response
+        from .log import logger
+        from dashscope import Application
+        from http import HTTPStatus
+        try:
+            # Ensure only GET requests are processed
+            if request.method != "GET":
+                return Response.error(msg="Invalid request method, only GET allowed")
+
+            uid = request.query_params.get("userid")
+            user_profile = User.objects.filter(uid=uid).first()
+            age = user_profile.age
+            BMI = user_profile.BMI
+            userlike = user_profile.userlike
+            allergies = user_profile.allergies
+
+            response = Application.call(
+
+                api_key=API_KEY,
+                app_id=SUGGEST_APP_ID,
+                prompt=f'Hi! I need a 1-day meal plan.Here’s my profile:Allergies:{allergies} '
+                       f'Taste Preferences:{userlike}'
+                       f'BMI: {BMI}, Age: {age}'
+            )
+
+            # Check response status
+            if response.status_code != HTTPStatus.OK:
+                msg_info = (
+                    f"request_id={response.request_id}, code={response.status_code}, message={response.message}.\n"
+                    f"See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code"
+                )
+                logger.error(msg_info)
+                return Response.error(msg=msg_info)
+
+            res = response.output.text
+            print(res)
+
+            if res == '':
+                return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
+
+            else:
+                updated_count = User.objects.filter(uid=uid).update(daily_suggest=res)
+                if updated_count == 0:
+                    Response.error(msg='update daily message failed')
+
+        except Exception as e:
+            return Response.error(msg=e)
+
+        return Response.ok(data=[res], msg=f"Success in user_id = {uid}")
+
+
 class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
@@ -115,7 +170,7 @@ class RecipeViewSet(ModelViewSet):
         from django.forms.models import model_to_dict
         from .response import Response  # Assuming you have a custom response handler
         user_id = request.user.id
-        print(user_id)
+        # print(user_id)
         if user_id is None:
             return Response.error(msg="cannot search with invalid user")
 
@@ -140,6 +195,27 @@ class RecipeViewSet(ModelViewSet):
         # Return the recipe data as JSON
         return Response.ok(data=recipe_data, msg=f"Success in recipe_id = {id}, user_id = {uid}")
 
+
+    @action(detail=False, methods=["get"], url_path="generate_shopping_list")
+    def shopping_list(self,request):
+        from .response import Response
+        try:
+            uid = request.query_params.get("userid")
+            recipe_id = request.query_params.get("recipe_id")
+
+            fridge_items = FridgeItem.objects.filter(uid=uid).first()
+            fridge_foods = [fridge_items.name] if fridge_items else []
+            recipe = Recipe.objects.filter(uid=uid, id=recipe_id).first()
+            if not recipe:
+                return Response.error(msg="Recipe not found")
+
+            recipe_food = recipe.food
+            missing_items = list(set(recipe_food) - set(fridge_foods))
+            # return missing_items
+            return Response.ok(data=missing_items, msg=f"Success find purchase list recipe_id = {id}, user_id = {uid}")
+
+        except Exception as e:
+            return Response.error(msg=f"generate shopping_list Error: {str(e)}")
 
 
 class UserRecipeLogViewSet(ModelViewSet):
@@ -205,15 +281,10 @@ class UserRecipeLogViewSet(ModelViewSet):
         return Response({"is_collected": exists})
 
     def get_queryset(self):
-        
         queryset = UserRecipeLog.objects.select_related("recipe_id").all()
-        
         userid = self.request.query_params.get('userid')
         queryset = queryset.filter(userid=userid)  
-        
         op = self.request.query_params.get('op')
-
-
 
         if op is not None:
             queryset = queryset.filter(op=int(op))
@@ -483,32 +554,35 @@ class UserProfileView(generics.GenericAPIView):
         # print(user)
         serializer = self.get_serializer(user)
         return R.ok(serializer.data)
-        
 
-def get_food_list(request):
-    from .response import Response
-    from .log import logger
-    try:
-        uid = request.GET.get('uid')
-        if uid == '':
-            return Response.error(msg=f'[user_id] not valid: {uid}')
-        uid = int(uid)
-        queryset = FridgeItem.objects.filter(uid=uid).order_by('create_time')
 
-        if not queryset:
-            return Response.error(msg='Failed to fetch items')
-        foods = []
-        tags = ['sweet', 'spicy', 'salty', 'creamy', 'savory']
-        for item in queryset:
-            pic = PicUrls.objects.filter(name=item.name).first()
-            foods.append({"name":item.name, "pic":pic.url})
-        return Response.ok(data={"foods": foods, "tags": tags }, msg="Received all the foods")
 
-    except Exception as err:
-        # Log the error for debugging
-        logger.error(f"Error: {err}")
-        # Return a serializable error message
-        return Response.error(msg=str(err))
+
+
+# def get_food_list(request):
+#     from .response import Response
+#     from .log import logger
+#     try:
+#         uid = request.GET.get('uid')
+#         if uid == '':
+#             return Response.error(msg=f'[user_id] not valid: {uid}')
+#         uid = int(uid)
+#         queryset = FridgeItem.objects.filter(uid=uid).order_by('create_time')
+#
+#         if not queryset:
+#             return Response.error(msg='Failed to fetch items')
+#         foods = []
+#         tags = ['sweet', 'spicy', 'salty', 'creamy', 'savory']
+#         for item in queryset:
+#             pic = PicUrls.objects.filter(name=item.name).first()
+#             foods.append({"name":item.name, "pic":pic.url})
+#         return Response.ok(data={"foods": foods, "tags": tags }, msg="Received all the foods")
+#
+#     except Exception as err:
+#         # Log the error for debugging
+#         logger.error(f"Error: {err}")
+#         # Return a serializable error message
+#         return Response.error(msg=str(err))
 
 
 
