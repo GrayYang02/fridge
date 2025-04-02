@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 
 from .views import UserViewSet, RecipeViewSet, UserRecipeLogViewSet, FridgeItemViewSet, recipe_detail_recieve, \
-     get_food_list, RegisterView, LoginView, build_food_pic
+    get_food_list, RegisterView, LoginView, build_food_pic, shopping_list
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .views import (
@@ -35,6 +35,7 @@ urlpatterns = [
     path('get_food_list/', get_food_list, name='get_food'),
 
     path('build_food_pic/', build_food_pic, name='build_food_pic'),
+    path('shopping_list/', shopping_list, name='shopping_list'),
     # path('search_food_list/', search_food_list, name='search_food_list'),
 
     # path('get_recipe/', get_recipe, name='get_recipe'),
