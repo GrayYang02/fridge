@@ -25,6 +25,8 @@ class User(AbstractUser):
     userlike = models.CharField(max_length=255, null=True, blank=True)
     dislike = models.CharField(max_length=255, null=True, blank=True)
     allergies = models.CharField(max_length=255, null=True, blank=True)
+
+    # suggest = models.CharField(max_length=455, null=True, blank=True)
     profilepic = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
 
     # Set email as the unique identifier for authentication
@@ -61,9 +63,6 @@ class UserRecipeLog(models.Model):
     def __str__(self):
         return f"{self.userid} - {self.recipe_id} - {self.op}"
 
-
-
-
 def default_expire_time():
     return datetime.date.today() + datetime.timedelta(days=30) 
 
@@ -88,3 +87,4 @@ class ItemTag(models.Model):
 class PicUrls(models.Model):
     name = models.CharField(max_length=255,unique=True)
     url = models.CharField(max_length=255)
+

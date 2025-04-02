@@ -40,7 +40,6 @@ class UserViewSet(ModelViewSet):
     @action(detail=False, methods=["get"], url_path="daily_recommand")
     def user_daily_recommandation(self,request):
         from core.settings import SUGGEST_APP_ID, API_KEY
-        from dashscope import Application
         from .response import Response
         from .log import logger
         from dashscope import Application
@@ -50,46 +49,61 @@ class UserViewSet(ModelViewSet):
             if request.method != "GET":
                 return Response.error(msg="Invalid request method, only GET allowed")
 
-            uid = request.query_params.get("userid")
-            user_profile = User.objects.filter(uid=uid).first()
+            uid = int(request.query_params.get("userid"))
+            user_profile = User.objects.filter(id=uid).first()
             age = user_profile.age
             BMI = user_profile.BMI
             userlike = user_profile.userlike
             allergies = user_profile.allergies
 
-            response = Application.call(
-
-                api_key=API_KEY,
-                app_id=SUGGEST_APP_ID,
-                prompt=f'Hi! I need a 1-day meal plan.Here’s my profile:Allergies:{allergies} '
-                       f'Taste Preferences:{userlike}'
-                       f'BMI: {BMI}, Age: {age}'
-            )
-
-            # Check response status
-            if response.status_code != HTTPStatus.OK:
-                msg_info = (
-                    f"request_id={response.request_id}, code={response.status_code}, message={response.message}.\n"
-                    f"See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code"
-                )
-                logger.error(msg_info)
-                return Response.error(msg=msg_info)
-
-            res = response.output.text
+            # response = Application.call(
+            #
+            #     api_key=API_KEY,
+            #     app_id=SUGGEST_APP_ID,
+            #     prompt=f'Hi! I need a 1-day meal plan.Here’s my profile:Allergies:{allergies} '
+            #            f'Taste Preferences:{userlike}'
+            #            f'BMI: {BMI}, Age: {age}'
+            # )
+            #
+            # # Check response status
+            # if response.status_code != HTTPStatus.OK:
+            #     msg_info = (
+            #         f"request_id={response.request_id}, code={response.status_code}, message={response.message}.\n"
+            #         f"See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code"
+            #     )
+            #     logger.error(msg_info)
+            #     return Response.error(msg=msg_info)
+            #
+            # res = response.output.text
+            res = '''{
+  "breakfast": {
+    "recipename": "Fruit Smoothie",
+    "calories": 200,
+    "flavor_tags": ["sweet"],
+    "ingredients": ["banana", "strawberries", "orange juice"]
+  },
+  "lunch": {
+    "recipename": "Vegetable Stir-Fry with Rice",
+    "calories": 400,
+    "flavor_tags": ["savory", "sweet", "sour"],
+    "ingredients": ["carrots", "bell peppers", "broccoli", "rice", "apple cider vinegar", "honey"]
+  },
+  "dinner": {
+    "recipename": "Baked Salmon with Mango Salsa",
+    "calories": 600,
+    "flavor_tags": ["sweet", "sour"],
+    "ingredients": ["salmon fillet", "mango", "red onion", "lime juice", "cilantro"]
+  }
+}'''
             print(res)
 
             if res == '':
                 return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
 
-            else:
-                updated_count = User.objects.filter(uid=uid).update(daily_suggest=res)
-                if updated_count == 0:
-                    Response.error(msg='update daily message failed')
-
         except Exception as e:
             return Response.error(msg=e)
 
-        return Response.ok(data=[res], msg=f"Success in user_id = {uid}")
+        return Response.ok(data=res, msg=f"Success in user_id = {uid}")
 
 
 class RecipeViewSet(ModelViewSet):
@@ -196,12 +210,13 @@ class RecipeViewSet(ModelViewSet):
         return Response.ok(data=recipe_data, msg=f"Success in recipe_id = {id}, user_id = {uid}")
 
 
-    @action(detail=False, methods=["get"], url_path="generate_shopping_list")
+    @action(detail=False, methods=["get"], url_path="shopping_list")
     def shopping_list(self,request):
         from .response import Response
         try:
-            uid = request.query_params.get("userid")
+            uid = int(request.query_params.get("userid"))
             recipe_id = request.query_params.get("recipe_id")
+            print(uid,recipe_id)
 
             fridge_items = FridgeItem.objects.filter(uid=uid).first()
             fridge_foods = [fridge_items.name] if fridge_items else []
@@ -209,10 +224,13 @@ class RecipeViewSet(ModelViewSet):
             if not recipe:
                 return Response.error(msg="Recipe not found")
 
-            recipe_food = recipe.food
+            recipe_food = eval(recipe.food)
+            # print(recipe_food, fridge_foods)
             missing_items = list(set(recipe_food) - set(fridge_foods))
+
+            # print(missing_items)
             # return missing_items
-            return Response.ok(data=missing_items, msg=f"Success find purchase list recipe_id = {id}, user_id = {uid}")
+            return Response.ok(data=missing_items, msg=f"Success find purchase list recipe_id = {recipe_id}, user_id = {uid}")
 
         except Exception as e:
             return Response.error(msg=f"generate shopping_list Error: {str(e)}")
