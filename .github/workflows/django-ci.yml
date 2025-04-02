@@ -43,6 +43,8 @@ jobs:
 
       # 7. Run database migrations
       - name: Migrate & run backend tests
+        env:
+          DJANGO_ENV: test    
         run: |
           cd backend
           python manage.py makemigrations --noinput

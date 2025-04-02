@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'fridgeserver.wsgi.application'
 
 
 
-if 'test' in sys.argv:
+if 'test' in sys.argv or  os.getenv('DJANGO_ENV') == 'test':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
