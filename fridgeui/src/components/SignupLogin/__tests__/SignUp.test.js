@@ -1,6 +1,4 @@
-/**
- * @jest-environment jsdom
- */
+
 import React from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -8,29 +6,26 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import SignUp from '../SignUp';
 import api from '../../../api';
 
-// ✅ Mock useNavigate (Correct approach)
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate, // Directly return mock function
+  useNavigate: () => mockNavigate, 
 }));
 
-// ✅ Mock API requests
 jest.mock('../../../api', () => ({
   post: jest.fn()
 }));
 
 beforeEach(() => {
   jest.spyOn(window, 'alert').mockImplementation(() => {});
-  jest.clearAllMocks(); // Clear all mocks
-  mockNavigate.mockClear(); // Ensure navigate is cleared before each test
+  jest.clearAllMocks(); 
+  mockNavigate.mockClear();
 });
 
 afterEach(() => {
   jest.restoreAllMocks();
 });
 
-// ✅ Ensure `MemoryRouter` provides `/signup` as the initial path
 function renderWithRouter(ui) {
   return render(
     <MemoryRouter initialEntries={["/signup"]}>

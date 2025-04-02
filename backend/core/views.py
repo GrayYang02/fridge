@@ -1,3 +1,5 @@
+import json
+
 from .models import User, Recipe, UserRecipeLog, FridgeItem, PicUrls
 from .serializers import UserSerializer, RecipeSerializer, UserRecipeLogSerializer, FridgeItemSerializer, ProfileSerializer
 from rest_framework import generics, status
@@ -48,6 +50,54 @@ from .response import Response as R
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    @action(detail=False, methods=["get"], url_path="daily_recommand")
+    def user_daily_recommandation(self, request):
+        from core.settings import SUGGEST_APP_ID, API_KEY
+        from .response import Response
+        from .log import logger
+        from dashscope import Application
+        from http import HTTPStatus
+        try:
+            # Ensure only GET requests are processed
+            if request.method != "GET":
+                return Response.error(msg="Invalid request method, only GET allowed")
+
+            uid = int(request.query_params.get("userid"))
+            user_profile = User.objects.filter(id=uid).first()
+            age = user_profile.age
+            BMI = user_profile.BMI
+            userlike = user_profile.userlike
+            allergies = user_profile.allergies
+
+            response = Application.call(
+
+                api_key=API_KEY,
+                app_id=SUGGEST_APP_ID,
+                prompt=f'Hi! I need a 1-day meal plan.Here’s my profile:Allergies:{allergies} '
+                       f'Taste Preferences:{userlike}'
+                       f'BMI: {BMI}, Age: {age}'
+            )
+
+            # Check response status
+            if response.status_code != HTTPStatus.OK:
+                msg_info = (
+                    f"request_id={response.request_id}, code={response.status_code}, message={response.message}.\n"
+                    f"See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code"
+                )
+                logger.error(msg_info)
+                return Response.error(msg=msg_info)
+
+            res = response.output.text
+
+            parsed_data = json.loads(res)
+
+            if res == '':
+                return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
+
+        except Exception as e:
+            return Response.error(msg=e)
+
+        return Response.ok(data=parsed_data, msg=f"Success in user_id = {uid}")
 
     parser_classes = (MultiPartParser, FormParser)
 
@@ -77,9 +127,6 @@ class RecipeViewSet(ModelViewSet):
     serializer_class = RecipeSerializer
 
 
-    # @action(detail=False, methods=["get"], url_path="is_collected")
-
-     #todo: dix user token in recipe
 
 class UserRecipeLogViewSet(ModelViewSet):
     queryset = UserRecipeLog.objects.all()
@@ -171,9 +218,7 @@ class FridgeItemViewSet(ModelViewSet):
     serializer_class = FridgeItemSerializer
     permission_classes = [IsAuthenticated]  
     def get_queryset(self):
-        """确保用户只能看到自己的食物"""
-        return FridgeItem.objects.filter(user=self.request.user)
-
+        return FridgeItem.objects.filter(uid=self.request.user.id)
 
     @action(detail=False, methods=['post'])
     def add_food(self, request):
@@ -188,8 +233,6 @@ class FridgeItemViewSet(ModelViewSet):
         expire_time = request.data.get('expire_time')
         tag = request.data.get('tag')
 
-        # Check if user exists
-        # user = get_object_or_404(User, id=user_id)
 
         # Create FridgeItem
         fridge_item = FridgeItem.objects.create(
@@ -211,12 +254,9 @@ class FridgeItemViewSet(ModelViewSet):
     def search_food_list(self, request):
         from .response import Response
         user = request.user
-        # print(user.id)
         uid = user.id
-        # uid=111
         name = request.GET.get('name')
 
-        # Search for FridgeItem with or without name filter
         if name:
             fridge_items = FridgeItem.objects.filter(uid=uid, name__icontains=name).order_by('expire_time')
         else:
@@ -224,7 +264,7 @@ class FridgeItemViewSet(ModelViewSet):
 
         foods = []
         for item in fridge_items:
-            pic = PicUrls.objects.filter(name=item.name).first()
+            # pic = PicUrls.objects.filter(name=item.name).first()
             tag_icon = FOOD_TAGS.get(item.tag, {}).get("icon", "") 
             foods.append({
                 "name": item.name,
@@ -319,15 +359,15 @@ class FridgeItemViewSet(ModelViewSet):
     
 
 
-    def get_queryset(self):
-        return FridgeItem.objects.filter(user=self.request.user)
+    # def get_queryset(self):
+    #     return FridgeItem.objects.filter(user=self.request.user)
     
     @action(detail=False, methods=['get'])
     def get_recipe(self,request):
         from .log import logger
         from dashscope import Application
         from http import HTTPStatus
-        from core.settings import APP_ID, API_KEY
+        from core.settings import RECIPE_APP_ID, API_KEY
         from .response import Response
         from datetime import datetime
         from .models import Recipe
@@ -337,25 +377,21 @@ class FridgeItemViewSet(ModelViewSet):
         if request.user.is_anonymous:
             return Response({"error": "Unauthorized - Invalid Token"}, status=401)
         try:
-            # Ensure only GET requests are processed
             if request.method != "GET":
                 return Response.error(msg="Invalid request method, only GET allowed")
 
-            # Get the ingredient parameter from the request
             foods = request.GET.get('ingredient')
             user_id = request.user.id
             if foods == '':
                 return Response.error(msg="cannot generate with no food")
-            # print(user_id)
-            # Call the external API
+  
             response = Application.call(
 
                 api_key= API_KEY,
-                app_id= APP_ID,
+                app_id= RECIPE_APP_ID,
                 prompt=f'My food is {foods},generate English recipe! remember to output in [dict] format!'
             )
 
-            # Check response status
             if response.status_code != HTTPStatus.OK:
                 msg_info = (
                     f"request_id={response.request_id}, code={response.status_code}, message={response.message}.\n"
@@ -376,12 +412,13 @@ class FridgeItemViewSet(ModelViewSet):
                     recipe = Recipe.objects.create(
                         recipe_name=d['name'],
                         food=d['ingredients'],
+                        calories=d['calories'],
                         flavor_tag=d['flavor_tag'],
                         recipe=d['steps'],
                         uid=user_id,
                         create_time=datetime.now()
                     )
-                    d['id'] = recipe.id  # 直接在菜谱结构中添加 ID
+                    d['id'] = recipe.id 
                     recipes_with_ids.append(d)
             except Exception as e:
                 logger.error(f'failed to store info to Recipe, err_msg:{e}')
@@ -473,7 +510,7 @@ class UserProfileView(APIView):
 
 def get_food_list(request):
     from .response import Response
-    from .log import logger
+
     try:
         uid = request.GET.get('uid')
         if uid == '':
@@ -491,12 +528,35 @@ def get_food_list(request):
         return Response.ok(data={"foods": foods, "tags": tags }, msg="Received all the foods")
 
     except Exception as err:
-        # Log the error for debugging
         print(f"Error: {err}")
-        # Return a serializable error message
         return Response.error(msg=str(err))
 
 
+
+def shopping_list(request):
+    from .response import Response
+    try:
+        uid = int(request.GET.get('userid'))
+        recipe_id = request.GET.get('recipe_id')
+        print(uid, recipe_id)
+
+        fridge_items = FridgeItem.objects.filter(uid=uid).first()
+        fridge_foods = [fridge_items.name] if fridge_items else []
+        recipe = Recipe.objects.filter(uid=uid, id=recipe_id).first()
+        if not recipe:
+            return Response.error(msg="Recipe not found")
+
+        recipe_food = eval(recipe.food)
+        # print(recipe_food, fridge_foods)
+        missing_items = list(set(recipe_food) - set(fridge_foods))
+
+        # print(missing_items)
+        # return missing_items
+        return Response.ok(data=missing_items,
+                           msg=f"Success find purchase list recipe_id = {recipe_id}, user_id = {uid}")
+
+    except Exception as e:
+        return Response.error(msg=f"generate shopping_list Error: {str(e)}")
 
 
 def build_food_pic(request):
@@ -519,69 +579,6 @@ def build_food_pic(request):
                    #API PORT #
 
 #################################################
-# def get_recipe(request):
-#     from .log import logger
-#     from dashscope import Application
-#     from http import HTTPStatus
-#     from core.settings import APP_ID, API_KEY
-#     from .response import Response
-#     from datetime import datetime
-#     from .models import Recipe
-    
-#     try:
-#         # Ensure only GET requests are processed
-#         if request.method != "GET":
-#             return Response.error(msg="Invalid request method, only GET allowed")
-
-#         # Get the ingredient parameter from the request
-#         foods = request.GET.get('ingredient')
-#         user_id = int(request.GET.get('user_id'))
-#         if foods == '':
-#             return Response.error(msg="cannot generate with no food")
-#         # print(user_id)
-#         # Call the external API
-#         response = Application.call(
-
-#             api_key= API_KEY,
-#             app_id= APP_ID,
-#             prompt=f'My food is {foods},generate English recipe! remember to output in [dict] format!'
-#         )
-
-#         # Check response status
-#         if response.status_code != HTTPStatus.OK:
-#             msg_info = (
-#                 f"request_id={response.request_id}, code={response.status_code}, message={response.message}.\n"
-#                 f"See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code"
-#             )
-#             logger.error(msg_info)
-#             return Response.error(msg=msg_info)
-
-#         res = response.output.text
-#         res_clean = extract_clean_data(res)
-
-#         if res_clean == '':
-#             return Response.error(msg=f"extract_clean_data failed, raw message: {res}")
-        
-#         recipes_with_ids = []
-#         try:
-#             for d in res_clean['recipes']:
-#                 recipe = Recipe.objects.create(
-#                     recipe_name=d['name'],
-#                     food=d['ingredients'],
-#                     flavor_tag=d['flavor_tag'],
-#                     recipe=d['steps'],
-#                     uid=user_id,
-#                     create_time=datetime.now()
-#                 )
-#                 d['id'] = recipe.id  # 直接在菜谱结构中添加 ID
-#                 recipes_with_ids.append(d)
-#         except Exception as e:
-#             logger.error(f'failed to store info to Recipe, err_msg:{e}')
-        
-#         return Response.ok(data={'recipes': recipes_with_ids}, msg="Successfully retrieved recipes")
-#     except Exception as e:
-#         return Response.error(msg=f"Internal Server Error: {str(e)}")
-
 
 def extract_clean_data(long_string):
     from .log import logger
@@ -612,8 +609,8 @@ def extract_clean_data(long_string):
 
 def recipe_detail_recieve(request):
     from django.forms.models import model_to_dict
-    from .response import Response  # Assuming you have a custom response handler
-    uid = request.GET.get('user_id')  # Ensure you're using the correct query parameter name
+    from .response import Response  
+    uid = request.GET.get('user_id')  
     id = request.GET.get('id')
     if not uid or not id:
         return Response.error(msg="Missing user_id or id")
@@ -624,12 +621,12 @@ def recipe_detail_recieve(request):
         if not recipe:
             return Response.error(msg="Recipe not found")
 
-        # Convert the Recipe object to a dictionary for JSON serialization
         recipe_data = model_to_dict(recipe)
 
     except Exception as e:
         return Response.error(msg=f"Error retrieving recipe: {str(e)}")
 
-    # Return the recipe data as JSON
     return Response.ok(data=recipe_data, msg=f"Success in recipe_id = {id}, user_id = {uid}")
+
+
 

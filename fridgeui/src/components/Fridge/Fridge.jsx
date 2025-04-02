@@ -24,7 +24,11 @@ const FridgePage = () => {
     name: "",
     user_id: "",
     add_time: getCurrentDate(),
-    expire_time: "",
+
+    // expire_time: "",
+
+    expire_time: getCurrentDate(),
+
     tag: "",
   });
 
@@ -33,7 +37,7 @@ const FridgePage = () => {
 
   const [currentPageNormal, setCurrentPageNormal] = useState(1);
   const [totalPagesNormal, setTotalPagesNormal] = useState(1);
-  const [sortBy, setSortBy] = useState("create_time_desc"); // Default sort option
+  const [sortBy, setSortBy] = useState("create_time_desc"); 
   useEffect(() => {
     loadItems();
     loadFoodTags();
@@ -45,6 +49,7 @@ const FridgePage = () => {
   const loadItems = async () => {
     setLoading(true);
     try {
+
       const items = await fetchFridgeItems(
         currentPageNormal,
         10,
@@ -54,6 +59,7 @@ const FridgePage = () => {
       // const expitems = await fetchFridgeItems(currentPageExpiring, 5, sortBy, searchTerm, true);
 
       // setTotalPagesExpiring(Math.ceil((expitems.total || 0) / 5));
+
       setTotalPagesNormal(Math.ceil((items.total || 0) / 10));
       // console.log(totalPagesExpiring);
       console.log(totalPagesNormal);
@@ -71,6 +77,7 @@ const FridgePage = () => {
   const loadExpItems = async () => {
     setExpLoading(true);
     try {
+
       const expitems = await fetchFridgeItems(
         currentPageExpiring,
         5,
@@ -78,6 +85,7 @@ const FridgePage = () => {
         searchTerm,
         true
       );
+
 
       setTotalPagesExpiring(Math.ceil((expitems.total || 0) / 5));
       console.log(totalPagesExpiring);
@@ -105,28 +113,30 @@ const FridgePage = () => {
 
     const result = await deleteFridgeItem(id);
     if (result?.success) {
+
       // check if food will be expired in 1 day
+
       const now = new Date();
       const expireDate = new Date(expire_time);
       const oneDayLater = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
       if (expireDate <= oneDayLater) {
+
         loadExpItems(); //only load expired items
       } else {
         loadItems(); // reload all food items
+
       }
     } else {
       alert("Failed to delete item.");
     }
   };
 
+
+
+
   const handleAddFood = async () => {
-    if (
-      !newFood.name ||
-      !newFood.add_time ||
-      !newFood.expire_time ||
-      !newFood.tag
-    ) {
+    if (!newFood.name || !newFood.add_time || !newFood.expire_time || !newFood.tag) {
       alert("Please fill in all fields.");
       return;
     }
@@ -134,33 +144,34 @@ const FridgePage = () => {
     const result = await addFridgeItem(newFood);
     if (result) {
       setIsModalOpen(false);
-      setNewFood({
-        name: "",
-        user_id: "",
-        add_time: getCurrentDate(),
-        expire_time: "",
-        tag: "",
-      });
+      setNewFood({ name: "", user_id: "", add_time: getCurrentDate(), expire_time: "", tag: "" });
+
 
       const now = new Date();
       const expireDate = new Date(newFood.expire_time);
       const oneDayLater = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
       if (expireDate <= oneDayLater) {
+
         loadExpItems();
       } else {
         loadItems();
+
       }
     } else {
       alert("Failed to add food.");
     }
+
   };
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
-      <Navbar />
+
+      <Navbar /> 
       <main className="p-8">
         <section className="flex gap-4">
+  
+
           <div className="bg-white p-4 shadow rounded-lg w-60">
             <h3 className="font-semibold text-red-500">Expiring Soon</h3>
             {expLoading ? (
@@ -168,28 +179,23 @@ const FridgePage = () => {
             ) : (
               <ul className="mt-4 space-y-3 overflow-y-auto max-h-60">
                 {expiringItems.map((item) => (
-                  <li
-                    key={item.id}
-                    className="flex items-center gap-2 border-b pb-2 relative"
-                  >
+
+                  <li key={item.id} className="flex items-center gap-2 border-b pb-2 relative">
+
                     <button
                       onClick={() => handleDelete(item.id, item.expire_time)}
                       className="absolute top-1 right-1 text-xs bg-red-500 text-white px-2 py-1 rounded"
                     >
                       ✕
                     </button>
-                    <img
-                      src={item.icon || "https://placehold.co/50x50/png"}
-                      alt={item.name}
-                      className="h-8 w-8"
-                    />
+
+                    <img src={item.icon || "https://placehold.co/50x50/png"} alt={item.name} className="h-8 w-8" />
 
                     <div className="flex flex-col">
                       <span className="text-red-500">{item.name}</span>
-                      <span className="text-xs text-red-500">
-                        Expires: {item.expire_time}
-                      </span>
+                      <span className="text-xs text-red-500">Expires: {item.expire_time}</span>
                     </div>
+
                   </li>
                 ))}
               </ul>
@@ -201,6 +207,7 @@ const FridgePage = () => {
             />
           </div>
 
+
           <div className="bg-white p-4 shadow rounded-lg flex-grow">
             <div className="flex items-center gap-2 mb-4">
               <input
@@ -209,7 +216,9 @@ const FridgePage = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
+
               {/* Sorting Dropdown */}
+
               <select
                 className="border rounded-lg px-2 py-1"
                 value={sortBy}
@@ -229,6 +238,7 @@ const FridgePage = () => {
               ) : (
                 <div className="grid grid-cols-5 gap-2">
                   {fridgeItems
+
                     .filter((item) =>
                       item.name.toLowerCase().includes(searchTerm.toLowerCase())
                     )
@@ -241,10 +251,12 @@ const FridgePage = () => {
                           onClick={() =>
                             handleDelete(item.id, item.expire_time)
                           }
+
                           className="absolute top-1 right-1 text-xs bg-red-500 text-white px-2 py-1 rounded"
                         >
                           ✕
                         </button>
+
                         <img
                           src={item.icon || "https://placehold.co/50x50/png"}
                           alt={item.name}
@@ -257,6 +269,9 @@ const FridgePage = () => {
                       </div>
                     ))}
                 </div>
+
+
+
               )}
             </div>
             <Pagination
@@ -265,10 +280,11 @@ const FridgePage = () => {
               onPageChange={setCurrentPageNormal}
             />
           </div>
+
         </section>
+
       </main>
 
-      {/* Add Food Button */}
       <button
         onClick={() => setIsModalOpen(true)}
         className="fixed bottom-6 right-6 bg-blue-500 text-white px-4 py-2 rounded-full shadow-lg"
@@ -276,7 +292,6 @@ const FridgePage = () => {
         + Add Food
       </button>
 
-      {/* Add Food Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
@@ -289,7 +304,9 @@ const FridgePage = () => {
               className="border px-3 py-2 w-full mb-2"
             />
 
+
             {/* Tag Selection Dropdown */}
+
             <div className="mb-4">
               <label className="block text-gray-700">Category:</label>
               <select
@@ -314,28 +331,34 @@ const FridgePage = () => {
                 />
               )}
             </div>
+
             {/* Add Time Input */}
+
             <div className="flex items-center mb-4">
               <span className="w-24 text-gray-700">Add Time:</span>
               <input
                 type="date"
                 value={newFood.add_time}
-                onChange={(e) =>
-                  setNewFood({ ...newFood, add_time: e.target.value })
-                }
+
+                onChange={(e) => setNewFood({ ...newFood, add_time: e.target.value })}
+
                 className="border px-3 py-2 w-full"
               />
             </div>
 
+
             {/* Expire Time Input */}
+
             <div className="flex items-center mb-4">
               <span className="w-24 text-gray-700">Expire Time:</span>
               <input
                 type="date"
                 value={newFood.expire_time}
+
                 onChange={(e) =>
                   setNewFood({ ...newFood, expire_time: e.target.value })
                 }
+
                 className="border px-3 py-2 w-full"
               />
             </div>

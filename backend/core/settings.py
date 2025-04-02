@@ -90,8 +90,23 @@ if 'test' in sys.argv:
         }
     }
 else:
-    DATABASES = {
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.mysql',
+    #         'NAME': 'django_db',
+    #         'USER': 'django_user',
+    #         'PASSWORD': 'wb4697',
+    #         'HOST': 'database-1.czm20ai6yn1e.us-east-2.rds.amazonaws.com',
+    #         'PORT': '3306',
+    #         'OPTIONS': {
+    #             'auth_plugin': 'caching_sha2_password',
+    #         },
+    #     }
+    # }
+    # todo for github testing
+      DATABASES = {
         'default': {
+
             'ENGINE': 'django.db.backends.mysql',
             'NAME': os.getenv("DB_NAME"),
             'USER': os.getenv("DB_USER"),
@@ -101,6 +116,10 @@ else:
             # 'OPTIONS': {
             #     'auth_plugin': 'caching_sha2_password',
             # },
+
+            # 'ENGINE': 'django.db.backends.sqlite3',
+            # 'NAME': BASE_DIR / 'db.sqlite3',
+
         }
     }
 
@@ -118,6 +137,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 
+
 ### Media - profile pics
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -129,3 +149,9 @@ APP_ID = os.getenv("APP_ID")
 print("Using DB:", DATABASES['default'])
 
 print("📦 DB in use:", os.getenv('DB_NAME'))
+
+### API parts
+API_KEY = "sk-94945667a547494a9adeefcff1d5a3a1"
+RECIPE_APP_ID = 'a78c9f45e02c411da89cd9c95a1b86aa'
+SUGGEST_APP_ID = '1fdcf8a05beb4c2b960cb6673c9e5e70'
+
