@@ -22,17 +22,24 @@ Ensure you have the following installed:
    python -m venv ~/env/venv
    source ~/env/venv/bin/activate  # On Windows use `venv\Scripts\activate`
    ```
-3. Install dependencies:
+3. Enviroment Config (.env file)
+This project uses `.env` file to store environment variobles,
+after you clone the repo, please execute the commands below:
+```bash
+cp .env.example .env
+```
+modify .env file if necessary (replace any placeholder)
+4. Install dependencies:
    ```sh
    pip install -r requirements.txt
    ```
-4. Run the Django server:
+5. Run the Django server:
    ```sh
    python manage.py runserver
    ```
    The backend will be accessible at [http://localhost:8000](http://localhost:8000).
 
-5. Run the test_views.py for tests of views:
+6. Run the test_views.py for tests of views:
    python manage.py test core     
 
 ### Option 2: Run with Docker Compose

@@ -31,13 +31,7 @@ function RegisterAndLogout() {
   return <SignUp />;
 }
 
-// Common layout: includes Navbar and nested routes
-const LayoutWithNavbar = () => (
-  <>
-    <Navbar />
-    {/* <Outlet /> */}
-  </>
-);
+
 
 function App() {
   return (
@@ -54,9 +48,13 @@ function App() {
 
         {/* Pages that require the common navbar */}
 
-        <Route path="/profile" element={<UserProvider><ProtectedRoute><Profile /></ProtectedRoute></UserProvider>} />
-        <Route path="/fridge" element={<UserProvider><ProtectedRoute><Fridge /></ProtectedRoute></UserProvider>} />
-        <Route path="/recipe_gen" element={<UserProvider><ProtectedRoute><RecipeGen /></ProtectedRoute></UserProvider>} />
+
+
+        <Route path="/profile" element={<ProtectedRoute><UserProvider><Profile /></UserProvider></ProtectedRoute>} />
+        <Route path="/fridge" element={<ProtectedRoute><UserProvider><Fridge /></UserProvider></ProtectedRoute>} />
+        <Route path="/recipe_gen" element={<ProtectedRoute><UserProvider><RecipeGen /></UserProvider></ProtectedRoute>} />
+
+=
 
         {/* <Route path="/recipe_detail" element={<RecipeDetail userId={121} recipeId={10} />} /> */}
 

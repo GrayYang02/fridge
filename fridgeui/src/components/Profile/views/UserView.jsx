@@ -6,9 +6,12 @@ const UserView = () => {
   const { userinfo, setUserinfo, loading, error } = useContext(UserContext);
   const [isEditing, setIsEditing] = useState(false);
   const [tempUser, setTempUser] = useState({});
+  const [previewPic, setPreviewPic] = useState(null);
+  const [picFile, setPicFile] = useState(null);
 
   useEffect(() => {
     setTempUser(userinfo);
+    console.log("User info heihei:", userinfo);
   }, [userinfo]);
 
   const calculateBMI = (height, weight) => {
@@ -29,19 +32,52 @@ const UserView = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setUserinfo({ ...tempUser, profilePicture: URL.createObjectURL(file) });
+      setPicFile(file);
+      setPreviewPic( URL.createObjectURL(file));
+      
     }
   };
 
   const handleSave = async () => {
     try {
       // Send a PATCH request to update the user info
-      const response = await api.patch(`/core/users/${tempUser.id}/`, tempUser);
+//       const response = await api.patch(`/core/profile/user-info/`, tempUser, {headers: {
+//         "Content-Type": "multipart/form-data", 
+//       },
+// });
+const formData = new FormData();
+
+// Append fields one by one
+
+if (tempUser.username) formData.append("username", tempUser.username);
+if (tempUser.height) formData.append("height", tempUser.height);
+if (tempUser.weight) formData.append("weight", tempUser.weight);
+if (tempUser.BMI) formData.append("BMI", tempUser.BMI);
+
+
+
+// Check if profile_pic is a File object
+if (picFile instanceof File) {
+  formData.append("profile_pic", picFile);
+}
+
+const response = await api.patch("/core/users/"+tempUser.id+"/", formData, {
+  headers: {
+    "Content-Type": "multipart/form-data",
+  },
+});
       if (response.status !== 200) {
         throw new Error("Failed to update user info");
       }
+      
+      
       alert("User info updated successfully!");
-      setUserinfo(tempUser);
+      
+
+      setUserinfo(response.data.data); 
+      setTempUser(response.data.data); 
+      setPreviewPic(null); 
+        
     } catch (err) {
       console.error(err);
       alert("Failed to update user info");
@@ -144,15 +180,22 @@ const UserView = () => {
             </span>
             .
           </p>
+          <p>🔗{" "}<a className="underline italic" target="_blank" rel="noopener noreferrer" href="https://www.canada.ca/en/health-canada/services/food-nutrition/healthy-eating/healthy-weights/canadian-guidelines-body-weight-classification-adults/questions-answers-public.html#a2">reference</a></p>
         </div>
 
         {/* Profile Picture Upload */}
         <div>
           <label className="block text-gray-600">Profile Picture</label>
           <div className="border p-4 flex flex-col items-center">
-            {tempUser?.profilePicture ? (
+            {previewPic? (
               <img
-                src={tempUser.profilePicture}
+              src={previewPic}
+              alt="preview"
+              className="w-24 h-24 rounded-md mb-2"
+            />):
+            tempUser?.profile_pic ? (
+              <img
+                src={tempUser.profile_pic}
                 alt="Uploaded"
                 className="w-24 h-24 rounded-md mb-2"
               />

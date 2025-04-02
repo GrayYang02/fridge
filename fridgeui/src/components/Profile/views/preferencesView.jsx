@@ -3,20 +3,6 @@ import { LuX } from "react-icons/lu";
 import api from "../../../api";
 import { UserContext } from "./UserProvider";
 
-const tags = [
-  "Tagggggggggg",
-  "Tag",
-  "Tag",
-  "Tag",
-  "Tag",
-  "Tag",
-  "Tag",
-  "Tag",
-  "Tag",
-  "Tag",
-  "Tag",
-  "Tag",
-];
 
 const TagInput = ({ title, icon, tagList, onUpdate }) => {
   const [dynamicTags, setDynamicTags] = useState(tagList || []);
@@ -135,15 +121,19 @@ const PreferencesView = () => {
   const updateUserTags = async (field, newTags) => {
     try {
       const updatedUser = { ...userinfo, [field]: newTags.join(",") };
+      const patchData = { [field]: newTags.join(",") };
       const response = await api.patch(
         `/core/users/${userinfo.id}/`,
-        updatedUser
-      );
+        patchData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },}
+    );
       if (response.status !== 200)
         throw new Error("Failed to update user data");
 
       setUserinfo(updatedUser);
-      console.log(`Updated ${field}:`, newTags);
+    //   console.log(`Updated ${field}:`, newTags);
     } catch (error) {
       console.error(`Error updating ${field}:`, error);
     }

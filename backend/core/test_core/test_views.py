@@ -22,7 +22,7 @@ class UserViewSetTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
     
     def test_create_user(self):
-        url = reverse('core:user-list')
+        url = reverse('core:register')
         data = {
             "email": "newuser@example.com",
             "username": "newuser",
@@ -39,7 +39,7 @@ class UserViewSetTest(APITestCase):
     def test_update_user(self):
         url = reverse('core:user-detail', kwargs={'pk': self.user.pk})
         data = {"username": "updateduser"}
-        response = self.client.patch(url, data, format='json')
+        response = self.client.patch(url, data, format='multipart')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
     
     def test_delete_user(self):

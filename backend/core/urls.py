@@ -17,6 +17,9 @@ from .views import (
 )
 app_name = 'core'
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)  # `/users/`
@@ -43,4 +46,6 @@ urlpatterns = [
 
     path('recipe_detail/', recipe_detail_recieve, name='recipe_detail'),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

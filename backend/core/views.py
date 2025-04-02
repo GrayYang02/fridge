@@ -31,6 +31,8 @@ from datetime import datetime
 from django.utils import timezone
 from datetime import timedelta
 from django.shortcuts import get_object_or_404
+
+from rest_framework.parsers import MultiPartParser, FormParser
 FOOD_TAGS = {
     1: {"name": "meat", "icon": "/icons/meat.png"},
     2: {"name": "vegetable", "icon": "/icons/vegetable.png"},
@@ -97,6 +99,29 @@ class UserViewSet(ModelViewSet):
 
         return Response.ok(data=parsed_data, msg=f"Success in user_id = {uid}")
 
+    parser_classes = (MultiPartParser, FormParser)
+
+
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        # Use partial=True to allow updating only some fields
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response({
+                "code": 200,
+                "msg": "User updated successfully!",
+                "data": serializer.data
+            })
+        return Response({
+            "code": 400,
+            "msg": "Validation failed",
+            "errors": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+
 class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
@@ -124,25 +149,28 @@ class UserRecipeLogViewSet(ModelViewSet):
         try:
             user = get_object_or_404(User, id=user_id) 
             recipe = get_object_or_404(Recipe, id=recipe_id)
+
             # Check if a record exists
             user_recipe_log = UserRecipeLog.objects.filter(
                 userid=user, recipe_id=recipe, op=op
             ).first()
+            print(UserRecipeLogSerializer(user_recipe_log).data)
+            
             
             if user_recipe_log:
-                if op == 1 or op == 2:
-                    # Toggle is_del (soft delete/restore)
+                if op in [2]:  
                     user_recipe_log.is_del = 0 if user_recipe_log.is_del else 1
                     user_recipe_log.save()
                     action = "Restored" if user_recipe_log.is_del == 0 else "Deleted"
                 else:
-                    pass
+                    action = "No action needed" 
             else:
                 # Create a new record if it does not exist
                 user_recipe_log = UserRecipeLog.objects.create(
                     userid=user, recipe_id=recipe, op=op, is_del=0
                 )
                 action = "Created"
+                
 
             return Response({"message": f"Record {action} successfully", "data": UserRecipeLogSerializer(user_recipe_log).data}, status=200)
 
@@ -442,15 +470,34 @@ class LoginView(generics.GenericAPIView):
             "username": user.username
         }, status=status.HTTP_200_OK)
     
-class UserProfileView(generics.GenericAPIView):
-    serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated]  
+# class UserProfileView(generics.GenericAPIView):
+#     serializer_class = ProfileSerializer
+#     # permission_classes = [IsAuthenticated]  
+
+#     def get(self, request):
+#         user = request.user
+#         # print(user)
+#         serializer = self.get_serializer(user)
+#         return R.ok(serializer.data)
+
+class UserProfileView(APIView):
+    # permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
 
     def get(self, request):
         user = request.user
-        # print(user)
-        serializer = self.get_serializer(user)
+        print(user)
+        serializer = ProfileSerializer(user)
         return R.ok(serializer.data)
+
+    def patch(self, request, format=None):
+        user = request.user
+        print(request.data)
+        serializer = ProfileSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return R.ok(serializer.data)
+        return R.error(serializer.errors)
         
 
 
