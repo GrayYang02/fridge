@@ -58,6 +58,8 @@ class Recipe(models.Model):
     update_time = models.DateTimeField(auto_now=True)
     flavor_tag = models.CharField(max_length=255, null=True, blank=True)
     is_del = models.IntegerField(default=0)
+    calories = models.IntegerField(default=0)
+
 
 
 class UserRecipeLog(models.Model):
