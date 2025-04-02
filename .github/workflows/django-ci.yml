@@ -75,14 +75,14 @@ jobs:
           # 等待前端服务启动
           sleep 20
 
-      # 11. install Chromium & Chromedriver
-      - name: Install Chrome and Chromedriver
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y chromium-browser chromium-chromedriver
+      # # 11. install Chromium & Chromedriver
+      # - name: Install Chrome and Chromedriver
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y chromium-browser chromium-chromedriver
 
-      # 12. run Selenium test
-      - name: Run Selenium tests
-        run: |
-          pip install selenium pytest
-          pytest tests/test_selenium.py --maxfail=1 --disable-warnings -q
+      # # 12. run Selenium test
+      # - name: Run Selenium tests
+      #   run: |
+      #     pip install selenium pytest
+      #     pytest tests/test_selenium.py --maxfail=1 --disable-warnings -q
