@@ -149,6 +149,7 @@ APP_ID = os.getenv("APP_ID")
 print("Using DB:", DATABASES['default'])
 
 print("📦 DB in use:", os.getenv('DB_NAME'))
+print("django env:", os.getenv('DJANGO_ENV'))
 
 ### API parts
 API_KEY = "sk-94945667a547494a9adeefcff1d5a3a1"
