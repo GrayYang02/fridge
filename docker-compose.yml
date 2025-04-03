@@ -21,7 +21,7 @@ services:
       args:
 # <<<<<<< HEAD
         REACT_APP_API_URL: "${REACT_APP_API_URL:-http://3.139.71.177:8000/}"
-      dockerfile: Dockerfile.react 
+      # dockerfile: Dockerfile.react 
 # =======
 #         # - REACT_APP_API_URL=${REACT_APP_API_URL}
 #       dockerfile: Dockerfile.react 
