@@ -1,10 +1,10 @@
 name: Auto Deploy to EC2 (push Docker image)
 
 on:
-  push:
-    branches:
-      # - deploy
-      - main
+  # push:
+  #   branches:
+  #     # - deploy
+  #     - main
   pull_request:
     types: [closed]
     branches:
