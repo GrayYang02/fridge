@@ -58,9 +58,9 @@ jobs:
               DJANGO_ENV: test 
         run: |
           cd backend
-          python manage.py migrate
-          nohup python manage.py runserver 0.0.0.0:8000 &
-          sleep 15
+          nohup python manage.py runserver 0.0.0.0:8000 > server.log 2>&1 &
+          sleep 10
+          cat server.log
 
       # 9. Install frontend dependencies
       - name: Install frontend dependencies
