@@ -24,7 +24,9 @@ def driver():
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     if os.getenv("GITHUB_ACTIONS") == "true":
-        chrome_options.binary_location = "/usr/bin/chromium-browser"
+        chrome_path = os.getenv("CHROME_BIN")
+        if chrome_path:
+            chrome_options.binary_location = chrome_path
         driver = webdriver.Chrome(options=chrome_options)
         print("Running in GitHub Actions")
     else:
