@@ -24,7 +24,9 @@ def driver():
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     if os.getenv("GITHUB_ACTIONS") == "true":
-        chrome_options.binary_location = "/usr/bin/chromium-browser"
+        chrome_path = os.getenv("CHROME_BIN")
+        if chrome_path:
+            chrome_options.binary_location = chrome_path
         driver = webdriver.Chrome(options=chrome_options)
         print("Running in GitHub Actions")
     else:
@@ -43,6 +45,7 @@ def wait_for_element(driver, by, value, timeout=20):
 def test_signup_and_login_flow(driver):
     driver.get(BASE_URL + "/login")
     wait_for_element(driver, By.XPATH, "//*[contains(text(), 'Welcome back')]")
+
 
     signup_link = driver.find_element(By.LINK_TEXT, "Sign up")
     signup_link.click()
@@ -63,6 +66,7 @@ def test_signup_and_login_flow(driver):
 
     signup_button = driver.find_element(By.XPATH, "//button[contains(text(),'Sign up')]")
     signup_button.click()
+    
 
     WebDriverWait(driver, 10).until(EC.alert_is_present())
     alert = driver.switch_to.alert
