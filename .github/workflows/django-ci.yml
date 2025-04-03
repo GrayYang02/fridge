@@ -62,7 +62,7 @@ jobs:
 
 
           sleep 10
-          cat server.log
+          
 
       # 9. Install frontend dependencies
       - name: Install frontend dependencies
