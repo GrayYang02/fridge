@@ -11,6 +11,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import ActionChains
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 
 BASE_URL = "http://localhost:3000"
 
@@ -24,8 +26,11 @@ def driver():
     if os.getenv("GITHUB_ACTIONS") == "true":
         chrome_options.binary_location = "/usr/bin/chromium-browser"
         driver = webdriver.Chrome(options=chrome_options)
+        print("Running in GitHub Actions")
     else:
-        driver = webdriver.Chrome()  # 本地测试时使用默认配置
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+        # driver = webdriver.Chrome()  # 本地测试时使用默认配置
     driver.maximize_window()
     yield driver
     driver.quit()

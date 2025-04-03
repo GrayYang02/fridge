@@ -54,18 +54,22 @@ jobs:
 
       # 8. Run backend tests with coverage reporting
       - name: Start backend server
+        env:
+              DJANGO_ENV: test 
         run: |
           cd backend
           nohup python manage.py runserver 0.0.0.0:8000 &
 
+
           sleep 10
+          
 
       # 9. Install frontend dependencies
       - name: Install frontend dependencies
         run: |
           cd fridgeui
           npm install
-          cp .env.example .env
+
 
       # 10. start frontend service
       - name: Start frontend server
@@ -82,7 +86,9 @@ jobs:
       #     sudo apt-get install -y chromium-browser chromium-chromedriver
 
       # # 12. run Selenium test
-      # - name: Run Selenium tests
+      # - name: Run Selenium tests 
+      #   env:
+      #     GITHUB_ACTIONS: true
       #   run: |
-      #     pip install selenium pytest
+      #     pip install selenium pytest webdriver-manager
       #     pytest tests/test_selenium.py --maxfail=1 --disable-warnings -q
