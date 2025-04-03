@@ -54,6 +54,8 @@ jobs:
 
       # 8. Run backend tests with coverage reporting
       - name: Start backend server
+        env:
+              DJANGO_ENV: test 
         run: |
           cd backend
           nohup python manage.py runserver 0.0.0.0:8000 &
@@ -65,7 +67,7 @@ jobs:
         run: |
           cd fridgeui
           npm install
-          cp .env.example .env
+
 
       # 10. start frontend service
       - name: Start frontend server
