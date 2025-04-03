@@ -49,8 +49,14 @@ jobs:
           docker stop frontend || true && docker rm frontend || true
 
           docker run -d \
-          --name backend \
-          --env-file /home/ubuntu/fridge/backend/.env \
-          -p 8000:8000 \
-          fridge-backend
-          docker run -d --name frontend -p 80:80 fridge-frontend
+            --name backend \
+            --env-file /home/ubuntu/fridge/backend/.env \
+            -v /home/ubuntu/fridge/backend/media:/app/media \
+            -p 8000:8000 \
+            fridge-backend
+            
+          docker run -d \
+          --name frontend \
+          -v /home/ubuntu/fridge/backend/media:/app/media \
+          -p 80:80 \
+          fridge-frontend
