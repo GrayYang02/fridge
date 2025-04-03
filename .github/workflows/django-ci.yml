@@ -88,5 +88,5 @@ jobs:
         env:
             DJANGO_ENV: test  
         run: |
-          pip install selenium pytest
+          pip install selenium pytest webdriver-manager
           pytest tests/test_selenium.py --maxfail=1 --disable-warnings -q
