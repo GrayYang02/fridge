@@ -30,7 +30,7 @@ function SignUp() {
       navigate('/login');
     } catch (err) {
       console.error(err);
-      alert('Sign Up Failed!'+err.message);
+      alert('Sign Up Failed!');
     } finally {
       setLoading(false);
     }
