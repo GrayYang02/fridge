@@ -64,7 +64,7 @@ class UserViewSet(ModelViewSet):
 
             uid = int(request.query_params.get("userid"))
             user_profile = User.objects.filter(id=uid).first()
-            age = user_profile.age
+            # age = user_profile.age
             BMI = user_profile.BMI
             userlike = user_profile.userlike
             allergies = user_profile.allergies
@@ -75,7 +75,7 @@ class UserViewSet(ModelViewSet):
                 app_id=SUGGEST_APP_ID,
                 prompt=f'Hi! I need a 1-day meal plan.Here’s my profile:Allergies:{allergies} '
                        f'Taste Preferences:{userlike}'
-                       f'BMI: {BMI}, Age: {age}'
+                       f'BMI: {BMI}'
             )
 
             # Check response status

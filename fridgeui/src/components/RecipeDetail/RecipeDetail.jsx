@@ -9,6 +9,32 @@ const [recipeName, setRecipeName] = useState("")
 const [error, setError] = useState(null);
 const [loading, setLoading] = useState(true);
 const [isCollected, setIsCollected] = useState(false);
+const [calories, setCalories] = useState(0);
+const [missingItems, setMissingItems] = useState([]);
+const [listLoading, setListLoading] = useState(false); // for shopping list
+
+const getShoppingList = async () => {
+  setListLoading(true);
+  setError("");
+  try {
+    const response = await api.get("/core/shopping_list/", {
+      params: {
+        userid: userId,
+        recipe_id: recipeId,
+      },
+    });
+
+    if (response.status === 200) {
+      setMissingItems(response.data.data || []);
+    } else {
+      setError("Failed to fetch shopping list.");
+    }
+  } catch (err) {
+    setError("Error: " + err.message);
+  } finally {
+    setListLoading(false);
+  }
+};
 
 // const handleCreateViewRecord = async () => {
 //   try {
@@ -104,7 +130,12 @@ useEffect(() => {
         setRecipe(JSON.parse(response.data.data.recipe.replace(/'/g, '"')));
         setIngredient(JSON.parse(response.data.data.food.replace(/'/g, '"')))
         setRecipeName(response.data.data.recipe_name)
-       
+        const caloriesValue = response.data.data.calories;
+        console.log("calories", caloriesValue)
+        if (caloriesValue !== "" && caloriesValue !== null && caloriesValue !== undefined) {
+          setCalories(caloriesValue);
+        }
+
       
       
     } catch (err) {
@@ -151,6 +182,62 @@ return (
             {recipeName || "Unknown Recipe"}
           </h1>
 
+           {/* Calories Display */}
+        <p className="text-center text-xl text-gray-500 mb-4">
+          Estimated Calories: {calories} kcal
+        </p>
+
+        <div className="w-full max-w-2xl mt-6 mb-4 flex space-x-4">
+              {/* Collect Button */}
+              <button
+                className={`px-4 py-2 text-lg font-semibold rounded-lg ${
+                  isCollected ? "bg-yellow-300 text-white-500" : "bg-gray-300 text-gray-500"
+                }`}
+                onClick={handleToggleCollection}
+              >
+                {isCollected ? "★ Collected" : "☆ Collect"}
+              </button>
+
+              {/* Cook Button */}
+              <button
+                className="px-4 py-2 text-lg font-semibold bg-green-500 text-white rounded-lg"
+                onClick={handleCook}
+              >
+                🍳 Cook
+              </button>
+              <button
+        onClick={getShoppingList}
+        className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+      >
+        🛒 Generate Shopping List
+      </button>
+            </div>
+
+
+            <div className="my-4">
+      {/* <button
+        onClick={getShoppingList}
+        className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+      >
+        🛒 Generate Shopping List
+      </button> */}
+
+      {listLoading && <p className="text-gray-500 mt-2">Checking your fridge...</p>}
+
+{error && <p className="text-red-500 mt-2">{error}</p>}
+
+      {missingItems.length > 0 && (
+        <div className="mt-4 border border-gray-300 p-4 rounded bg-yellow-50">
+          <h2 className="font-semibold text-gray-800 mb-2">Items to Buy:</h2>
+          <ul className="list-disc list-inside text-gray-700">
+            {missingItems.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Ingredients Section */}
             <div className="border border-gray-300 rounded-lg p-4 bg-blue-50">
@@ -171,25 +258,7 @@ return (
                 )) || <p>No steps provided.</p>}
               </ol>
             </div>
-            <div className="w-full max-w-lg mt-6 flex justify-end space-x-4">
-              {/* Collect Button */}
-              <button
-                className={`px-4 py-2 text-lg font-semibold rounded-lg ${
-                  isCollected ? "bg-yellow-300 text-white-500" : "bg-gray-300 text-gray-500"
-                }`}
-                onClick={handleToggleCollection}
-              >
-                {isCollected ? "★ Collected" : "☆ Collect"}
-              </button>
-
-              {/* Cook Button */}
-              <button
-                className="px-4 py-2 text-lg font-semibold bg-green-500 text-white rounded-lg"
-                onClick={handleCook}
-              >
-                🍳 Cook
-              </button>
-            </div>
+            
           </div>
         </div>
       ) : (
