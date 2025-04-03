@@ -84,6 +84,8 @@ jobs:
 
       # 12. run Selenium test
       - name: Run Selenium tests 
+        env:
+          GITHUB_ACTIONS: true
         run: |
           pip install selenium pytest webdriver-manager
           pytest tests/test_selenium.py --maxfail=1 --disable-warnings -q
