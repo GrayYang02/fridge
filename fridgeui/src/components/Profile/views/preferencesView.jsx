@@ -9,6 +9,7 @@ const TagInput = ({ title, icon, tagList, onUpdate }) => {
   const [inputValue, setInputValue] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [originalTags, setOriginalTags] = useState(tagList || []);
+  
 
   useEffect(() => {
     setDynamicTags(tagList || []);
@@ -38,6 +39,7 @@ const TagInput = ({ title, icon, tagList, onUpdate }) => {
   };
 
   return (
+    
     <div className="bg-white rounded-2xl shadow-md p-4 mb-6">
       <div className="flex items-center gap-2 mb-3">
         {icon}
@@ -114,6 +116,9 @@ const TagInput = ({ title, icon, tagList, onUpdate }) => {
 
 const PreferencesView = () => {
   const { userinfo, setUserinfo } = useContext(UserContext);
+  const [recommendation, setRecommendation] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   //   const [likes, setLikes] = useState([]);
   //   const [dislikes, setDislikes] = useState([]);
   //   const [allergies, setAllergies] = useState([]);
@@ -139,6 +144,25 @@ const PreferencesView = () => {
     }
   };
 
+  const getDailyRecommendation = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await api.get("/core/users/daily_recommand/", {
+        params: { userid: userinfo.id },
+      });
+      if (response.status === 200 && response.data.success) {
+        setRecommendation(response.data.data);
+      } else {
+        setError("Failed to fetch daily recommendation.");
+      }
+    } catch (err) {
+      setError("Error: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       {/* Main Content */}
@@ -161,6 +185,32 @@ const PreferencesView = () => {
         tagList={userinfo?.allergies ? userinfo.allergies.split(",") : []}
         onUpdate={(newTags) => updateUserTags("allergies", newTags)}
       />
+
+<div className="text-center mt-4">
+        <button
+          onClick={getDailyRecommendation}
+          className="bg-gradient-to-l from-green-400 to-green-600 hover:from-green-700 hover:to-green-500 text-white px-5 py-2 rounded-lg shadow"
+        >
+          🍽 Get Daily Recommendation
+        </button>
+
+        {loading && <p className="mt-2 text-gray-500">Loading...</p>}
+        {error && <p className="text-red-500 mt-2">{error}</p>}
+
+        {recommendation && (
+          <div className="mt-6 text-left border p-4 rounded-md bg-yellow-50">
+            {Object.entries(recommendation).map(([meal, detail]) => (
+              <div key={meal} className="mb-4">
+                <h3 className="text-lg font-semibold capitalize">🍴 {meal}</h3>
+                <p><strong>Recipe:</strong> {detail.recipename}</p>
+                <p><strong>Calories:</strong> {detail.calories}</p>
+                <p><strong>Flavors:</strong> {detail.flavor_tags.join(", ")}</p>
+                <p><strong>Ingredients:</strong> {detail.ingredients.join(", ")}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </>
   );
 };
