@@ -2,9 +2,9 @@ name: Django CI
 
 on:
   push:
-    branches: [ '*' ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ '*' ]
+    branches: [ "main" ]
 
 jobs:
   test:
@@ -22,7 +22,7 @@ jobs:
           python-version: 3.11
 
       # 3. Install system dependencies for mysqlclient (if using MySQL in backend)
-      - name: Install system dependencies for mysqlclient
+      - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y default-libmysqlclient-dev build-essential
@@ -42,20 +42,47 @@ jobs:
         run: pip install coverage
 
       # 7. Run database migrations
-      - name: Run migrations
+      - name: Migrate & run backend tests
+        env:
+          DJANGO_ENV: test    
         run: |
-          python backend/manage.py makemigrations --noinput
-          python backend/manage.py migrate --noinput
-
-      # 8. Run backend tests with coverage reporting
-      - name: Run backend tests with coverage
-        run: |
-          coverage run --source=core backend/manage.py test core.test_core
+          cd backend
+          python manage.py makemigrations --noinput
+          python manage.py migrate --noinput
+          coverage run --source=core manage.py test core.test_core
           coverage report -m
 
-      # # 9. Install frontend dependencies and run frontend tests
-      # - name: Run frontend tests
+      # 8. Run backend tests with coverage reporting
+      - name: Start backend server
+        run: |
+          cd backend
+          nohup python manage.py runserver 0.0.0.0:8000 &
+          # 等待后端服务启动
+          sleep 10
+
+      # 9. Install frontend dependencies
+      - name: Install frontend dependencies
+        run: |
+          cd fridgeui
+          npm install
+          cp .env.example .env
+
+      # 10. start frontend service
+      - name: Start frontend server
+        run: |
+          cd fridgeui
+          nohup npm start &
+          # 等待前端服务启动
+          sleep 20
+
+      # # 11. install Chromium & Chromedriver
+      # - name: Install Chrome and Chromedriver
       #   run: |
-      #     cd fridgeui
-      #     npm install
-      #     npm test -- --coverage
+      #     sudo apt-get update
+      #     sudo apt-get install -y chromium-browser chromium-chromedriver
+
+      # # 12. run Selenium test
+      # - name: Run Selenium tests
+      #   run: |
+      #     pip install selenium pytest
+      #     pytest tests/test_selenium.py --maxfail=1 --disable-warnings -q

@@ -152,6 +152,7 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
 
      
       try {
+
         const queryString = encodeURIComponent(ingredientNames.join(", "));
         const response = await api.get(
           `core/fridge/get_recipe/?ingredient=${queryString}`
@@ -407,12 +408,14 @@ const FridgeRecipePage = ({ userId, recipeId }) => {
         </section>
       </main>
       {selectedRecipeId && (
+
         <RecipeDetail
           userId={userinfo.id}
           recipeId={selectedRecipeId}
           onClose={() => setSelectedRecipeId(null)}
         />
       )}
+
     </div>
 
 

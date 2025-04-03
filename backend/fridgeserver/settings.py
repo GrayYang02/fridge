@@ -106,17 +106,5 @@ USE_I18N = True
 USE_TZ = True
 
 
-
-
 STATIC_URL = 'static/'
-
-
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-MONGODB_DB = 1
-MONGODB_URI  =1
-
-API_KEY = "sk-94945667a547494a9adeefcff1d5a3a1"
-APP_ID = 'a78c9f45e02c411da89cd9c95a1b86aa'
-

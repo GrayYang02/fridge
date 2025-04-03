@@ -1,0 +1,4 @@
+ERROR 2025-03-05 16:11:50,660 [process: 13303:][thread: 6188904448] /Users/xitiebai/code/fridge/backend/core/views.py [line:339] request_id=fb86812c-001b-9bf1-a165-5fd4f92e7e20, code=401, message=Invalid API-key provided..
+See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code
+ERROR 2025-03-05 16:12:13,550 [process: 13303:][thread: 6206304256] /Users/xitiebai/code/fridge/backend/core/views.py [line:339] request_id=9c2ecc5f-f2f2-9442-a969-2c9b83c989d4, code=401, message=Invalid API-key provided..
+See Docs: https://help.aliyun.com/zh/model-studio/developer-reference/error-code

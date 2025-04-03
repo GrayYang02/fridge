@@ -11,8 +11,12 @@ RUN apt-get update && apt-get install -y \
     gcc \
     python3-dev \
     libpq-dev \
-    pkg-config \
+    # pkg-config \
+    # default-libmysqlclient-dev \
+    libmariadb-dev \
+    libmariadb-dev-compat \
     default-libmysqlclient-dev \
+    pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
 # 复制依赖文件并安装 Python 依赖
@@ -21,6 +25,7 @@ RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
 # 复制所有项目文件
 COPY . /app/
+COPY .env /app/.env
 
 # 暴露端口并启动 gunicorn
 EXPOSE 8000
