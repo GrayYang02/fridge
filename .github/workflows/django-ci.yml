@@ -70,6 +70,10 @@ jobs:
           cd fridgeui
           npm install
 
+      - name: Check if SQLite DB file exists
+        run: |
+          ls -al backend/db.sqlite3 || echo "DB does not exist"
+
 
       # 10. start frontend service
       - name: Start frontend server
@@ -94,3 +98,6 @@ jobs:
         run: |
           pip install selenium pytest webdriver-manager
           pytest tests/test_selenium.py --maxfail=1 --disable-warnings -q
+
+      - name: Tail Django log for debug
+        run: tail -n 100 nohup.out || echo "No logs yet"
