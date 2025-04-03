@@ -1,3 +1,6 @@
+The frontend can be accessed at:
+http://3.139.71.177/login
+
 # Project Setup
 
 This project consists of a frontend built with React and a backend powered by Django. The services are managed using Docker Compose.

@@ -2,9 +2,9 @@ name: Django CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
   pull_request:
-    branches: [ "main" ]
+    branches: ['main']
 
 jobs:
   test:
@@ -44,7 +44,7 @@ jobs:
       # 7. Run database migrations
       - name: Migrate & run backend tests
         env:
-          DJANGO_ENV: test    
+          DJANGO_ENV: test
         run: |
           cd backend
           python manage.py makemigrations --noinput
@@ -58,7 +58,9 @@ jobs:
               DJANGO_ENV: test 
         run: |
           cd backend
-          nohup python manage.py runserver 0.0.0.0:8000 > server.log 2>&1 &
+          nohup python manage.py runserver 0.0.0.0:8000 &
+
+
           sleep 10
           cat server.log
 
@@ -74,6 +76,7 @@ jobs:
         run: |
           cd fridgeui
           nohup npm start &
+
           sleep 20
 
       # 11. install Chromium & Chromedriver
