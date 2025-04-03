@@ -8,6 +8,7 @@ Ensure you have the following installed:
 
 - [Python & pip](https://www.python.org/)
 - [Docker](https://www.docker.com/get-started) (if using Docker Compose)
+  
 
 ## Running the Backend
 
