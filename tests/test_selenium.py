@@ -46,7 +46,6 @@ def test_signup_and_login_flow(driver):
     driver.get(BASE_URL + "/login")
     wait_for_element(driver, By.XPATH, "//*[contains(text(), 'Welcome back')]")
 
-    print(driver.page_source)
 
     signup_link = driver.find_element(By.LINK_TEXT, "Sign up")
     signup_link.click()
