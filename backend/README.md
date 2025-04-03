@@ -1,3 +1,6 @@
+The frontend can be accessed at:
+http://3.139.71.177/login
+
 # Backend Setup
 
 This document provides instructions for setting up and running the Django backend.
@@ -8,6 +11,7 @@ Ensure you have the following installed:
 
 - [Python & pip](https://www.python.org/)
 - [Docker](https://www.docker.com/get-started) (if using Docker Compose)
+  
 
 ## Running the Backend
 
