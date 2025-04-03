@@ -46,6 +46,8 @@ def test_signup_and_login_flow(driver):
     driver.get(BASE_URL + "/login")
     wait_for_element(driver, By.XPATH, "//*[contains(text(), 'Welcome back')]")
 
+    print(driver.page_source)
+
     signup_link = driver.find_element(By.LINK_TEXT, "Sign up")
     signup_link.click()
     wait_for_element(driver, By.ID, "email")
@@ -65,6 +67,7 @@ def test_signup_and_login_flow(driver):
 
     signup_button = driver.find_element(By.XPATH, "//button[contains(text(),'Sign up')]")
     signup_button.click()
+    
 
     WebDriverWait(driver, 10).until(EC.alert_is_present())
     alert = driver.switch_to.alert
