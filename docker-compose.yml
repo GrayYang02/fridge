@@ -11,23 +11,18 @@ services:
     env_file:
       - ./backend/.env
 
-      # - .env
-    
-
   frontend:
     build:
       context: ./fridgeui
       dockerfile: Dockerfile.react
       args:
-# <<<<<<< HEAD
         REACT_APP_API_URL: "${REACT_APP_API_URL:-http://3.139.71.177:8000/}"
-      # dockerfile: Dockerfile.react 
-# =======
-#         # - REACT_APP_API_URL=${REACT_APP_API_URL}
-#       dockerfile: Dockerfile.react 
-# >>>>>>> main
+        # REACT_APP_API_URL: "${REACT_APP_API_URL:-http://localhost:8000/}"
+
     environment:
       - REACT_APP_API_URL=${REACT_APP_API_URL:-http://3.139.71.177:8000/}
+      # - REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:8000/}
+
     container_name: frontend
     ports:
       - "80:80"
