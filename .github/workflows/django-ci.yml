@@ -2,7 +2,7 @@ name: Django CI
 
 on:
   push:
-    branches: ['main']
+    branches: ['showcase-lily']
   pull_request:
     branches: ['main']
 
@@ -77,8 +77,10 @@ jobs:
 
       # 10. start frontend service
       - name: Start frontend server
+        
         run: |
           cd fridgeui
+          echo "REACT_APP_API_URL=http://localhost:8000" > .env
           nohup npm start &
 
           sleep 20
