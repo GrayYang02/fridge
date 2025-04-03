@@ -83,6 +83,8 @@ jobs:
 
       # 12. run Selenium test
       - name: Run Selenium tests
+        env:
+            DJANGO_ENV: test  
         run: |
           pip install selenium pytest
           pytest tests/test_selenium.py --maxfail=1 --disable-warnings -q
