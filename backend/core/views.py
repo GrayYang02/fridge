@@ -444,6 +444,7 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
+    print("Signup error:", serializer_class.errors)
 
 class LoginView(generics.GenericAPIView):
 

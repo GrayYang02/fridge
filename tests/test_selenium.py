@@ -26,6 +26,7 @@ def driver():
     if os.getenv("GITHUB_ACTIONS") == "true":
         chrome_options.binary_location = "/usr/bin/chromium-browser"
         driver = webdriver.Chrome(options=chrome_options)
+        print("Running in GitHub Actions")
     else:
         service = Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=chrome_options)
