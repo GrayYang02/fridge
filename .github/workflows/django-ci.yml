@@ -58,9 +58,9 @@ jobs:
               DJANGO_ENV: test 
         run: |
           cd backend
+          python manage.py migrate
           nohup python manage.py runserver 0.0.0.0:8000 &
-          # 等待后端服务启动
-          sleep 10
+          sleep 15
 
       # 9. Install frontend dependencies
       - name: Install frontend dependencies
@@ -74,7 +74,6 @@ jobs:
         run: |
           cd fridgeui
           nohup npm start &
-          # 等待前端服务启动
           sleep 20
 
       # 11. install Chromium & Chromedriver
@@ -84,9 +83,7 @@ jobs:
           sudo apt-get install -y chromium-browser chromium-chromedriver
 
       # 12. run Selenium test
-      - name: Run Selenium tests
-        env:
-            DJANGO_ENV: test  
+      - name: Run Selenium tests 
         run: |
           pip install selenium pytest webdriver-manager
           pytest tests/test_selenium.py --maxfail=1 --disable-warnings -q
